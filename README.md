@@ -1,17 +1,38 @@
-# Habit Loop — Remotion Demo (Three.js + Recharts)
+# Nghị quyết 57 — Video giải mã (Remotion)
 
-Demo 2 scene chạy được thật bằng Remotion, nối tiếp 2 bản preview HTML đã duyệt trước đó.
+Video giải thích Nghị quyết 57 của Bộ Chính trị về đột phá phát triển khoa học, công nghệ,
+đổi mới sáng tạo và chuyển đổi số quốc gia. Dựng bằng **Remotion** (video-as-code): 3D
+(Three.js), biểu đồ (Recharts), animation SVG, phụ đề karaoke 1 dòng, và giọng đọc TTS
+chọn được qua 4 backend độc lập.
 
-- **Scene 1** — kinetic typography + icon 3D xoay (torus ring + node/brain) dựng bằng `@remotion/three` (React Three Fiber).
-- **Scene 2** — biểu đồ cột animate bằng Recharts, giá trị được "bake" theo frame để đảm bảo render deterministic.
-- Chuyển cảnh bằng `@remotion/transitions` (fade).
+## Yêu cầu
+
+- Node.js 18+ và npm
+- Python 3.10+ (chỉ để sinh audio TTS)
+- ffmpeg (dùng bản `ffmpeg-static` đã cài cùng dự án)
 
 ## Cài đặt
 
 ```bash
-cd remotion-demo
 npm install
+pip install edge-tts gTTS mutagen ffmpeg-static
 ```
+
+## Sinh giọng đọc (TTS)
+
+SScript `gen_tts_v2.py` sinh file `public/nq57/sN.mp3` và tự cập nhật `src/nq57-data.ts`
+(thời lượng + phụ đề). Chọn 1 trong 4 backend — hoàn toàn độc lập, chỉ đổi flag:
+
+| Backend   | Lệnh                                      | Ghi chú |
+|-----------|-------------------------------------------|---------|
+| `edge`    | `python3 gen_tts_v2.py --backend edge`    | Free, nhanh (Microsoft edge-tts), 2 giọng có sẵn |
+| `omni`    | `python3 gen_tts_v2.py --backend omni`    | OmniVoice local, giọng tùy biến (Voice Design). Cần `pip install omnivoice soundfile torch` |
+| `gemini`  | `python3 gen_tts_v2.py --backend gemini`  | Google AI Studio trực tiếp. Cần `GEMINI_API_KEY` (env) |
+| `proxy`   | `python3 gen_tts_v2.py --backend proxy`   | Gateway OpenAI-compatible local (vd aistudio). Cần key qua env `AISTUDIO_KEY` hoặc file `proxy_key.txt` |
+
+- Sửa kịch bản / phụ đề: mảng `DIALOGUE` trong `gen_tts_v2.py`.
+- Đổi giọng proxy: biến `PROXY_VOICE` (vd `Puck` nam, `Kore` nữ) và `PROXY_MODEL`.
+- Key **không bao giờ commit** (xem `.gitignore`): dùng env hoặc file `proxy_key.txt` / `gemini_key.txt` nằm ngoài git.
 
 ## Xem preview (Remotion Studio)
 
@@ -19,48 +40,48 @@ npm install
 npm run dev
 ```
 
-Mở trình duyệt tại địa chỉ Studio hiện ra trong terminal (mặc định `http://localhost:3000`). Bạn có thể tua timeline, xem từng frame chính xác — không như preview HTML chỉ chạy real-time.
+Mở địa chỉ Studio in terminal (mặc định `http://localhost:3000`) để tua timeline từng frame.
 
 ## Render ra MP4
 
 ```bash
-npm run render
+npx remotion render src/index.ts NghiQuyet57V2 out/nq57.mp4
 ```
 
-File xuất ra ở `out/habit-loop.mp4`.
-
-## Thêm giọng đọc (TTS) + nhạc nền
-
-1. Bỏ file `voiceover.mp3` và `bg-music.mp3` vào thư mục `public/`.
-2. Mở `src/HabitLoopVideo.tsx`, bỏ comment 2 dòng `<Audio>` ở cuối file.
-3. Nếu có file phụ đề `.srt`/`.vtt` xuất từ TTS, thay caption tĩnh trong `Scene1Orb.tsx` / `Scene2Chart.tsx` bằng component đọc caption theo timestamp (xem docs: `@remotion/captions`).
+- Composition chính: **`NghiQuyet57V2`** (7 cảnh s1–s7, phụ đề karaoke, giọng 2 người).
+- Composition cũ `HabitLoop` và `NghiQuyet57` vẫn còn trong `Root.tsx` để tham khảo.
 
 ## Cấu trúc thư mục
 
 ```
 src/
-  index.ts              # entry, registerRoot
-  Root.tsx               # khai báo Composition (id, fps, kích thước, thời lượng)
-  HabitLoopVideo.tsx      # ghép 2 scene bằng TransitionSeries
-  theme.ts                # design tokens (màu, font) — sửa ở đây để đổi cả bộ nhận diện
+  index.ts                 # entry, registerRoot
+  Root.tsx                 # khai báo các Composition (NghiQuyet57V2, HabitLoop, NghiQuyet57)
+  NghiQuyet57VideoV2.tsx    # ghép 7 cảnh bằng TransitionSeries (cross-fade)
+  nq57-data.ts              # SCENES (id/audio/caption/dur) — được gen_tts_v2.py sinh lại
+  fonts-nq57.ts             # font Be Vietnam Pro
+  theme-nq57.ts             # design tokens (màu, font) cho bộ NQ57
   scenes/
-    Scene1Orb.tsx          # headline + icon 3D
-    Scene2Chart.tsx         # chart Recharts
-  components/
-    Icon3D.tsx               # mesh 3D dùng lại được cho scene khác
+    NQ57ScenesV2.tsx        # 7 cảnh: Title, Quote, Roles, Pillars, Stats, Vision, End
+                            # + SVG (RingDraw, UnderlineDraw, DataFlow, Gauge) + KaraokeCaption
+gen_tts_v2.py               # sinh TTS đa backend + cập nhật nq57-data.ts
+public/nq57/                # audio mp3 (được sinh, đã gitignore)
+out/                        # video xuất (đã gitignore)
 ```
 
-## Lưu ý kỹ thuật quan trọng (đừng phá vỡ khi sửa code)
+## Lưu ý kỹ thuật (giữ nguyên khi sửa code)
 
-- Trong bất kỳ component nào nằm trong `<ThreeCanvas>`, **luôn dùng `useCurrentFrame()`** của Remotion để animate — **không dùng `useFrame()`** gốc của React Three Fiber, vì nó chạy theo đồng hồ thực và không tua được trong Studio, cũng không render đúng khi xuất video.
-- `<Sequence>` bọc quanh `<ThreeCanvas>` phải có `layout="none"`.
-- `<ThreeCanvas>` phải khai báo `width`/`height` tường minh.
-- Với bất kỳ thư viện chart/animation bên thứ 3 nào (Recharts, Nivo, Lottie...), luôn **tắt animation nội bộ** của thư viện đó (`isAnimationActive={false}` với Recharts) và tự tính giá trị theo `frame` bằng `interpolate()`/`spring()`. Nếu để thư viện tự chạy animation, mỗi lần render một frame có thể ra kết quả khác nhau → video bị giật/nhòe khi xuất.
+- Trong mọi component nằm trong `<ThreeCanvas>`, **luôn dùng `useCurrentFrame()`** của Remotion
+  để animate — **không dùng `useFrame()`** gốc của React Three Fiber (chạy theo đồng hồ thực,
+  không tua được trong Studio và render sai khi xuất).
+- `<Sequence>` bọc `<ThreeCanvas>` phải có `layout="none"`; `<ThreeCanvas>` khai báo rõ `width`/`height`.
+- Với Recharts (và mọi lib chart/animation): tắt animation nội bộ (`isAnimationActive={false}`)
+  và tự tính giá trị theo `frame` bằng `interpolate()`/`spring()` để render deterministic.
+- Phụ đề: chỉ 1 dòng, tự cuộn (marquee) theo lời đang nói — xem `KaraokeCaption` trong
+  `NQ57ScenesV2.tsx`. Mỗi cảnh audio được chèn 0.5s nghỉ đầu/cuối để chuyển cảnh không bị chồng tiếng.
+- Font tiếng Việt: Be Vietnam Pro (`@remotion/google-fonts`), load trong `fonts-nq57.ts`.
 
-## Roadmap tiếp theo (đã thảo luận trong chat)
+## File sinh tự động (đã gitignore)
 
-- [ ] Thay icon 3D tay-vẽ bằng icon từ Iconify (offline, đồng bộ style, tránh scrape web mỗi lần)
-- [ ] Thêm React Flow cho các scene dạng sơ đồ quy trình nhiều bước
-- [ ] Thêm `@remotion/lottie` cho animation phức tạp lấy từ LottieFiles, chỉnh màu theo `theme.ts`
-- [ ] Nối với TTS thật + `@remotion/captions` để phụ đề tự sinh theo timestamp
-- [ ] Viết script batch: 1 topic → tự sinh nhiều video theo template này (thay `defaultProps` của Composition)
+`out/`, `public/nq57/*.mp3`, `public/nq57/durations.json`, `*.pyc`, `node_modules/`,
+và mọi file chứa key. Clone về chạy `npm install` + `gen_tts_v2.py` là có thể render lại.
