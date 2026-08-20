@@ -9,6 +9,461 @@ Subject: [PATCH] Nang cap thi giac scenes NQ57V2: particles, grain, vignette,
  src/scenes/NQ57ScenesV2.tsx | 144 +++++++++++++++++-------
  2 files changed, 214 insertions(+), 145 deletions(-)
 
-[PATCH CONTENT PROVIDED BY USER]
-
-This patch file is preserved verbatim as supplied in the conversation. The complete patch body can be applied with git am after downloading this file. The patch targets the NQ57V2 visual upgrade described in HANDOFF.md and src/scenes/NQ57ScenesV2.tsx.
+diff --git a/HANDOFF.md b/HANDOFF.md
+index c11e245..6118b64 100644
+--- a/HANDOFF.md
++++ b/HANDOFF.md
+@@ -1,108 +1,107 @@
+-# HANDOFF — Pipeline tạo video code-gen (Remotion) — Chủ đề demo: Habit Loop
+-
+-> File này để dán lại cho Claude (hoặc người kế nhiệm) ở phiên làm việc mới,
+-> phòng trường hợp phiên hiện tại hết quota giữa chừng. Đọc file này là đủ để
+-> hiểu toàn bộ bối cảnh, không cần đọc lại lịch sử chat.
+-
+-## 1. Mục tiêu tổng của dự án
+-
+-Người dùng muốn xây một **pipeline tạo video tự động** bằng Remotion (video-as-code,
+-React), gồm đủ: TTS, hình ảnh, phụ đề, nhạc nền. Trở ngại ban đầu: **quota tạo ảnh AI
+-bị giới hạn**. Hướng giải quyết đã thống nhất: **thay ảnh bằng code-gen** — vẽ
+-icon/hình bằng SVG/Canvas/Three.js thay vì generate ảnh, vì quota code-gen thoải mái
+-hơn nhiều.
+-
+-## 2. Các quyết định chiến lược đã chốt (không cần bàn lại)
+-
+-- **Không** scrape SVG icon từ web theo từng topic (rủi ro bản quyền, không đồng nhất
+-  style, chậm, dễ lỗi). Thay vào đó: dùng bộ icon offline đồng nhất (khuyến nghị:
+-  Iconify — gộp Lucide/Tabler/Phosphor/Heroicons, MIT/Apache license) + semantic
+-  search local theo keyword, không cần lên mạng mỗi lần tạo video.
+-- **Kinetic typography** (chữ động) là xương sống mặc định của mọi video, vì không
+-  cần asset ngoài, luôn code-gen 100%.
+-- **ASCII art** và **hiệu ứng 3D (Three.js)** là gia vị điểm xuyết, không phải giải
+-  pháp thay ảnh toàn diện — 3D đặc biệt cần tiết chế vì render nặng (headless
+-  Chromium render từng frame, scene 3D phức tạp làm render time tăng vọt).
+-- **Chiến lược hybrid quota**: vẫn giữ AI image-gen cho vài "hero shot" thật sự cần
+-  ấn tượng mạnh (thumbnail, cảnh mở đầu); ~80-90% B-roll dùng code-gen.
+-- **Thư viện đã chốt dùng** (đều có tích hợp chính thức từ Remotion, đã verify qua
+-  web search, không cần tự viết cầu nối):
+-  - `@remotion/three` — 3D (React Three Fiber). Rule bắt buộc: dùng `useCurrentFrame()`
+-    thay vì `useFrame()`; `<Sequence layout="none">` bọc quanh `<ThreeCanvas>`;
+-    `<ThreeCanvas>` phải có `width`/`height` tường minh.
+-  - **Recharts** (MVP, dễ dùng) → **Visx** (khi cần chart mang đúng "signature style"
+-    riêng, không giống dashboard mặc định) — cho biểu đồ số liệu.
+-  - **React Flow** — cho sơ đồ quy trình/flowchart nhiều bước (chưa code demo, mới
+-    dừng ở gợi ý).
+-  - `@remotion/lottie` — nhúng animation Lottie có sẵn từ LottieFiles khi cần
+-    animation phức tạp mà tự vẽ path tốn công. Lưu ý: một số expression phức tạp có
+-    thể render không đúng frame (flicker) vì Remotion dùng `.goToAndStop()` để tua.
+-  - `@remotion/transitions` — chuyển cảnh (đang dùng `fade()`).
+-  - Matter.js (vật lý) — chưa tích hợp, nếu cần thì phải "bake" simulation thành
+-    timeline cố định trước rồi mới đưa vào Remotion (không có integration trực tiếp).
+-
+-## 3. Design system đã chốt (đừng đổi màu tuỳ tiện, đã được duyệt qua 2 vòng)
+-
+-Xem `src/theme.ts`. Tóm tắt:
+-
+-- Nền: `#0d0e15` (đen-chàm sâu), card phụ `#14161f`
+-- Accent: amber `#ffb86b`, teal `#5eead4`, pink `#ff6b9d` (mỗi accent gắn với 1 vai
+-  trò cố định: amber = tín hiệu/mở đầu, teal = hành động/core, pink = phần thưởng/kết)
+-- Chữ: display = Space Grotesk (700, headline), body = Inter (caption, sub-text)
+-- Ngôn ngữ thị giác: glass card (`backdrop-filter: blur`), glow/halo mềm, gradient
+-  ring xoay quanh icon tròn, mix phong cách icon filled/outline/glass để tránh đơn
+-  điệu (đã là feedback trực tiếp từ người dùng ở vòng 2).
+-
+-## 4. Lịch sử tiến độ (đã làm gì, theo thứ tự)
+-
+-1. **Brainstorm ban đầu** — người dùng đề xuất ý tưởng code-gen thay ảnh, Claude góp
+-   ý chỉnh sửa (bỏ scrape web, dùng Iconify offline, coi 3D/ASCII là gia vị).
+-2. **Demo v1 (HTML preview)** — `demo-video-remotion.html` — 2 scene tĩnh, circle-wipe
+-   transition, icon vẽ tay bằng SVG stroke-dasharray. Người dùng khen, xin tăng kích
+-   thước icon + đa dạng style + card/UX tốt hơn.
+-3. **Demo v2 (HTML preview)** — `demo-video-remotion-v2.html` — icon to hơn, orb card
+-   kính có ring gradient xoay, scene 2 đổi từ hàng ngang sang bố cục radial (hub +
+-   3 satellite card quanh, mỗi card 1 phong cách khác nhau: filled/outline/filled),
+-   transition đổi sang zoom+blur crossfade. Đây là **bố cục/màu sắc chuẩn cuối cùng**
+-   mà mọi scene Remotion về sau nên bám theo.
+-4. **Nghiên cứu thư viện** — search web xác nhận `@remotion/three`, Recharts/Visx,
+-   React Flow, `@remotion/lottie` đều là lựa chọn hợp lệ, có tích hợp chính thức.
+-5. **Bước hiện tại — project Remotion thật** (`remotion-demo/`) — chuyển demo v2 từ
+-   HTML mô phỏng sang code Remotion chạy được thật:
+-   - Scene 1: kinetic typography + icon 3D (torus ring + 3-node "brain" motif) bằng
+-     `@remotion/three`, thay cho orb card 2D của bản HTML.
+-   - Scene 2: **đổi hướng nội dung** so với bản HTML — thay vì lặp lại radial loop
+-     diagram (2D, đã làm rồi ở HTML), scene 2 trong bản Remotion là **biểu đồ
+-     Recharts động** ("độ bền thói quen tăng theo số lần lặp lại") để demo tích hợp
+-     chart thật — đúng yêu cầu "tương lai nên tích hợp cả vẽ biểu đồ, diagram".
+-   - Ghép 2 scene bằng `TransitionSeries` + `fade()`.
+-   - **CHƯA LÀM**: chưa `npm install` / chưa render thử thật (không có sandbox chạy
+-     headless Chromium trong môi trường hiện tại). Code viết đúng theo API chính thức
+-     đã verify qua docs, nhưng **chưa test end-to-end** — việc đầu tiên cần làm ở máy
+-     người dùng là `npm install && npm run dev` để bắt lỗi cú pháp/type nếu có.
+-
+-## 5. Việc cần làm tiếp theo (ưu tiên theo thứ tự)
+-
+-1. Chạy thử `npm install && npm run dev` trên máy người dùng, fix lỗi type/API nếu
+-   phiên bản package lệch (đã ghim version cụ thể trong `package.json`, nhưng
+-   Remotion ra bản mới rất nhanh — kiểm tra lại version mới nhất nếu cách xa ngày viết
+-   file này).
+-2. Nếu người dùng thích scene 2 dạng **radial loop diagram** (bản HTML v2) hơn là
+-   bar chart — cần viết thêm 1 scene mới `Scene2Loop.tsx` port lại đúng bố cục hub +
+-   3 satellite từ `demo-video-remotion-v2.html` sang JSX/inline style + `interpolate()`.
+-   Có thể làm **scene 3** luôn: Loop diagram + Chart trong cùng 1 video 3 cảnh.
+-3. Tích hợp Iconify offline (chưa làm) — cần: tải icon set cần thiết về
+-   `public/icons/`, viết helper load SVG theo tên, thay `Icon3D.tsx` node thủ công
+-   bằng icon thật khi không cần hiệu ứng 3D.
+-4. Tích hợp TTS thật — ghi âm/generate voiceover.mp3, đo timestamp từng câu, đồng bộ
+-   với `durationInFrames` của từng `TransitionSeries.Sequence` (hiện đang set cứng
+-   5.5s / 6.4s, cần đổi thành tính theo độ dài audio thật).
+-5. Viết `@remotion/captions` để phụ đề tự sinh từ SRT/VTT thay vì text tĩnh hard-code
+-   trong từng scene.
+-6. Cân nhắc thêm React Flow cho các topic có cấu trúc quy trình/flowchart phức tạp
+-   hơn habit loop (ví dụ: quy trình nhiều nhánh, có điều kiện rẽ nhánh).
+-
+-## 6. Cách tiếp tục nếu bắt đầu phiên chat mới
+-
+-Dán nguyên văn nội dung file này cho Claude, kèm câu: "Đây là handoff từ phiên trước,
+-tiếp tục từ mục 5". Không cần giải thích lại bối cảnh dự án.
++# HANDOFF — Video "Nghị quyết 57" (Remotion) — nâng cấp thị giác
++
++> File này để dán lại cho Claude (hoặc người kế nhiệm) ở phiên chat mới nếu phiên
++> hiện tại hết quota giữa chừng. Đọc file này là đủ hiểu bối cảnh, không cần đọc
++> lại lịch sử chat. (File HANDOFF.md bản cũ nói về dự án demo "Habit Loop" đã lỗi
++> thời — đã bị thay bằng bản này, vì trọng tâm hiện tại là composition
++> `NghiQuyet57V2`.)
++
++## 1. Bối cảnh
++
++Repo dựng video giải mã Nghị quyết 57 bằng Remotion (video-as-code), composition
++chính là **`NghiQuyet57V2`** (component `NghiQuyet57VideoV2`, 7 cảnh s1–s7 nối bằng
++`TransitionSeries`), toàn bộ scene UI nằm trong **`src/scenes/NQ57ScenesV2.tsx`**
++(1 file duy nhất chứa hết: shared helpers, SVG animation, Three.js emblem, 7 scene).
++Theme màu/font ở `src/theme-nq57.ts` (navy sâu + đỏ/vàng chính trị VN, teal điểm
++xuyết) và `src/fonts-nq57.ts` (Be Vietnam Pro).
++
++Người dùng nhờ: đọc codebase, cải thiện phần nhìn cho **đẹp hơn nữa** (không đổi
++nội dung/kịch bản, không đổi cấu trúc scene).
++
++## 2. Việc đã làm ở phiên này — nâng cấp thị giác trong `NQ57ScenesV2.tsx`
++
++Tất cả nằm trong 1 file, đã kiểm tra không lỗi cú pháp bằng `tsc --noEmit` (xem
++mục 4). **Chưa render thử thật** (môi trường hiện tại không cài được full
++dependency vì `package-lock.json` trỏ registry `registry.npmmirror.com` không
++truy cập được từ sandbox — xem mục 5.1).
++
++1. **`Backdrop`** — thêm 2 lớp mới, dùng chung cho mọi scene:
++   - `Particles`: các hạt sáng nhỏ trôi chậm lên trên + nhấp nháy (twinkle) bằng
++     `sin(frame)`, vẽ 1 lần bằng SVG, tạo chiều sâu điện ảnh. Nhận prop
++     `particleColor` để đổi màu theo tông từng cảnh (Quote = teal, Vision = đỏ,
++     còn lại mặc định vàng).
++   - Grain/noise phim: 1 SVG `feTurbulence` mã hoá base64 làm hằng số tĩnh (không
++     tính lại mỗi frame, rẻ), phủ `mix-blend-mode: overlay` độ mờ thấp.
++   - Vignette: `inset box-shadow` làm tối 4 góc, dồn mắt vào giữa khung hình.
++2. **`RingDraw`** — thêm 1 vòng phụ nét đứt, mờ, xoay chậm liên tục (`useCurrentFrame`)
++   ở ngoài vòng chính để tạo cảm giác nhiều lớp/song song thị sai (parallax); vòng
++   chính có thêm `drop-shadow` phát sáng theo màu.
++3. **`glassCard(accent, radius)`** — helper style mới: nền glass 2 lớp gradient +
++   viền trên nhuốm màu accent + inset highlight + shadow sâu. Dùng để đồng bộ mọi
++   card/panel (card vai trò ở `RolesSceneV2`, khung biểu đồ ở `StatsSceneV2`) thay
++   vì mỗi nơi tự khai border/shadow riêng lẻ, dễ lệch tay.
++4. **`Gauge`** — thêm vòng vạch chia độ (tick) quanh ngoài, sáng dần theo % đã đạt;
++   vòng tiến độ chính có `drop-shadow` phát sáng.
++5. **`KaraokeCaption`** — thêm viền sáng mảnh phía trên (gradient ngang), thanh
++   tiến độ (progress bar) mảnh phía dưới chạy theo % đã đọc, chữ đang nói có thêm
++   `text-shadow` phát sáng nhẹ thay vì chỉ đổi màu.
++6. **Card `RolesSceneV2`** — đổi sang `glassCard`, thêm quầng sáng quanh số thứ tự
++   (`box-shadow` theo màu accent), thêm hiệu ứng "shine sweep" (dải sáng chéo lướt
++   qua card) đồng bộ với thời điểm card xuất hiện.
++7. **Chữ tiêu đề gradient lớn** (Title `NGHỊ QUYẾT 57`, Vision `{val}%`, End
++   `Kỷ nguyên vươn mình`) — thêm `filter: drop-shadow(...)` màu đỏ mờ để chữ nổi
++   khối hơn trên nền tối, vì `WebkitTextFillColor: transparent` khiến `text-shadow`
++   thường không ăn, phải dùng `filter`.
++
++Không đổi: bố cục từng scene, nội dung caption/TTS, `nq57-data.ts`, thời lượng
++scene, composition `Root.tsx`, các scene V1 cũ (`NQ57Scenes.tsx`, `Scene1Orb.tsx`,
++`Scene2Chart.tsx` — không dùng trong `NghiQuyet57V2`, không đụng tới).
++
++## 3. Việc cần làm tiếp theo (ưu tiên theo thứ tự)
++
++1. **Bắt buộc trước tiên**: `npm install && npm run dev`, mở Studio, tua qua cả
++   7 cảnh (đặc biệt `TitleSceneV2`, `VisionSceneV2`, `EndSceneV2` vì có
++   `Particles` + `drop-shadow` mới — filter CSS trên Chromium headless đôi khi
++   render khác preview) rồi mới render thử `NghiQuyet57V2` ra MP4 để chắc ăn hiệu
++   năng (grain/particles vẽ SVG mỗi frame, nếu máy yếu có thể cần giảm
++   `count` trong `Particles` hoặc bỏ layer grain).
++2. Nếu muốn "đẹp hơn nữa": có thể áp `glassCard` luôn cho panel 3D ở
++   `PillarsSceneV2` (khung chứa `<ThreeCanvas>` hiện chưa có card nền), và thêm
++   marker/dot sáng tại điểm cuối `AreaChart` trong `StatsSceneV2` (Recharts hỗ trợ
++   `dot` custom trên `<Area>`, nhưng cần cẩn thận vì `isAnimationActive={false}` —
++   phải tự tính điểm cuối theo `progress`, tránh Recharts animate lại).
++3. Cân nhắc thêm 1 biến thể ánh sáng chuyển động (light sweep) cho toàn cảnh mở
++   đầu (`TitleSceneV2`) đồng bộ với nhạc/tiếng "chào bạn" để nhấn nhịp mở màn.
++4. Các mục "chưa làm" từ trước vẫn còn treo, không liên quan tới đợt cải thiện thị
++   giác này: tích hợp Iconify offline, TTS/caption tự sinh từ SRT thay vì
++   hard-code trong `nq57-data.ts` — xem lịch sử README nếu cần.
++
++## 4. Cách mình đã kiểm tra code (môi trường sandbox không chạy được Remotion thật)
++
++Sandbox hiện tại **không** cho phép `npm install` đầy đủ vì `package-lock.json`
++trỏ resolve về `registry.npmmirror.com` (không nằm trong danh sách domain được
++phép của môi trường chạy — chỉ `registry.npmjs.org` và tương đương được mở). Do
++đó **không render thử được** video. Đã kiểm tra an toàn ở mức tối đa có thể:
++- Cân bằng dấu ngoặc `{}` toàn file bằng script Node nhỏ (đã cân bằng).
++- Cài `typescript` độc lập (`npm install --no-save typescript@5.5.4`), chạy
++  `tsc --noEmit --jsx react --skipLibCheck` riêng trên
++  `src/scenes/NQ57ScenesV2.tsx` — không còn lỗi cú pháp (mã lỗi `TS1xxx`), chỉ
++  còn lỗi "Cannot find module" (do thiếu `node_modules`, không phải lỗi code).
++
++=> Vẫn nên coi đây là **code chưa test end-to-end**. Việc đầu tiên khi có máy có
++mạng đầy đủ: `npm install` rồi `npm run dev` để soi bằng mắt.
++
++## 4.1. Vì sao không sửa `package-lock.json`
++
++Có thể fix bằng cách xoá lockfile và `npm install` lại từ `registry.npmjs.org` để
++lock mới trỏ đúng registry chuẩn, nhưng việc này **có rủi ro đổi version** một số
++package phụ thuộc gián tiếp — không tự ý làm khi không có sandbox để test lại
++toàn bộ pipeline TTS + render. Để dành cho người dùng tự quyết định ở máy thật.
++
++## 5. Cách tiếp tục nếu bắt đầu phiên chat mới
++
++Dán nguyên văn nội dung file này cho Claude, kèm câu: "Đây là handoff từ phiên
++trước, tiếp tục từ mục 3". Không cần giải thích lại bối cảnh dự án. Nếu người
++dùng đã tự render thử và có phản hồi cụ thể (ví dụ: "particles bị lag", "chữ
++NGHỊ QUYẾT 57 bị mờ khi có drop-shadow"), ưu tiên xử lý phản hồi đó trước khi làm
++tiếp mục 3.
+diff --git a/src/scenes/NQ57ScenesV2.tsx b/src/scenes/NQ57ScenesV2.tsx
+index bec921d..3df2912 100644
+--- a/src/scenes/NQ57ScenesV2.tsx
++++ b/src/scenes/NQ57ScenesV2.tsx
+@@ -23,7 +23,39 @@ const fadeUp = (frame: number, delay: number, fps: number) => {
+   };
+ };
+ 
+-const Backdrop: React.FC = () => {
++// noise/grain tinh (khong render lai moi frame) de tang chat dien anh, nhe cho render
++const GRAIN_SVG =
++  "data:image/svg+xml;utf8," +
++  encodeURIComponent(
++    '<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140">' +
++      '<filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/>' +
++      '<feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/></filter>' +
++      '<rect width="100%" height="100%" filter="url(#n)"/></svg>'
++  );
++
++// hat sang troi nhe phia sau, tao chieu sau + khong khi dien anh
++const PARTICLE_SEED = Array.from({ length: 24 }).map((_, i) => ({
++  x: (i * 37 + 11) % 100,
++  y: (i * 53 + 7) % 100,
++  r: 1 + (i % 3) * 0.7,
++  s: 0.35 + (i % 5) * 0.12,
++  d: i * 17,
++}));
++
++const Particles: React.FC<{ color?: string; count?: number }> = ({ color = nq57.colors.gold, count = 18 }) => {
++  const frame = useCurrentFrame();
++  return (
++    <svg width="100%" height="100%" viewBox="0 0 1920 1080" preserveAspectRatio="none" style={{ position: "absolute", inset: 0 }}>
++      {PARTICLE_SEED.slice(0, count).map((p, i) => {
++        const y = ((p.y - frame * p.s * 0.06 + p.d) % 112 + 112) % 112;
++        const tw = 0.35 + 0.5 * Math.abs(Math.sin((frame + p.d) / (26 + p.r * 6)));
++        return <circle key={i} cx={(p.x / 100) * 1920} cy={(y / 100) * 1080 - 40} r={p.r} fill={color} opacity={tw * 0.5} />;
++      })}
++    </svg>
++  );
++};
++
++const Backdrop: React.FC<{ particleColor?: string }> = ({ particleColor = nq57.colors.gold }) => {
+   const frame = useCurrentFrame();
+   const a = interpolate(frame, [0, 200], [0, 1], { extrapolateRight: "clamp" });
+   const x1 = interpolate(frame, [0, 300], [20, 40]);
+@@ -33,6 +65,9 @@ const Backdrop: React.FC = () => {
+       <AbsoluteFill style={{ background: `radial-gradient(40% 40% at ${x1}% ${y1}%, rgba(226,59,59,0.22), transparent 70%)`, opacity: a }} />
+       <AbsoluteFill style={{ background: `radial-gradient(45% 45% at 80% 85%, rgba(243,201,105,0.16), transparent 70%)`, opacity: a }} />
+       <AbsoluteFill style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)", backgroundSize: "64px 64px", opacity: 0.5, maskImage: "radial-gradient(80% 80% at 50% 50%, black, transparent 100%)" }} />
++      <Particles color={particleColor} />
++      <AbsoluteFill style={{ backgroundImage: `url("${GRAIN_SVG}")`, backgroundSize: "140px 140px", opacity: 0.5, mixBlendMode: "overlay" }} />
++      <AbsoluteFill style={{ boxShadow: "inset 0 0 240px 80px rgba(0,0,0,0.5)" }} />
+     </AbsoluteFill>
+   );
+ };
+@@ -43,19 +78,35 @@ const RingDraw: React.FC<{ progress: number; size?: number; color?: string; stro
+   size = 520,
+   color = nq57.colors.gold,
+   stroke = 2,
+-}) => (
+-  <svg width={size} height={size} viewBox="0 0 100 100" style={{ position: "absolute", inset: 0, margin: "auto", pointerEvents: "none", overflow: "visible" }}>
+-    <circle cx="50" cy="50" r="47" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - progress} transform="rotate(-90 50 50)" opacity={0.85} />
+-    {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+-      const ang = (i * Math.PI * 2) / 8 - Math.PI / 2;
+-      const x1 = 50 + Math.cos(ang) * 51;
+-      const y1 = 50 + Math.sin(ang) * 51;
+-      const x2 = 50 + Math.cos(ang) * 55;
+-      const y2 = 50 + Math.sin(ang) * 55;
+-      return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={1.5} opacity={0.6} />;
+-    })}
+-  </svg>
+-);
++}) => {
++  const frame = useCurrentFrame();
++  const rot = (frame * 0.35) % 360;
++  return (
++    <svg width={size} height={size} viewBox="0 0 100 100" style={{ position: "absolute", inset: 0, margin: "auto", pointerEvents: "none", overflow: "visible" }}>
++      {/* vong ngoai mo, xoay cham, tao chieu sau song song voi vong chinh */}
++      <circle cx="50" cy="50" r="49.5" fill="none" stroke={color} strokeWidth={0.5} strokeDasharray="0.8 3.4" opacity={0.28 * progress} transform={`rotate(${rot} 50 50)`} />
++      <circle cx="50" cy="50" r="47" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - progress} transform="rotate(-90 50 50)" opacity={0.85} style={{ filter: `drop-shadow(0 0 6px ${color}aa)` }} />
++      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
++        const ang = (i * Math.PI * 2) / 8 - Math.PI / 2;
++        const x1 = 50 + Math.cos(ang) * 51;
++        const y1 = 50 + Math.sin(ang) * 51;
++        const x2 = 50 + Math.cos(ang) * 55;
++        const y2 = 50 + Math.sin(ang) * 55;
++        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={1.5} opacity={0.6} />;
++      })}
++    </svg>
++  );
++};
++
++// khung kinh dong bo cho card: vien gradient tinh te + anh sang hat tren + do bong sau
++const glassCard = (accent: string, radius = 24): React.CSSProperties => ({
++  position: "relative",
++  background: `linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015) 40%), ${nq57.colors.card}`,
++  border: `1px solid ${nq57.colors.line}`,
++  borderTop: `1px solid ${accent}66`,
++  borderRadius: radius,
++  boxShadow: `0 30px 60px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,0.07), 0 0 0 1px rgba(0,0,0,0.2)`,
++});
+ 
+ const UnderlineDraw: React.FC<{ progress: number; width?: number; color?: string }> = ({
+   progress,
+@@ -92,11 +143,21 @@ const Gauge: React.FC<{ value: number; max: number; label: string; unit: string;
+   const r = 42;
+   const pct = value / max;
+   const shown = Math.round(value * progress);
++  const tickCount = 40;
+   return (
+     <div style={{ textAlign: "center", width: 300 }}>
+       <svg width={170} height={170} viewBox="0 0 100 100">
++        {Array.from({ length: tickCount }).map((_, i) => {
++          const ang = (i / tickCount) * Math.PI * 2 - Math.PI / 2;
++          const lit = i / tickCount <= pct * progress;
++          const x1 = 50 + Math.cos(ang) * (r + 6);
++          const y1 = 50 + Math.sin(ang) * (r + 6);
++          const x2 = 50 + Math.cos(ang) * (r + 9.5);
++          const y2 = 50 + Math.sin(ang) * (r + 9.5);
++          return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={lit ? color : "rgba(255,255,255,0.08)"} strokeWidth={1.1} opacity={lit ? 0.8 : 0.5} />;
++        })}
+         <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={8} />
+-        <circle cx="50" cy="50" r={r} fill="none" stroke={color} strokeWidth={8} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pct * progress} transform="rotate(-90 50 50)" />
++        <circle cx="50" cy="50" r={r} fill="none" stroke={color} strokeWidth={8} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - pct * progress} transform="rotate(-90 50 50)" style={{ filter: `drop-shadow(0 0 8px ${color}99)` }} />
+         <text x="50" y="52" textAnchor="middle" dominantBaseline="central" fill={color} fontSize="24" fontWeight={800} fontFamily={BV}>
+           {shown}
+           <tspan fontSize="12" fill={nq57.colors.ink}>{unit}</tspan>
+@@ -139,20 +200,24 @@ const KaraokeCaption: React.FC<{ text: string; dur: number }> = ({ text, dur })
+   let wi = 0;
+   return (
+     <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: "4.5%" }}>
+-      <div style={{ maxWidth: "92%", display: "flex", justifyContent: maxScroll > 0 ? "flex-start" : "center", overflow: "hidden", whiteSpace: "nowrap", fontFamily: BV, fontWeight: 600, fontSize, lineHeight: 1.25, background: "rgba(5,8,16,0.72)", border: `1px solid ${nq57.colors.line}`, borderRadius: 14, padding: "10px 26px", backdropFilter: "blur(8px)" }}>
+-        <span style={{ display: "inline-block", whiteSpace: "nowrap", transform: `translateX(${tx}px)` }}>
+-          {tokens.map((tok, ti) => {
+-            if (/^\s+$/.test(tok)) return " ";
+-            const idx = wi++;
+-            const on = idx < localRevealed;
+-            const cur = idx === localRevealed - 1;
+-            return (
+-              <span key={ti} style={{ opacity: on ? 1 : 0.2, color: cur ? nq57.colors.gold : nq57.colors.ink, fontWeight: cur ? 700 : 600 }}>
+-                {tok}
+-              </span>
+-            );
+-          })}
+-        </span>
++      <div style={{ position: "relative", maxWidth: "92%", overflow: "hidden", borderRadius: 14, boxShadow: "0 20px 45px -18px rgba(0,0,0,.6)" }}>
++        <div style={{ position: "absolute", top: 0, left: "8%", right: "8%", height: 1, background: `linear-gradient(90deg, transparent, ${nq57.colors.gold}99, transparent)` }} />
++        <div style={{ display: "flex", justifyContent: maxScroll > 0 ? "flex-start" : "center", overflow: "hidden", whiteSpace: "nowrap", fontFamily: BV, fontWeight: 600, fontSize, lineHeight: 1.25, background: "rgba(6,9,18,0.78)", border: `1px solid ${nq57.colors.line}`, padding: "10px 26px 12px", backdropFilter: "blur(10px)" }}>
++          <span style={{ display: "inline-block", whiteSpace: "nowrap", transform: `translateX(${tx}px)` }}>
++            {tokens.map((tok, ti) => {
++              if (/^\s+$/.test(tok)) return " ";
++              const idx = wi++;
++              const on = idx < localRevealed;
++              const cur = idx === localRevealed - 1;
++              return (
++                <span key={ti} style={{ opacity: on ? 1 : 0.2, color: cur ? nq57.colors.gold : nq57.colors.ink, fontWeight: cur ? 700 : 600, textShadow: cur ? `0 0 14px ${nq57.colors.gold}88` : "none" }}>
++                  {tok}
++                </span>
++              );
++            })}
++          </span>
++        </div>
++        <div style={{ position: "absolute", bottom: 0, left: 0, height: 2, width: `${Math.round(prog * 100)}%`, background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, opacity: 0.85 }} />
+       </div>
+     </AbsoluteFill>
+   );
+@@ -242,7 +307,8 @@ export const TitleSceneV2: React.FC<{ audio: string; caption: string; dur: numbe
+       <div style={{ ...badge, fontFamily: BV, fontWeight: 700, letterSpacing: 6, fontSize: 22, color: nq57.colors.gold }}>BỘ CHÍNH TRỊ · 22/12/2024</div>
+       <EmblemBox size={430} />
+       <div style={{ ...big, fontFamily: BV, fontWeight: 800, fontSize: 150, lineHeight: 1, marginTop: -10,
+-        background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
++        background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
++        filter: "drop-shadow(0 10px 34px rgba(226,59,59,0.4))" }}>
+         NGHỊ QUYẾT 57
+       </div>
+       <div style={{ ...sub, fontFamily: BV, fontWeight: 600, fontSize: 34, color: nq57.colors.ink, textAlign: "center", maxWidth: "72%", marginTop: 14 }}>
+@@ -262,7 +328,7 @@ export const QuoteSceneV2: React.FC<{ audio: string; caption: string; dur: numbe
+   const ul = interpolate(frame, [20, 50], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+   return (
+       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", padding: "0 9% 12%" }}>
+-      <Backdrop />
++      <Backdrop particleColor={nq57.colors.teal} />
+       <Audio src={staticFile(audio)} />
+       <div style={{ position: "absolute", top: "12%", left: "9%", fontFamily: BV, fontWeight: 800, fontSize: 200, color: "rgba(226,59,59,0.16)" }}>“</div>
+       <div style={{ ...q, fontFamily: BV, fontWeight: 700, fontSize: 60, lineHeight: 1.35, color: nq57.colors.ink, textAlign: "center", maxWidth: "80%" }}>
+@@ -291,9 +357,11 @@ export const RolesSceneV2: React.FC<{ audio: string; caption: string; dur: numbe
+       <div style={{ display: "flex", gap: 36, alignItems: "center" }}>
+         {roles.map((r, i) => {
+           const e = fadeUp(frame, 10 + i * 14, fps);
++          const shine = interpolate(frame, [10 + i * 14, 40 + i * 14], [-40, 140], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+           return (
+-            <div key={i} style={{ ...e, width: 420, background: nq57.colors.card, border: `1px solid ${nq57.colors.line}`, borderRadius: 24, padding: "40px 34px", textAlign: "center", boxShadow: "0 30px 60px -24px rgba(0,0,0,.55)" }}>
+-              <div style={{ width: 86, height: 86, borderRadius: 999, margin: "0 auto 22px", border: `3px solid ${r.c}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: BV, fontWeight: 800, fontSize: 40, color: r.c }}>{i + 1}</div>
++            <div key={i} style={{ ...e, ...glassCard(r.c), width: 420, padding: "40px 34px", textAlign: "center", overflow: "hidden" }}>
++              <div style={{ position: "absolute", top: 0, bottom: 0, left: `${shine}%`, width: "35%", background: "linear-gradient(75deg, transparent, rgba(255,255,255,0.08), transparent)", pointerEvents: "none" }} />
++              <div style={{ width: 86, height: 86, borderRadius: 999, margin: "0 auto 22px", border: `3px solid ${r.c}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: BV, fontWeight: 800, fontSize: 40, color: r.c, boxShadow: `0 0 26px ${r.c}55, inset 0 0 18px ${r.c}22` }}>{i + 1}</div>
+               <div style={{ fontFamily: BV, fontWeight: 700, fontSize: 34, color: nq57.colors.ink }}>{r.t}</div>
+               <div style={{ fontFamily: BV, fontWeight: 500, fontSize: 22, color: nq57.colors.muted, marginTop: 10 }}>{r.s}</div>
+             </div>
+@@ -364,7 +432,7 @@ export const StatsSceneV2: React.FC<{ audio: string; caption: string; dur: numbe
+       <Backdrop />
+       <Audio src={staticFile(audio)} />
+       <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 52, color: nq57.colors.ink, marginBottom: 14 }}>Mục tiêu 2030</div>
+-      <div style={{ width: "100%", maxWidth: 960, height: 280, background: nq57.colors.card, border: `1px solid ${nq57.colors.line}`, borderRadius: 22, padding: "18px 26px", marginBottom: 18 }}>
++      <div style={{ ...glassCard(nq57.colors.gold, 22), width: "100%", maxWidth: 960, height: 280, padding: "18px 26px", marginBottom: 18 }}>
+         <ResponsiveContainer width="100%" height="100%">
+           <AreaChart data={shown} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
+             <defs>
+@@ -407,14 +475,15 @@ export const VisionSceneV2: React.FC<{ audio: string; caption: string; dur: numb
+   const val = Math.round(interpolate(p, [0, 1], [0, 50]));
+   return (
+       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", paddingBottom: "12%" }}>
+-        <Backdrop />
++        <Backdrop particleColor={nq57.colors.red} />
+         <Audio src={staticFile(audio)} />
+         <div style={{ position: "relative" }}>
+           <RingDraw progress={ring} size={460} color={nq57.colors.red} />
+         <div style={{ ...e, textAlign: "center", padding: "0 6%" }}>
+           <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 8, fontSize: 30, color: nq57.colors.gold }}>TẦM NHÌN 2045</div>
+           <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 168, lineHeight: 1, margin: "6px 0",
+-            background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{val}%</div>
++            background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
++            filter: "drop-shadow(0 10px 34px rgba(226,59,59,0.4))" }}>{val}%</div>
+         </div>
+       </div>
+       <div style={{ fontFamily: BV, fontWeight: 600, fontSize: 38, color: nq57.colors.ink, marginTop: 10 }}>Kinh tế số · Nước phát triển, thu nhập cao</div>
+@@ -439,7 +508,8 @@ export const EndSceneV2: React.FC<{ audio: string; caption: string; dur: number
+       </div>
+       <div style={{ ...e, textAlign: "center", padding: "0 8%", marginTop: -10 }}>
+         <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 82, lineHeight: 1.15,
+-          background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Kỷ nguyên vươn mình</div>
++          background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
++          filter: "drop-shadow(0 10px 34px rgba(226,59,59,0.4))" }}>Kỷ nguyên vươn mình</div>
+         <div style={{ fontFamily: BV, fontWeight: 600, fontSize: 38, color: nq57.colors.ink, marginTop: 18 }}>Hành động hôm nay — Việt Nam hùng cường ngày mai</div>
+         <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 4, fontSize: 24, color: nq57.colors.muted, marginTop: 34 }}>NGHỊ QUYẾT 57-NQ/TW</div>
+       </div>
+-- 
+2.43.0
