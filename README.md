@@ -20,7 +20,7 @@ pip install edge-tts gTTS mutagen ffmpeg-static
 
 ## Sinh giọng đọc (TTS)
 
-SScript `gen_tts_v2.py` sinh file `public/nq57/sN.mp3` và tự cập nhật `src/nq57-data.ts`
+Script `gen_tts_v2.py` sinh file `public/nq57/sN.mp3` và tự cập nhật `src/nq57-data.ts`
 (thời lượng + phụ đề). Chọn 1 trong 4 backend — hoàn toàn độc lập, chỉ đổi flag:
 
 | Backend   | Lệnh                                      | Ghi chú |
@@ -33,6 +33,65 @@ SScript `gen_tts_v2.py` sinh file `public/nq57/sN.mp3` và tự cập nhật `sr
 - Sửa kịch bản / phụ đề: mảng `DIALOGUE` trong `gen_tts_v2.py`.
 - Đổi giọng proxy: biến `PROXY_VOICE` (vd `Puck` nam, `Kore` nữ) và `PROXY_MODEL`.
 - Key **không bao giờ commit** (xem `.gitignore`): dùng env hoặc file `proxy_key.txt` / `gemini_key.txt` nằm ngoài git.
+
+## Preview workflow — HTML Storyboard → Remotion
+
+Có một preview HTML độc lập dùng làm **visual storyboard / playground** trước khi đưa thiết kế vào Remotion:
+
+```text
+preview/nq57-storyboard.html
+```
+
+Preview này cố tình **không cần TTS, subtitle audio hay render MP4**. Nó mô phỏng 7 scene của `NghiQuyet57V2` và tập trung vào phần nhìn:
+
+- kinetic typography và hierarchy chữ
+- SVG icon / line-art motion
+- Three.js hero motif nhẹ, deterministic về mặt visual
+- particles/glow/grid/vignette/glass-card language
+- ring/gauge và data-flow accents
+- chart / infographic treatment
+- cinematic crossfade / scale / blur transition giữa scene
+- caption/progress-bar giả lập để duyệt bố cục
+
+### Chạy HTML preview
+
+Cách ổn định nhất là chạy local server:
+
+```bash
+npx serve .
+```
+
+Sau đó mở:
+
+```text
+http://localhost:3000/preview/nq57-storyboard.html
+```
+
+Có thể mở trực tiếp bằng Chrome, nhưng vì preview tải Three.js từ CDN nên local server được khuyến nghị.
+
+Điều khiển:
+
+- `←` / `→`: chuyển scene
+- `Space`: play/pause autoplay
+- nút `‹` / `›` / `▶`: điều khiển trên màn hình
+
+### Quy trình thiết kế chính thức
+
+```text
+HTML Storyboard / Playground
+        ↓
+Duyệt bằng mắt + chốt visual
+        ↓
+Port visual đã duyệt vào NQ57ScenesV2.tsx
+        ↓
+Remotion Studio — kiểm tra timeline/frame
+        ↓
+TTS + subtitles + audio
+        ↓
+Render MP4
+```
+
+**Nguyên tắc:** HTML preview là nơi thử nghiệm visual nhanh; Remotion là source of truth cho video cuối cùng. Không coi preview HTML là bản render cuối.
 
 ## Xem preview (Remotion Studio)
 
@@ -57,15 +116,17 @@ npx remotion render src/index.ts NghiQuyet57V2 out/nq57.mp4
 src/
   index.ts                 # entry, registerRoot
   Root.tsx                 # khai báo các Composition (NghiQuyet57V2, HabitLoop, NghiQuyet57)
-  NghiQuyet57VideoV2.tsx    # ghép 7 cảnh bằng TransitionSeries (cross-fade)
-  nq57-data.ts              # SCENES (id/audio/caption/dur) — được gen_tts_v2.py sinh lại
-  fonts-nq57.ts             # font Be Vietnam Pro
-  theme-nq57.ts             # design tokens (màu, font) cho bộ NQ57
+  NghiQuyet57VideoV2.tsx   # ghép 7 cảnh bằng TransitionSeries (cross-fade)
+  nq57-data.ts             # SCENES (id/audio/caption/dur) — được gen_tts_v2.py sinh lại
+  fonts-nq57.ts            # font Be Vietnam Pro
+  theme-nq57.ts            # design tokens (màu, font) cho bộ NQ57
   scenes/
-    NQ57ScenesV2.tsx        # 7 cảnh: Title, Quote, Roles, Pillars, Stats, Vision, End
+    NQ57ScenesV2.tsx       # 7 cảnh: Title, Quote, Roles, Pillars, Stats, Vision, End
                             # + SVG (RingDraw, UnderlineDraw, DataFlow, Gauge) + KaraokeCaption
-gen_tts_v2.py               # sinh TTS đa backend + cập nhật nq57-data.ts
-public/nq57/                # audio mp3 (được sinh, đã gitignore)
+preview/
+  nq57-storyboard.html     # visual storyboard/playground, không cần render MP4
+gen_tts_v2.py              # sinh TTS đa backend + cập nhật nq57-data.ts
+public/nq57/               # audio mp3 (được sinh, đã gitignore)
 out/                        # video xuất (đã gitignore)
 ```
 
