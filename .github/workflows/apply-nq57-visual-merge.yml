@@ -1,0 +1,106 @@
+name: Apply NQ57 visual merge
+
+on:
+  push:
+    branches:
+      - feat/nq57-visual-merge-2026-08-20
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply visual patch 1
+        run: git apply --index 0001-visual-upgrade-nq57.patch
+
+      - name: Apply unified merge additions
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path("src/scenes/NQ57ScenesV2.tsx")
+          s = p.read_text(encoding="utf-8")
+
+          s = s.replace(
+              'import { BV } from "../fonts-nq57";\n',
+              'import { BV } from "../fonts-nq57";\nimport { cardText } from "../layout-nq57";\n',
+              1,
+          )
+
+          old = '<div style={{ fontFamily: BV, fontWeight: 500, fontSize: 22, color: nq57.colors.muted, marginTop: 10 }}>{r.s}</div>'
+          new = '<div style={{ ...cardText(), fontFamily: BV, fontWeight: 500, fontSize: 22, color: nq57.colors.muted, marginTop: 10 }}>{r.s}</div>'
+          assert old in s
+          s = s.replace(old, new, 1)
+
+          old = '<div key={i} style={{ ...e, width: 200, textAlign: "center", fontFamily: BV, fontWeight: 600, fontSize: 22, color: nq57.colors.ink }}>\n              <span style={{ color: c, fontWeight: 800, marginRight: 6 }}>{i + 1}.</span>\n              {p}\n            </div>'
+          new = '<div key={i} style={{ ...e, ...glassCard(c, 14), width: 200, padding: "12px 14px", textAlign: "center", fontFamily: BV, fontWeight: 600, fontSize: 22, color: nq57.colors.ink }}>\n              <span style={{ color: c, fontWeight: 800, marginRight: 6 }}>{i + 1}.</span>\n              <span style={cardText()}>{p}</span>\n            </div>'
+          assert old in s
+          s = s.replace(old, new, 1)
+
+          old = '<Area type="monotone" dataKey="v" stroke={nq57.colors.gold} strokeWidth={3} fill="url(#gdp)" isAnimationActive={false} />'
+          new = '''<Area type="monotone" dataKey="v" stroke={nq57.colors.gold} strokeWidth={3} fill="url(#gdp)" isAnimationActive={false}
+              dot={(dotProps: any) => {
+                const isLast = dotProps.payload === shown[shown.length - 1];
+                const key = `dot-${dotProps.index}`;
+                if (!isLast) return <circle key={key} cx={dotProps.cx} cy={dotProps.cy} r={0} fill="none" />;
+                return (
+                  <g key={key}>
+                    <circle cx={dotProps.cx} cy={dotProps.cy} r={9} fill={nq57.colors.gold} opacity={0.18} />
+                    <circle cx={dotProps.cx} cy={dotProps.cy} r={5.5} fill={nq57.colors.gold} stroke={nq57.colors.ink} strokeWidth={2} style={{ filter: `drop-shadow(0 0 8px ${nq57.colors.gold}aa)` }} />
+                  </g>
+                );
+              }} />'''
+          assert old in s
+          s = s.replace(old, new, 1)
+
+          p.write_text(s, encoding="utf-8")
+
+          Path("src/layout-nq57.ts").write_text('''import { CSSProperties } from "react";
+
+/** Shared visual layout tokens for NQ57 scenes. Keep scene content intact while preventing edge/overflow collisions. */
+export const NQ57_SAFE = {
+  horizontal: "6%",
+  bottom: "12%",
+  maxText: "88%",
+  contentMax: 1500,
+} as const;
+
+export const safeText = (extra: CSSProperties = {}): CSSProperties => ({
+  maxWidth: NQ57_SAFE.maxText,
+  overflowWrap: "break-word",
+  wordBreak: "normal",
+  ...extra,
+});
+
+export const cardText = (extra: CSSProperties = {}): CSSProperties => ({
+  minWidth: 0,
+  maxWidth: "100%",
+  overflowWrap: "break-word",
+  wordBreak: "normal",
+  ...extra,
+});
+''', encoding="utf-8")
+
+      - name: Validate source-level merge
+        run: |
+          test -f src/layout-nq57.ts
+          grep -q 'const Particles' src/scenes/NQ57ScenesV2.tsx
+          grep -q 'const glassCard' src/scenes/NQ57ScenesV2.tsx
+          grep -q 'import { cardText }' src/scenes/NQ57ScenesV2.tsx
+          grep -q 'dot={(dotProps: any)' src/scenes/NQ57ScenesV2.tsx
+
+      - name: Commit merged implementation
+        run: |
+          rm -f 0001-visual-upgrade-nq57.patch 0002-visual-merge-unified.patch .github/workflows/apply-nq57-visual-merge.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: merge NQ57 visual upgrades into Remotion" 
+          git push origin HEAD:feat/nq57-visual-merge-2026-08-20
