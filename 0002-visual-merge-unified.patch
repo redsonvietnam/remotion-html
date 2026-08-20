@@ -1,0 +1,203 @@
+From 03b1471c536ba2568040f357f03d97d05247c9da Mon Sep 17 00:00:00 2001
+From: Claude <claude@anthropic.com>
+Date: Thu, 20 Aug 2026 04:49:10 +0000
+Subject: [PATCH 2/2] Gop 3 nhanh visual (patch cu, fix/nq57-visual-design,
+ preview/nq57-storyboard) vao code Remotion that
+
+Ap thi luon nang cap thi giac cu (particles, grain, glassCard, glow ring/gauge, caption progress) vao NQ57ScenesV2.tsx
+Them src/layout-nq57.ts (safe-area helper) port tu fix/nq57-visual-design
+Chip trum cot dung glassCard thay chu tran
+Dot phat sang cuoi bieu do StatsSceneV2, lay y tuong tu preview/nq57-storyboard.html
+Cap nhat HANDOFF.md giai thich toan bo boi canh nhanh + quyet dinh gop
+---
+ HANDOFF.md                  | 77 ++++++++++++++++++++++++++++++++-----
+ src/layout-nq57.ts          | 24 ++++++++++++
+ src/scenes/NQ57ScenesV2.tsx | 20 ++++++++--
+ 3 files changed, 107 insertions(+), 14 deletions(-)
+
+ diff --git a/HANDOFF.md b/HANDOFF.md
+ index 6118b64..91f9458 100644
+ --- a/HANDOFF.md
+ +++ b/HANDOFF.md
+ @@ -6,6 +6,30 @@
+ > thoi — da bi thay bang ban nay, vi trong tam hien tai la composition
+ > `NghiQuyet57V2`.)
++
++## 0. Boi canh nhanh Git (doc truoc, quan trong)
++
++O mot phien truoc, Claude da doc code, sua `src/scenes/NQ57ScenesV2.tsx` (particles,
++grain, `glassCard`, glow ring/gauge, caption progress bar...) **chi trong sandbox
++cuc bo cua Claude** — khong co quyen push len GitHub that — va xuat ra 1 file patch
++de nguoi dung tu ap dung. Nguoi dung sau do tu tao vai nhanh tren GitHub:
++
++- `visual-upgrade` — chi luu file `.patch` do **nhu tai lieu tham khao**, chua
++  tung `git am` ap dung that vao `NQ57ScenesV2.tsx`.
++- `fix/nq57-visual-design` — huong khac: 2 file HTML preview doc lap (khong dung
++  Remotion) de thu bo cuc/mau/icon SVG tay ve + demo Three.js hero motif, cong
++  `src/layout-nq57.ts` (helper an toan chong tran chu).
++- `preview/nq57-storyboard` — ban HTML preview moi nhat, da tu gop kha tot y
++  tuong tu patch (glassCard, shine sweep, ring+tick, caption progress, chart co
++  dot cuoi) va icon SVG/Three.js tu `fix/nq57-visual-design`, kem doc
++  `docs/NQ57-VISUAL-STORYBOARD.md` giai thich quy trinh duyet visual bang HTML
++  truoc khi dua vao Remotion that.
++
++**Diem chinh**: khong nhanh nao trong 3 nhanh tren tung thuc su sua
++`src/scenes/NQ57ScenesV2.tsx` — moi cai tien chi nam o file `.patch` tinh hoac o lop
++preview HTML tach biet. Phien nay da **gop lai va ap dung that** vao
++`NQ57ScenesV2.tsx` (xem muc 2) — day la lan dau code Remotion that co cac cai tien
++thi giac noi tren.
++
+ ## 1. Boi canh
+ 
+ Repo dung video giai ma Nghi quyet 57 bang Remotion (video-as-code), composition
+@@ -57,22 +81,55 @@ Khong doi: bo cuc tung scene, noi dung caption/TTS, `nq57-data.ts`,
+ scene, composition `Root.tsx`, cac scene V1 cu (`NQ57Scenes.tsx`, `Scene1Orb.tsx`,
+ `Scene2Chart.tsx` — khong dung trong `NghiQuyet57V2`, khong dung toi).
+ 
++## 2.1. Viec gop them o phien nay (tu nhanh `fix/nq57-visual-design` +
++`preview/nq57-storyboard`) vao code that
++
++8. **`src/layout-nq57.ts`** (file moi) — port nguyen van tu nhanh
++   `fix/nq57-visual-design`: `NQ57_SAFE` (token safe-area) + `safeText()` /
++   `cardText()` (helper `overflowWrap`/`maxWidth` chong tran chu). Hien moi ap
++   `cardText()` cho mo ta card 3 chu the (`RolesSceneV2`) — cho de tran nhat neu
++   sau nay doi caption dai hon. `safeText()` chua dung o dau, de san cho ai can.
++9. **Chip tru cot `PillarsSceneV2`** — 5 nhan tru cot truoc la chu tran, gio boc
++   trong `glassCard(mau, 14)` thanh chip kinh nho, dong bo ngon ngu thi giac voi
++   card 3 chu the — lay cam hung tu `.pillar` chip trong
++   `preview/nq57-visual-preview-3d.html`.
++10. **Dot phat sang cuoi bieu do `StatsSceneV2`** — them `dot` custom cho
++    `<Area>` (Recharts): chi ve 1 cham glow tai diem du lieu cuoi cung da hien
++    ra (theo `shown`, khong phai toan bo `GDP_DATA`, de khong lo diem tuong lai
++    truoc khi animation toi do) — lay y tuong tu `<circle class="dot">` trong
++    `preview/nq57-storyboard.html`. Day dung la viec "can lam tiep theo" ma
++    HANDOFF ban truoc co ghi o muc 3.2, da xong.
++
++**Co tinh KHONG mang sang**: bo icon SVG tay ve theo tung pillar/role trong 2
++file preview HTML, va toan bo background Three.js dang "hero motif xoay" phu kin
++man hinh cua `preview/nq57-storyboard.html` — vi `PillarsSceneV2` trong Remotion
++da co bieu do cot 3D that (`Bars3D`, `@remotion/three`) dong vai tro tuong tu,
++them icon nua de roi; con `TitleSceneV2`/`EndSceneV2` da co `EmblemBox` 3D rieng.
++Neu sau nay thay 3 card `RolesSceneV2` (hien chi co so 1/2/3) hoi don dieu so voi
++ban HTML (co icon SVG nguoi/kinh nghiem/la co), co the can nhac them icon nho
++canh so — chua lam vi khong chac co lam "roi" hay khong, de nguoi dung quyet.
++
+ ## 3. Viec can lam tiep theo (uu tien theo thu tu)
+ 
+ 1. **Bat buoc truoc tien**: `npm install && npm run dev`, mo Studio, tua qua ca
+    7 canh (dac biet `TitleSceneV2`, `VisionSceneV2`, `EndSceneV2` vi co
+-   `Particles` + `drop-shadow` moi — filter CSS tren Chromium headless doi khi
+-   render khac preview) roi moi render thu `NghiQuyet57V2` ra MP4 de chac an hieu
++   `Particles` + `drop-shadow` moi, va `StatsSceneV2` vi `Area dot` custom moi —
++   filter CSS/Recharts custom dot tren Chromium headless doi khi render khac
++   preview trinh duyet thuong) roi moi render thu `NghiQuyet57V2` ra MP4 de chac
++   an hieu
+    nang (grain/particles ve SVG moi frame, neu may yeu co the can giam
+    `count` trong `Particles` hoac bo layer grain).
+-2. Neu muon "dep hon nua": co the ap `glassCard` luon cho panel 3D o
+-   `PillarsSceneV2` (khung chua `<ThreeCanvas>` hien chua co card nen), va them
+-   marker/dot sang tai diem cuoi `AreaChart` trong `StatsSceneV2` (Recharts ho tro
+-   `dot` custom tren `<Area>`, nhung can can than vi `isAnimationActive={false}` —
+-   phai tu tinh diem cuoi theo `progress`, tranh Recharts animate lai).
+-3. Can nhac them 1 bien the anh sang chuyen dong (light sweep) cho toan canh mo
++2. Don nhanh Git cho gon: hien co 4 nhanh (`master`, `visual-upgrade`,
++   `fix/nq57-visual-design`, `preview/nq57-storyboard`) nhung chi nhanh chua
++   commit cua phien nay moi co code Remotion that da cap nhat. Nen merge nhanh
++   do vao `master` roi can nhac xoa 3 nhanh con lai (hoac giu
++   `preview/nq57-storyboard` rieng neu van muon dung quy trinh duyet bang HTML
++   truoc khi doi Remotion — xem `docs/NQ57-VISUAL-STORYBOARD.md`).
++3. Neu muon them icon SVG tay ve cho card `RolesSceneV2` (nhu 2 ban HTML preview
++   co) — xem ghi chu cuoi muc 2.1 o tren, can nhac ky co lam roi card hay khong
++   truoc khi them.
++4. Can nhac them 1 bien the anh sang chuyen dong (light sweep) cho toan canh mo
+    dau (`TitleSceneV2`) dong bo voi nhac/tieng "chao ban" de nhan nhip mo man.
+-4. Cac muc "chua lam" tu truoc van con treo, khong lien quan toi dot cai thien thi
++5. Cac muc "chua lam" tu truoc van con treo, khong lien quan toi dot cai thien thi
+    giac nay: tich hop Iconify offline, TTS/caption tu sinh tu SRT thay vi
+    hard-code trong `nq57-data.ts` — xem lich su README neu can.
+ 
+ diff --git a/src/layout-nq57.ts b/src/layout-nq57.ts
+ new file mode 100644
+ index 0000000..5d52d16
+ --- /dev/null
+ +++ b/src/layout-nq57.ts
+ @@ -0,0 +1,24 @@
+ +import { CSSProperties } from "react";
++
+ +/** Shared visual layout tokens for NQ57 scenes. Keep scene content intact while preventing edge/overflow collisions. */
+ +export const NQ57_SAFE = {
+ +  horizontal: "6%",
+ +  bottom: "12%",
+ +  maxText: "88%",
+ +  contentMax: 1500,
+ +} as const;
++
+ +export const safeText = (extra: CSSProperties = {}): CSSProperties => ({
+ +  maxWidth: NQ57_SAFE.maxText,
+ +  overflowWrap: "break-word",
+ +  wordBreak: "normal",
+ +  ...extra,
+ +});
++
+ +export const cardText = (extra: CSSProperties = {}): CSSProperties => ({
+ +  minWidth: 0,
+ +  maxWidth: "100%",
+ +  overflowWrap: "break-word",
+ +  wordBreak: "normal",
+ +  ...extra,
+ +});
+ diff --git a/src/scenes/NQ57ScenesV2.tsx b/src/scenes/NQ57ScenesV2.tsx
+ index 3df2912..5ac6350 100644
+ --- a/src/scenes/NQ57ScenesV2.tsx
+ +++ b/src/scenes/NQ57ScenesV2.tsx
+ @@ -13,6 +13,7 @@ import { ThreeCanvas } from "@remotion/three";
+  import { AreaChart, Area, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from "recharts";
+  import { nq57 } from "../theme-nq57";
+  import { BV } from "../fonts-nq57";
+ +import { cardText } from "../layout-nq57";
+ 
+  // ---------- shared ----------
+  const fadeUp = (frame: number, delay: number, fps: number) => {
+ @@ -363,7 +364,7 @@ export const RolesSceneV2: React.FC<{ audio: string; caption: string; dur: number
+                <div style={{ position: "absolute", top: 0, bottom: 0, left: `${shine}%`, width: "35%", background: "linear-gradient(75deg, transparent, rgba(255,255,255,0.08), transparent)", pointerEvents: "none" }} />
+                <div style={{ width: 86, height: 86, borderRadius: 999, margin: "0 auto 22px", border: `3px solid ${r.c}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: BV, fontWeight: 800, fontSize: 40, color: r.c, boxShadow: `0 0 26px ${r.c}55, inset 0 0 18px ${r.c}22` }}>{i + 1}</div>
+                <div style={{ fontFamily: BV, fontWeight: 700, fontSize: 34, color: nq57.colors.ink }}>{r.t}</div>
+ -              <div style={{ fontFamily: BV, fontWeight: 500, fontSize: 22, color: nq57.colors.muted, marginTop: 10 }}>{r.s}</div>
+ +              <div style={{ ...cardText(), fontFamily: BV, fontWeight: 500, fontSize: 22, color: nq57.colors.muted, marginTop: 10 }}>{r.s}</div>
+              </div>
+            );
+          })}
+ @@ -400,9 +401,9 @@ export const PillarsSceneV2: React.FC<{ audio: string; caption: string; dur: number
+            const e = fadeUp(frame, 20 + i * 8, fps);
+            const c = [nq57.colors.red, nq57.colors.gold, nq57.colors.teal, nq57.colors.gold, nq57.colors.red][i];
+            return (
+ -            <div key={i} style={{ ...e, width: 200, textAlign: "center", fontFamily: BV, fontWeight: 600, fontSize: 22, color: nq57.colors.ink }}>
+ +            <div key={i} style={{ ...e, ...glassCard(c, 14), width: 200, padding: "12px 14px", textAlign: "center", fontFamily: BV, fontWeight: 600, fontSize: 22, color: nq57.colors.ink }}>
+                <span style={{ color: c, fontWeight: 800, marginRight: 6 }}>{i + 1}.</span>
+ -              {p}
+ +              <span style={cardText()}>{p}</span>
+              </div>
+            );
+          })}
+ @@ -444,7 +445,18 @@ export const StatsSceneV2: React.FC<{ audio: string; caption: string; dur: number
+              <CartesianGrid strokeDasharray="4 8" stroke={nq57.colors.line} vertical={false} />
+              <XAxis dataKey="year" tick={{ fill: nq57.colors.muted, fontFamily: BV, fontSize: 15 }} axisLine={{ stroke: nq57.colors.line }} tickLine={false} />
+              <YAxis tick={{ fill: nq57.colors.muted, fontFamily: BV, fontSize: 13 }} axisLine={false} tickLine={false} unit="%" width={40} />
+ -            <Area type="monotone" dataKey="v" stroke={nq57.colors.gold} strokeWidth={3} fill="url(#gdp)" isAnimationActive={false} />
+ +            <Area type="monotone" dataKey="v" stroke={nq57.colors.gold} strokeWidth={3} fill="url(#gdp)" isAnimationActive={false}
+ +              dot={(dotProps: any) => {
+ +                const isLast = dotProps.payload === shown[shown.length - 1];
+ +                const key = `dot-${dotProps.index}`;
+ +                if (!isLast) return <circle key={key} cx={dotProps.cx} cy={dotProps.cy} r={0} fill="none" />;
+ +                return (
+ +                  <g key={key}>
+ +                    <circle cx={dotProps.cx} cy={dotProps.cy} r={9} fill={nq57.colors.gold} opacity={0.18} />
+ +                    <circle cx={dotProps.cx} cy={dotProps.cy} r={5.5} fill={nq57.colors.gold} stroke={nq57.colors.ink} strokeWidth={2} style={{ filter: `drop-shadow(0 0 8px ${nq57.colors.gold}aa)` }} />
+ +                  </g>
+ +                );
+ +              }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+ --
+ 2.43.0
