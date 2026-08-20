@@ -11,8 +11,8 @@ import {
 } from "remotion";
 import { ThreeCanvas } from "@remotion/three";
 import { AreaChart, Area, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { nq57 } from "../theme-nq57";
-import { BV } from "../fonts-nq57";
+import { nq57 } from "../theme/nq57";
+import { BV } from "../fonts/nq57";
 
 // ---------- shared ----------
 const fadeUp = (frame: number, delay: number, fps: number) => {

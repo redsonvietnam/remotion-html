@@ -288,7 +288,7 @@ def main():
     lines.append("// moi scene cong them 0.5s de khong cat mat tieng cuoi")
     lines.append("export const TAIL = 0.5;")
     lines.append("export const sceneFrames = (dur: number) => Math.ceil((dur + TAIL) * FPS);")
-    with open("src/nq57-data.ts", "w", encoding="utf-8") as f:
+    with open("src/data/nq57.ts", "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     print("Wrote src/nq57-data.ts")
 

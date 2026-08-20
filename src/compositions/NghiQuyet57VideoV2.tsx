@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
-import { SCENES, sceneFrames } from "./nq57-data";
+import { SCENES, sceneFrames } from "../data/nq57";
 import {
   TitleSceneV2,
   QuoteSceneV2,
@@ -11,9 +11,9 @@ import {
   StatsSceneV2,
   VisionSceneV2,
   EndSceneV2,
-} from "./scenes/NQ57ScenesV2";
+} from "../scenes/NQ57ScenesV2";
 
-const SceneById: Record<string, React.FC<{ audio: string; caption: string }>> = {
+const SceneById: Record<string, React.FC<{ audio: string; caption: string; dur: number }>> = {
   s1: TitleSceneV2,
   s2: QuoteSceneV2,
   s3: RolesSceneV2,
@@ -48,7 +48,7 @@ export const NghiQuyet57VideoV2: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0a0e1a" }}>
-      <TransitionSeries durationInFrames={totalFrames}>{items}</TransitionSeries>
+      <TransitionSeries>{items}</TransitionSeries>
     </AbsoluteFill>
   );
 };

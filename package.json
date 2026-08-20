@@ -1,12 +1,12 @@
 {
-  "name": "habit-loop-remotion-demo",
+  "name": "nq57-remotion-video",
   "version": "1.0.0",
   "private": true,
-  "description": "Demo Remotion 2-scene: Three.js orb icon (Scene 1) + Recharts animated chart (Scene 2), chu de Habit Loop.",
+  "description": "Nghi quyet 57 explainer video — Remotion video-as-code with TTS, 7 scenes, karaoke captions.",
   "scripts": {
     "dev": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts HabitLoop out/habit-loop.mp4",
-    "still": "remotion still src/index.ts HabitLoop out/thumb.png",
+    "render": "remotion render src/index.ts NghiQuyet57V2 out/nq57.mp4",
+    "still": "remotion still src/index.ts NghiQuyet57V2 out/nq57-thumb.png",
     "upgrade": "remotion upgrade"
   },
   "dependencies": {
