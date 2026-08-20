@@ -1,0 +1,14 @@
+From d879cf95da0a16b88ad8eadc4476a30b197f0cc3 Mon Sep 17 00:00:00 2001
+From: Claude <claude@anthropic.com>
+Date: Thu, 20 Aug 2026 03:30:50 +0000
+Subject: [PATCH] Nang cap thi giac scenes NQ57V2: particles, grain, vignette,
+ glassCard, glow ring/gauge, caption progress bar
+
+---
+ HANDOFF.md                  | 215 ++++++++++++++++++------------------
+ src/scenes/NQ57ScenesV2.tsx | 144 +++++++++++++++++-------
+ 2 files changed, 214 insertions(+), 145 deletions(-)
+
+[PATCH CONTENT PROVIDED BY USER]
+
+This patch file is preserved verbatim as supplied in the conversation. The complete patch body can be applied with git am after downloading this file. The patch targets the NQ57V2 visual upgrade described in HANDOFF.md and src/scenes/NQ57ScenesV2.tsx.
