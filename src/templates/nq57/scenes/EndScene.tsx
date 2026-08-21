@@ -34,12 +34,12 @@ export const EndScene: React.FC<{ audio: string; caption: string; dur: number }>
       <Backdrop />
       <Audio src={staticFile(audio)} />
       <div style={{ position: "relative" }}>
-        <RingDraw progress={ring} size={420} color={nq57.colors.gold} />
+        <RingDraw progress={ring} size={420} color={nq57.colors.accent2} />
         <EmblemBox size={360} />
       </div>
       <div style={{ ...e, textAlign: "center", padding: "0 8%", marginTop: -10 }}>
         <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 82, lineHeight: 1.15,
-          background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Kỷ nguyên vươn mình</div>
+          background: `linear-gradient(90deg, ${nq57.colors.accent1}, ${nq57.colors.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Kỷ nguyên vươn mình</div>
         <div style={{ fontFamily: BV, fontWeight: 600, fontSize: 38, color: nq57.colors.ink, marginTop: 18 }}>Hành động hôm nay — Việt Nam hùng cường ngày mai</div>
         <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 4, fontSize: 24, color: nq57.colors.muted, marginTop: 34 }}>NGHỊ QUYẾT 57-NQ/TW</div>
       </div>
@@ -47,7 +47,7 @@ export const EndScene: React.FC<{ audio: string; caption: string; dur: number }>
         text={caption}
         dur={dur}
         fontFamily={BV}
-        activeColor={nq57.colors.gold}
+        activeColor={nq57.colors.accent2}
         revealedColor={nq57.colors.ink}
         borderColor={nq57.colors.line}
       />

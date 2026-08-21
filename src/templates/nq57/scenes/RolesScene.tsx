@@ -21,9 +21,9 @@ import { BV } from "../../../fonts/nq57";
 import { fadeUp, Backdrop } from "../helpers";
 
 const ROLES = [
-  { t: "Người dân & Doanh nghiệp", s: "Trung tâm · Chủ thể · Động lực chính", c: nq57.colors.gold },
-  { t: "Nhà khoa học", s: "Nhân tố then chốt", c: nq57.colors.teal },
-  { t: "Nhà nước", s: "Dẫn dắt · Kiến tạo", c: nq57.colors.red },
+  { t: "Người dân & Doanh nghiệp", s: "Trung tâm · Chủ thể · Động lực chính", c: nq57.colors.accent2 },
+  { t: "Nhà khoa học", s: "Nhân tố then chốt", c: nq57.colors.accent3 },
+  { t: "Nhà nước", s: "Dẫn dắt · Kiến tạo", c: nq57.colors.accent1 },
 ];
 
 export const RolesScene: React.FC<{ audio: string; caption: string; dur: number }> = ({
@@ -60,13 +60,13 @@ export const RolesScene: React.FC<{ audio: string; caption: string; dur: number 
         })}
       </div>
       <div style={{ width: 1100, marginTop: 24 }}>
-        <FlowLine width={1100} progress={0.5} dotColor={nq57.colors.gold} lineColor={nq57.colors.line} />
+        <FlowLine width={1100} progress={(frame * 4) / 1100} dotColor={nq57.colors.accent2} lineColor={nq57.colors.line} />
       </div>
       <KaraokeReveal
         text={caption}
         dur={dur}
         fontFamily={BV}
-        activeColor={nq57.colors.gold}
+        activeColor={nq57.colors.accent2}
         revealedColor={nq57.colors.ink}
         borderColor={nq57.colors.line}
       />

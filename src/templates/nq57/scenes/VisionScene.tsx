@@ -37,11 +37,11 @@ export const VisionScene: React.FC<{ audio: string; caption: string; dur: number
       <Backdrop />
       <Audio src={staticFile(audio)} />
       <div style={{ position: "relative" }}>
-        <RingDraw progress={ring} size={460} color={nq57.colors.red} />
+        <RingDraw progress={ring} size={460} color={nq57.colors.accent1} />
         <div style={{ ...e, textAlign: "center", padding: "0 6%" }}>
-          <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 8, fontSize: 30, color: nq57.colors.gold }}>TẦM NHÌN 2045</div>
+          <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 8, fontSize: 30, color: nq57.colors.accent2 }}>TẦM NHÌN 2045</div>
           <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 168, lineHeight: 1, margin: "6px 0",
-            background: `linear-gradient(90deg, ${nq57.colors.red}, ${nq57.colors.gold})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{val}%</div>
+            background: `linear-gradient(90deg, ${nq57.colors.accent1}, ${nq57.colors.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{val}%</div>
         </div>
       </div>
       <div style={{ fontFamily: BV, fontWeight: 600, fontSize: 38, color: nq57.colors.ink, marginTop: 10 }}>Kinh tế số · Nước phát triển, thu nhập cao</div>
@@ -50,7 +50,7 @@ export const VisionScene: React.FC<{ audio: string; caption: string; dur: number
         text={caption}
         dur={dur}
         fontFamily={BV}
-        activeColor={nq57.colors.gold}
+        activeColor={nq57.colors.accent2}
         revealedColor={nq57.colors.ink}
         borderColor={nq57.colors.line}
       />

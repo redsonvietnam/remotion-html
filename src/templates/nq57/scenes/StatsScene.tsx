@@ -28,9 +28,9 @@ const GDP_DATA = [
 ];
 
 const GAUGES = [
-  { value: 30, max: 100, label: "Quy mô kinh tế số (% GDP)", unit: "%", c: nq57.colors.gold },
-  { value: 80, max: 100, label: "Dịch vụ công trực tuyến", unit: "%", c: nq57.colors.teal },
-  { value: 3, max: 10, label: "ASEAN về Trí tuệ nhân tạo", unit: " Top", c: nq57.colors.red },
+  { value: 30, max: 100, label: "Quy mô kinh tế số (% GDP)", unit: "%", c: nq57.colors.accent2 },
+  { value: 80, max: 100, label: "Dịch vụ công trực tuyến", unit: "%", c: nq57.colors.accent3 },
+  { value: 3, max: 10, label: "ASEAN về Trí tuệ nhân tạo", unit: " Top", c: nq57.colors.accent1 },
 ];
 
 export const StatsScene: React.FC<{ audio: string; caption: string; dur: number }> = ({
@@ -53,19 +53,19 @@ export const StatsScene: React.FC<{ audio: string; caption: string; dur: number 
           <AreaChart data={shown} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="gdp" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={nq57.colors.gold} stopOpacity={0.8} />
-                <stop offset="100%" stopColor={nq57.colors.gold} stopOpacity={0.05} />
+                <stop offset="0%" stopColor={nq57.colors.accent2} stopOpacity={0.8} />
+                <stop offset="100%" stopColor={nq57.colors.accent2} stopOpacity={0.05} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="4 8" stroke={nq57.colors.line} vertical={false} />
             <XAxis dataKey="year" tick={{ fill: nq57.colors.muted, fontFamily: BV, fontSize: 15 }} axisLine={{ stroke: nq57.colors.line }} tickLine={false} />
             <YAxis tick={{ fill: nq57.colors.muted, fontFamily: BV, fontSize: 13 }} axisLine={false} tickLine={false} unit="%" width={40} />
-            <Area type="monotone" dataKey="v" stroke={nq57.colors.gold} strokeWidth={3} fill="url(#gdp)" isAnimationActive={false} />
+            <Area type="monotone" dataKey="v" stroke={nq57.colors.accent2} strokeWidth={3} fill="url(#gdp)" isAnimationActive={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
       <div style={{ width: 980, marginBottom: 10 }}>
-        <FlowLine width={980} progress={0.5} dotColor={nq57.colors.teal} lineColor={nq57.colors.line} />
+        <FlowLine width={980} progress={(frame * 4) / 980} dotColor={nq57.colors.accent3} lineColor={nq57.colors.line} />
       </div>
       <div style={{ display: "flex", gap: 24 }}>
         {GAUGES.map((g, i) => {
@@ -81,7 +81,7 @@ export const StatsScene: React.FC<{ audio: string; caption: string; dur: number 
         text={caption}
         dur={dur}
         fontFamily={BV}
-        activeColor={nq57.colors.gold}
+        activeColor={nq57.colors.accent2}
         revealedColor={nq57.colors.ink}
         borderColor={nq57.colors.line}
       />

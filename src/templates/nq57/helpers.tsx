@@ -84,11 +84,11 @@ const Emblem3D: React.FC = () => {
       <pointLight position={[-3, -2, 2]} intensity={0.9} color="#5eead4" />
       <mesh rotation={[0.5, t * 0.6, 0]}>
         <torusGeometry args={[1.5, 0.12, 18, 90]} />
-        <meshStandardMaterial color={nq57.colors.red} emissive={nq57.colors.red} emissiveIntensity={0.45} metalness={0.6} roughness={0.3} />
+        <meshStandardMaterial color={nq57.colors.accent1} emissive={nq57.colors.accent1} emissiveIntensity={0.45} metalness={0.6} roughness={0.3} />
       </mesh>
       <mesh rotation={[t * 0.5, t * 0.8, 0]}>
         <icosahedronGeometry args={[0.95, 1]} />
-        <meshStandardMaterial color={nq57.colors.gold} wireframe emissive={nq57.colors.gold} emissiveIntensity={0.35} />
+        <meshStandardMaterial color={nq57.colors.accent2} wireframe emissive={nq57.colors.accent2} emissiveIntensity={0.35} />
       </mesh>
       {nodes.map((i) => {
         const a = t * 0.8 + (i * Math.PI * 2) / 5;
@@ -96,7 +96,7 @@ const Emblem3D: React.FC = () => {
         return (
           <mesh key={i} position={[Math.cos(a) * r, Math.sin(a * 1.3) * 0.5, Math.sin(a) * r]}>
             <sphereGeometry args={[0.13, 20, 20]} />
-            <meshStandardMaterial color={nq57.colors.teal} emissive={nq57.colors.teal} emissiveIntensity={0.6} />
+            <meshStandardMaterial color={nq57.colors.accent3} emissive={nq57.colors.accent3} emissiveIntensity={0.6} />
           </mesh>
         );
       })}
@@ -119,7 +119,7 @@ export const EmblemBox: React.FC<{ size?: number }> = ({ size = 460 }) => (
 const Bars3D: React.FC<{ count: number }> = ({ count }) => {
   const frame = useCurrentFrame();
   const fps = useVideoConfig().fps;
-  const colors = [nq57.colors.red, nq57.colors.gold, nq57.colors.teal, nq57.colors.gold, nq57.colors.red];
+  const colors = [nq57.colors.accent1, nq57.colors.accent2, nq57.colors.accent3, nq57.colors.accent2, nq57.colors.accent1];
   return (
     <>
       <ambientLight intensity={0.6} />

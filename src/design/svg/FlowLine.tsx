@@ -7,7 +7,6 @@
 
 import React from "react";
 import type { FlowLineProps } from "./types";
-import { clampProgress } from "./types";
 
 export const FlowLine: React.FC<FlowLineProps> = ({
   width,
@@ -21,7 +20,7 @@ export const FlowLine: React.FC<FlowLineProps> = ({
   direction = "ltr",
   style,
 }) => {
-  const p = clampProgress(progress);
+  const p = progress;
   const midY = height / 2;
   const dir = direction === "rtl" ? -1 : 1;
 

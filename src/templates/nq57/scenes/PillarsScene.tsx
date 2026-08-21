@@ -21,7 +21,7 @@ import { BV } from "../../../fonts/nq57";
 import { fadeUp, Backdrop, Bars3DBox } from "../helpers";
 
 const PILLARS = ["Thể chế", "Nhân lực", "Hạ tầng", "Dữ liệu", "Công nghệ chiến lược"];
-const PILLAR_COLORS = [nq57.colors.red, nq57.colors.gold, nq57.colors.teal, nq57.colors.gold, nq57.colors.red];
+const PILLAR_COLORS = [nq57.colors.accent1, nq57.colors.accent2, nq57.colors.accent3, nq57.colors.accent2, nq57.colors.accent1];
 
 export const PillarsScene: React.FC<{ audio: string; caption: string; dur: number }> = ({
   audio,
@@ -36,8 +36,8 @@ export const PillarsScene: React.FC<{ audio: string; caption: string; dur: numbe
       <Backdrop />
       <Audio src={staticFile(audio)} />
       <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 50, color: nq57.colors.ink, marginTop: 16 }}>Năm trụ cột cốt lõi</div>
-      <div style={{ fontFamily: BV, fontWeight: 500, fontSize: 26, color: nq57.colors.gold, marginBottom: 6 }}>Thể chế là điều kiện tiên quyết — đi trước một bước</div>
-      <LineDraw progress={ul} width={420} stroke={nq57.colors.gold} />
+      <div style={{ fontFamily: BV, fontWeight: 500, fontSize: 26, color: nq57.colors.accent2, marginBottom: 6 }}>Thể chế là điều kiện tiên quyết — đi trước một bước</div>
+      <LineDraw progress={ul} width={420} stroke={nq57.colors.accent2} />
       <Bars3DBox count={PILLARS.length} width={Math.round(1920 * 0.7)} height={500} />
       <div style={{ display: "flex", gap: 18, marginTop: 6 }}>
         {PILLARS.map((p, i) => {
@@ -54,7 +54,7 @@ export const PillarsScene: React.FC<{ audio: string; caption: string; dur: numbe
         text={caption}
         dur={dur}
         fontFamily={BV}
-        activeColor={nq57.colors.gold}
+        activeColor={nq57.colors.accent2}
         revealedColor={nq57.colors.ink}
         borderColor={nq57.colors.line}
       />
