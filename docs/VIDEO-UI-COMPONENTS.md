@@ -38,7 +38,23 @@ REMOTION
 - Built on Design primitives (typography, svg, layout, motion, theme)
 - Template decides WHICH components to use and WHAT content to show
 - Component decides HOW to render the structure
-- Semantic color props (text, muted, accent) — not raw CSS
+- **Semantic color props are REQUIRED — no defaults**
+
+## Policy: Zero Palette Knowledge
+
+Components have **zero palette knowledge**. All color props are **required** — no defaults.
+
+```tsx
+// BAD — component knows colors
+<SectionLabel text="BA CHỦ THỂ" color="#9aa0b5" />
+
+// GOOD — template provides colors via theme
+<SectionLabel text="BA CHỦ THỂ" color={theme.colors.muted} />
+```
+
+**Rationale:** Components define structure, not visual language. If a component had default colors, it would encode one template's palette. Required props force templates to be explicit about their visual choices.
+
+**Exception:** Layout/typography defaults are structural (width, fontSize, fontWeight) — these are NOT palette-specific and are OK to have defaults.
 
 ## Components
 
@@ -52,12 +68,14 @@ import { SectionLabel } from "../components";
 <SectionLabel text="BA CHỦ THỂ" fontFamily={BV} color={theme.colors.muted} />
 ```
 
-**Props:**
+**Required Props:**
 - `text` — label text
+- `color` — text color (template provides via theme)
+
+**Optional Props:**
 - `fontFamily` — font family
 - `fontSize` — font size in px (default: 26)
 - `fontWeight` — font weight (default: 700)
-- `color` — text color (default: muted)
 - `letterSpacing` — letter spacing in px (default: 4)
 - `marginBottom` — bottom margin in px (default: 30)
 
@@ -77,10 +95,12 @@ import { GradientText } from "../components";
 />
 ```
 
-**Props:**
+**Required Props:**
 - `text` — text content
-- `colorFrom` — start color of gradient (default: accent1)
-- `colorTo` — end color of gradient (default: accent2)
+- `colorFrom` — start color of gradient (template provides via theme)
+- `colorTo` — end color of gradient (template provides via theme)
+
+**Optional Props:**
 - `gradientAngle` — gradient direction in degrees (default: 90)
 - `fontFamily` — font family
 - `fontSize` — font size in px (default: 120)
@@ -111,16 +131,18 @@ import { CardBlock } from "../components";
 />
 ```
 
-**Props:**
+**Required Props:**
+- `accent` — badge border/accent color (template provides via theme)
+- `background` — card background (template provides via theme)
+- `borderColor` — card border (template provides via theme)
+- `text` — primary text color (template provides via theme)
+- `muted` — secondary text color (template provides via theme)
+
+**Optional Props:**
 - `number` — number in badge (null = no badge)
-- `accent` — badge border/accent color
 - `title` — card title
 - `subtitle` — card subtitle
 - `width` — card width in px (default: 420)
-- `background` — card background (semantic: "card" from theme)
-- `borderColor` — card border (semantic: "line" from theme)
-- `text` — primary text color (semantic: "ink" from theme)
-- `muted` — secondary text color (semantic: "muted" from theme)
 - `borderRadius` — border radius (default: 24)
 - `padding` — card padding (default: "40px 34px")
 - `fontFamily` — font family
@@ -183,11 +205,11 @@ const style = stagger({ frame, index: i, stagger: 14 });
 - Define reusable video UI patterns
 - Accept content via props
 - Use Design primitives for rendering
-- Use semantic color props (text, muted, accent)
+- Use semantic color props (text, muted, accent) — **REQUIRED, no defaults**
 
 **Components does NOT:**
 - Know what content to display (template's job)
 - Know what colors/fonts to use (theme's job)
 - Know how things animate (motion's job)
-- Accept raw CSS strings where semantic inputs work
+- Have default colors (template provides all colors)
 - Import from `templates/`, `scenes/`, `compositions/`

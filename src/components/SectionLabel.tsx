@@ -3,6 +3,9 @@
 //
 // Replaces NQ57's inline section labels with a configurable component.
 // Used for: "BA CHỦ THỂ", "Năm trụ cột cốt lõi", "Mục tiêu 2030", etc.
+//
+// Policy: color is REQUIRED — no defaults.
+// The template provides all colors via theme.
 // ---------------------------------------------------------------------------
 
 import React from "react";
@@ -13,7 +16,7 @@ export const SectionLabel: React.FC<SectionLabelProps> = ({
   fontFamily,
   fontSize = 26,
   fontWeight = 700,
-  color = "#9aa0b5",
+  color,
   letterSpacing = 4,
   marginBottom = 30,
   className,

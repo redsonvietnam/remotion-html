@@ -3,6 +3,9 @@
 //
 // Replaces NQ57's inline gradient text with a configurable component.
 // Used for: "NGHỊ QUYẾT 57", "Kỷ nguyên vươn mình", "50%", etc.
+//
+// Policy: colorFrom and colorTo are REQUIRED — no defaults.
+// The template provides all colors via theme.
 // ---------------------------------------------------------------------------
 
 import React from "react";
@@ -10,8 +13,8 @@ import type { GradientTextProps } from "./types";
 
 export const GradientText: React.FC<GradientTextProps> = ({
   text,
-  colorFrom = "#e23b3b",
-  colorTo = "#f3c969",
+  colorFrom,
+  colorTo,
   gradientAngle = 90,
   fontFamily,
   fontSize = 120,

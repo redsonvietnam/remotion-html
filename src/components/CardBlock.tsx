@@ -3,6 +3,9 @@
 //
 // Replaces NQ57's inline card pattern with a configurable component.
 // Used for: roles scene (3 cards with number, title, subtitle).
+//
+// Policy: All color props are REQUIRED — no defaults.
+// The template provides all colors via theme.
 // ---------------------------------------------------------------------------
 
 import React from "react";
@@ -10,14 +13,14 @@ import type { CardBlockProps } from "./types";
 
 export const CardBlock: React.FC<CardBlockProps> = ({
   number = null,
-  accent = "#f3c969",
+  accent,
   title,
   subtitle,
   width = 420,
-  background = "rgba(255,255,255,0.045)",
-  borderColor = "rgba(245,245,255,0.12)",
-  text = "#f7f5ef",
-  muted = "#9aa0b5",
+  background,
+  borderColor,
+  text,
+  muted,
   borderRadius = 24,
   padding = "40px 34px",
   fontFamily,

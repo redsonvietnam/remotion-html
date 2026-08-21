@@ -3,6 +3,11 @@
 //
 // Reusable video UI components built on Design primitives.
 // These are template-agnostic: they know structure, not content.
+//
+// Policy: Semantic color props are REQUIRED — no defaults.
+// The component has zero palette knowledge.
+// The template provides all colors via theme.
+// Layout/typography defaults are structural, not palette-specific.
 // ---------------------------------------------------------------------------
 
 import type { CSSProperties, ReactNode } from "react";
@@ -19,8 +24,8 @@ export interface SectionLabelProps {
   fontSize?: number;
   /** Font weight. Default: 700. */
   fontWeight?: number;
-  /** Text color. Default: muted. */
-  color?: string;
+  /** Text color — REQUIRED (no default). Template provides via theme. */
+  color: string;
   /** Letter spacing in px. Default: 4. */
   letterSpacing?: number;
   /** Bottom margin in px. Default: 30. */
@@ -37,10 +42,10 @@ export interface SectionLabelProps {
 export interface GradientTextProps {
   /** Text content. */
   text: string;
-  /** Start color of the gradient. */
-  colorFrom?: string;
-  /** End color of the gradient. */
-  colorTo?: string;
+  /** Start color of the gradient — REQUIRED (no default). Template provides via theme. */
+  colorFrom: string;
+  /** End color of the gradient — REQUIRED (no default). Template provides via theme. */
+  colorTo: string;
   /** Gradient direction in degrees (0 = left-to-right). Default: 90. */
   gradientAngle?: number;
   /** Font family. */
@@ -63,22 +68,22 @@ export interface GradientTextProps {
 export interface CardBlockProps {
   /** Number displayed in the badge (null = no badge). */
   number?: number | null;
-  /** Badge border/accent color. */
-  accent?: string;
+  /** Badge border/accent color — REQUIRED (no default). Template provides via theme. */
+  accent: string;
   /** Card title text. */
   title?: string;
   /** Card subtitle text. */
   subtitle?: string;
   /** Card width in px. Default: 420. */
   width?: number;
-  /** Card background color (semantic: "card" from theme). */
-  background?: string;
-  /** Card border color (semantic: "line" from theme). */
-  borderColor?: string;
-  /** Primary text color (semantic: "ink" from theme). */
-  text?: string;
-  /** Secondary text color (semantic: "muted" from theme). */
-  muted?: string;
+  /** Card background color — REQUIRED (no default). Template provides via theme. */
+  background: string;
+  /** Card border color — REQUIRED (no default). Template provides via theme. */
+  borderColor: string;
+  /** Primary text color — REQUIRED (no default). Template provides via theme. */
+  text: string;
+  /** Secondary text color — REQUIRED (no default). Template provides via theme. */
+  muted: string;
   /** Border radius in px. Default: 24. */
   borderRadius?: number;
   /** Card padding. Default: "40px 34px". */
