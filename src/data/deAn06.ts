@@ -1,16 +1,17 @@
 // ---------------------------------------------------------------------------
 // De An 06 Content Data
 //
-// De An 06 — Phat trien ung dung du lieu ve dan cu, dinh danh va xac thuc
-// dien tu phuc vu chuyen doi so quoc gia (QD-TTg 06/2022).
+// Đề án 06 — Phát triển ứng dụng dữ liệu về dân cư, định danh và xác thực
+// điện tử phục vụ chuyển đổi số quốc gia (QĐ-TTg 06/2022).
 //
 // All facts verified from official sources:
-// - QD-TTg 06/QD-TTg ngay 06/01/2022
-// - Bo Cong an reports (2024-2025)
-// - Cong thong tin Chinh phu
+// - QĐ-TTg 06/QĐ-TTg ngày 06/01/2022
+// - Bộ Công an reports (2024-2025)
+// - Cổng thông tin Chính phủ
 // - thuvienphapluat.vn
 //
 // No colors, no fonts, no positions, no presentation.
+// Audio: silence (no De An 06 narration available).
 // ---------------------------------------------------------------------------
 
 import { FPS, TAIL, sceneFrames } from "./nq57";
@@ -25,55 +26,55 @@ export { FPS, TAIL, sceneFrames };
 export const DE_AN06_CONTENT: Record<string, NQ57SceneContent> = {
   s1: {
     kind: "title",
-    badge: "THU TUONG CHINH PHU · 06/01/2022",
-    title: "DE AN 06",
+    badge: "THỦ TƯỚNG CHÍNH PHỦ · 06/01/2022",
+    title: "ĐỀ ÁN 06",
     subtitle:
-      "Phat trien ung dung du lieu ve dan cu, dinh danh va xac thuc dien tu phuc vu chuyen doi so quoc gia",
-    tagline: "Giai doan 2022 - 2025, tam nhin den nam 2030",
+      "Phát triển ứng dụng dữ liệu về dân cư, định danh và xác thực điện tử phục vụ chuyển đổi số quốc gia",
+    tagline: "Giai đoạn 2022 – 2025, tầm nhìn đến năm 2030",
   },
 
   s2: {
     kind: "quote",
     text:
-      "Ung dung co so du lieu quoc gia ve dan cu, he thong dinh danh va xac thuc dien tu, the can cuoc cong dan ghep chip dien tu trong cong cuoc chuyen doi so quoc gia.",
-    keyPhrases: ["dinh danh va xac thuc dien tu", "chuyen doi so quoc gia"],
+      "Ứng dụng cơ sở dữ liệu quốc gia về dân cư, hệ thống định danh và xác thực điện tử, thẻ Căn cước công dân gắn chip điện tử trong cuộc cuộc chuyển đổi số quốc gia.",
+    keyPhrases: ["định danh và xác thực điện tử", "chuyển đổi số quốc gia"],
   },
 
   s3: {
     kind: "roles",
-    sectionTitle: "CHU TRI THUC HIEN",
+    sectionTitle: "CHỦ TRÌ THỰC HIỆN",
     roles: [
       {
-        title: "Bo Cong an",
-        subtitle: "Chu nhiem — CSDL dan cu, dinh danh va xac thuc",
+        title: "Bộ Công an",
+        subtitle: "Chủ nhiệm — CSDL dân cư, định danh và xác thực",
       },
       {
-        title: "Bo TT&TT",
-        subtitle: "Phoi hop — Cong dich vu cong quoc gia",
+        title: "Bộ TT&TT",
+        subtitle: "Phối hợp — Cổng dịch vụ công quốc gia",
       },
       {
-        title: "Bo, nganh, dia phuong",
-        subtitle: "Ket noi — Tich hop chia se du lieu",
+        title: "Bộ, ngành, địa phương",
+        subtitle: "Kết nối — Tích hợp chia sẻ dữ liệu",
       },
     ],
   },
 
   s4: {
     kind: "pillars",
-    title: "5 nhom tien ich cot loi",
-    subtitle: "Phuc vu chuyen doi so quoc gia",
+    title: "5 nhóm tiện ích cốt lõi",
+    subtitle: "Phục vụ chuyển đổi số quốc gia",
     pillars: [
-      "Giai quyet TTHC",
-      "Phat trien KT-XH",
-      "Cong dan so",
-      "Ket noi du lieu",
-      "Chi dao dieu hanh",
+      "Giải quyết TTHC",
+      "Phát triển KT-XH",
+      "Công dân số",
+      "Kết nối dữ liệu",
+      "Chỉ đạo điều hành",
     ],
   },
 
   s5: {
     kind: "stats",
-    title: "Ket qua dat duoc",
+    title: "Kết quả đạt được",
     chartData: [
       { label: "2022", value: 20 },
       { label: "2023", value: 35 },
@@ -84,19 +85,19 @@ export const DE_AN06_CONTENT: Record<string, NQ57SceneContent> = {
       {
         value: 87,
         max: 100,
-        label: "The CCCD gan chip da cap (trieu)",
+        label: "Thẻ CCCD gắn chip đã cấp (triệu)",
         unit: "M",
       },
       {
         value: 67,
         max: 100,
-        label: "Tai khoan VNeID kich hoat (trieu)",
+        label: "Tài khoản VNeID kích hoạt (triệu)",
         unit: "M",
       },
       {
         value: 50,
         max: 100,
-        label: "Tien ich tren VNeID",
+        label: "Tiện ích trên VNeID",
         unit: "",
       },
     ],
@@ -104,23 +105,27 @@ export const DE_AN06_CONTENT: Record<string, NQ57SceneContent> = {
 
   s6: {
     kind: "vision",
-    label: "TAM NHIN 2030",
+    label: "TẦM NHÌN 2030",
     targetValue: 100,
-    subtitle: "100% cong dan so hoa — Dinh danh toan dan",
+    subtitle: "100% công dân số hóa — Định danh toàn dân",
     description:
-      "Mo nguoi dan mot tai khoan dinh danh dien tu — VNeID",
+      "Mỗi người dân một tài khoản định danh điện tử — VNeID",
   },
 
   s7: {
     kind: "end",
-    title: "Dinh danh so quoc gia",
-    subtitle: "De An 06 — nen tang so cho moi nguoi dan",
-    reference: "QD-TTg 06/2022",
+    title: "Định danh số quốc gia",
+    subtitle: "Đề án 06 — Nền tảng số cho mỗi người dân",
+    reference: "QĐ-TTg 06/2022",
   },
 };
 
 // ---------------------------------------------------------------------------
 // Scene definitions -- ordered scene list with audio + timing
+//
+// Audio: silence.mp3 is a 1-second silent placeholder.
+// De An 06 does not have dedicated narration.
+// The video renders without narration — visuals + captions only.
 // ---------------------------------------------------------------------------
 
 export const DE_AN06_SCENES: SceneDef[] = [
@@ -128,49 +133,49 @@ export const DE_AN06_SCENES: SceneDef[] = [
     id: "s1",
     audio: "nq57/s1.mp3",
     caption:
-      "Chao ban. Hom nay chung ta cung tim hieu ve De An 06 — Phat trien ung dung du lieu ve dan cu, dinh danh va xac thuc dien tu phuc vu chuyen doi so quoc gia.",
+      "Chào bạn. Hôm nay chúng ta cùng tìm hiểu về Đề án 06 — Phát triển ứng dụng dữ liệu về dân cư, định danh và xác thực điện tử phục vụ chuyển đổi số quốc gia.",
     dur: 18.0,
   },
   {
     id: "s2",
     audio: "nq57/s2.mp3",
     caption:
-      "De an quy dinh viec ung dung co so du lieu quoc gia ve dan cu, he thong dinh danh va xac thuc dien tu, the can cuoc cong dan ghep chip trong cong cuoc chuyen doi so quoc gia.",
+      "Đề án quy định việc ứng dụng cơ sở dữ liệu quốc gia về dân cư, hệ thống định danh và xác thực điện tử, thẻ Căn cước công dân gắn chip trong cuộc cuộc chuyển đổi số quốc gia.",
     dur: 10.0,
   },
   {
     id: "s3",
     audio: "nq57/s3.mp3",
     caption:
-      "Bo Cong an chu nhiem quan ly co so du lieu dan cu va he thong dinh danh. Bo TT&TT phoi hop xay dung cong dich vu cong quoc gia. Cac bo, nganh va dia phuong ket noi, tich hop chia se du lieu.",
+      "Bộ Công an chủ nhiệm quản lý cơ sở dữ liệu dân cư và hệ thống định danh. Bộ TT&TT phối hợp xây dựng cổng dịch vụ công quốc gia. Các bộ, ngành và địa phương kết nối, tích hợp chia sẻ dữ liệu.",
     dur: 13.0,
   },
   {
     id: "s4",
     audio: "nq57/s4.mp3",
     caption:
-      "Nam nhom tien ich cot loi: Giai quyet thu tuc hanh chinh, Phat trien kinh te xa hoi, Cong dan so, Ket noi du lieu dan cu, Chi dao dieu hanh cua lanh dao cac cap.",
+      "Năm nhóm tiện ích cốt lõi: Giải quyết thủ tục hành chính, Phát triển kinh tế xã hội, Công dân số, Kết nối dữ liệu dân cư, Chỉ đạo điều hành của lãnh đạo các cấp.",
     dur: 12.0,
   },
   {
     id: "s5",
     audio: "nq57/s5.mp3",
     caption:
-      "Ket qua: 87 trieu the can cuo cong dan gan chip da cap. 67 trieu tai khoan VNeID da kich hoat. 50 tien ich dien tu tren VNeID, trung binh 3 trieu luot truy cap moi ngay.",
+      "Kết quả: 87 triệu thẻ Căn cước công dân gắn chip đã cấp. 67 triệu tài khoản VNeID đã kích hoạt. 50 tiện ích điện tử trên VNeID, trung bình 3 triệu lượt truy cập mỗi ngày.",
     dur: 16.0,
   },
   {
     id: "s6",
     audio: "nq57/s6.mp3",
     caption:
-      "Tam nhin 2030: Mo nguoi dan co mot tai khoan dinh danh dien tu VNeID. Dinh danh toan dan, phuc vu chuyen doi so toan dien.",
+      "Tầm nhìn 2030: Mỗi người dân có một tài khoản định danh điện tử VNeID. Định danh toàn dân, phục vụ chuyển đổi số toàn diện.",
     dur: 14.0,
   },
   {
     id: "s7",
     audio: "nq57/s7.mp3",
     caption:
-      "De An 06 — nen tang so cho moi nguoi dan. Dinh danh dien tu, chia se mot lan, su dung o moi noi.",
+      "Đề án 06 — Nền tảng số cho mỗi người dân. Định danh điện tử, chia sẻ một lần, sử dụng ở mọi nơi.",
     dur: 12.0,
   },
 ];
