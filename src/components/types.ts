@@ -37,8 +37,12 @@ export interface SectionLabelProps {
 export interface GradientTextProps {
   /** Text content. */
   text: string;
-  /** Gradient CSS value. Default: "linear-gradient(90deg, #e23b3b, #f3c969)". */
-  gradient?: string;
+  /** Start color of the gradient. */
+  colorFrom?: string;
+  /** End color of the gradient. */
+  colorTo?: string;
+  /** Gradient direction in degrees (0 = left-to-right). Default: 90. */
+  gradientAngle?: number;
   /** Font family. */
   fontFamily?: string;
   /** Font size in px. Default: 120. */
@@ -60,17 +64,21 @@ export interface CardBlockProps {
   /** Number displayed in the badge (null = no badge). */
   number?: number | null;
   /** Badge border/accent color. */
-  accentColor?: string;
+  accent?: string;
   /** Card title text. */
   title?: string;
   /** Card subtitle text. */
   subtitle?: string;
   /** Card width in px. Default: 420. */
   width?: number;
-  /** Card background color. */
+  /** Card background color (semantic: "card" from theme). */
   background?: string;
-  /** Card border color. */
-  border?: string;
+  /** Card border color (semantic: "line" from theme). */
+  borderColor?: string;
+  /** Primary text color (semantic: "ink" from theme). */
+  text?: string;
+  /** Secondary text color (semantic: "muted" from theme). */
+  muted?: string;
   /** Border radius in px. Default: 24. */
   borderRadius?: number;
   /** Card padding. Default: "40px 34px". */
@@ -78,17 +86,13 @@ export interface CardBlockProps {
   /** Font family. */
   fontFamily?: string;
   /** Title font size in px. Default: 34. */
-  titleFontSize?: number;
+  titleSize?: number;
   /** Title font weight. Default: 700. */
-  titleFontWeight?: number;
-  /** Title text color. */
-  titleColor?: string;
+  titleWeight?: number;
   /** Subtitle font size in px. Default: 22. */
-  subtitleFontSize?: number;
+  subtitleSize?: number;
   /** Subtitle font weight. Default: 500. */
-  subtitleFontWeight?: number;
-  /** Subtitle text color. */
-  subtitleColor?: string;
+  subtitleWeight?: number;
   /** Badge size in px. Default: 86. */
   badgeSize?: number;
   /** Badge font size in px. Default: 40. */

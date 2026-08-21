@@ -10,21 +10,21 @@ import type { CardBlockProps } from "./types";
 
 export const CardBlock: React.FC<CardBlockProps> = ({
   number = null,
-  accentColor = "#f3c969",
+  accent = "#f3c969",
   title,
   subtitle,
   width = 420,
   background = "rgba(255,255,255,0.045)",
-  border = "1px solid rgba(245,245,255,0.12)",
+  borderColor = "rgba(245,245,255,0.12)",
+  text = "#f7f5ef",
+  muted = "#9aa0b5",
   borderRadius = 24,
   padding = "40px 34px",
   fontFamily,
-  titleFontSize = 34,
-  titleFontWeight = 700,
-  titleColor = "#f7f5ef",
-  subtitleFontSize = 22,
-  subtitleFontWeight = 500,
-  subtitleColor = "#9aa0b5",
+  titleSize = 34,
+  titleWeight = 700,
+  subtitleSize = 22,
+  subtitleWeight = 500,
   badgeSize = 86,
   badgeFontSize = 40,
   badgeFontWeight = 800,
@@ -39,7 +39,7 @@ export const CardBlock: React.FC<CardBlockProps> = ({
       style={{
         width,
         background,
-        border,
+        border: `1px solid ${borderColor}`,
         borderRadius,
         padding,
         textAlign: "center",
@@ -54,14 +54,14 @@ export const CardBlock: React.FC<CardBlockProps> = ({
             height: badgeSize,
             borderRadius: 999,
             margin: "0 auto 22px",
-            border: `3px solid ${accentColor}`,
+            border: `3px solid ${accent}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontFamily,
             fontWeight: badgeFontWeight,
             fontSize: badgeFontSize,
-            color: accentColor,
+            color: accent,
           }}
         >
           {number}
@@ -71,9 +71,9 @@ export const CardBlock: React.FC<CardBlockProps> = ({
         <div
           style={{
             fontFamily,
-            fontWeight: titleFontWeight,
-            fontSize: titleFontSize,
-            color: titleColor,
+            fontWeight: titleWeight,
+            fontSize: titleSize,
+            color: text,
           }}
         >
           {title}
@@ -83,9 +83,9 @@ export const CardBlock: React.FC<CardBlockProps> = ({
         <div
           style={{
             fontFamily,
-            fontWeight: subtitleFontWeight,
-            fontSize: subtitleFontSize,
-            color: subtitleColor,
+            fontWeight: subtitleWeight,
+            fontSize: subtitleSize,
+            color: muted,
             marginTop: 10,
           }}
         >

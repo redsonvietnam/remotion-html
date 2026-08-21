@@ -10,7 +10,9 @@ import type { GradientTextProps } from "./types";
 
 export const GradientText: React.FC<GradientTextProps> = ({
   text,
-  gradient = "linear-gradient(90deg, #e23b3b, #f3c969)",
+  colorFrom = "#e23b3b",
+  colorTo = "#f3c969",
+  gradientAngle = 90,
   fontFamily,
   fontSize = 120,
   fontWeight = 800,
@@ -18,6 +20,8 @@ export const GradientText: React.FC<GradientTextProps> = ({
   className,
   style,
 }) => {
+  const gradient = `linear-gradient(${gradientAngle}deg, ${colorFrom}, ${colorTo})`;
+
   return (
     <div
       className={className}

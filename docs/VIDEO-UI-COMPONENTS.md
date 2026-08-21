@@ -38,6 +38,7 @@ REMOTION
 - Built on Design primitives (typography, svg, layout, motion, theme)
 - Template decides WHICH components to use and WHAT content to show
 - Component decides HOW to render the structure
+- Semantic color props (text, muted, accent) — not raw CSS
 
 ## Components
 
@@ -69,7 +70,8 @@ import { GradientText } from "../components";
 
 <GradientText
   text="NGHỊ QUYẾT 57"
-  gradient="linear-gradient(90deg, #e23b3b, #f3c969)"
+  colorFrom={theme.colors.accent1}
+  colorTo={theme.colors.accent2}
   fontFamily={BV}
   fontSize={150}
 />
@@ -77,11 +79,16 @@ import { GradientText } from "../components";
 
 **Props:**
 - `text` — text content
-- `gradient` — CSS gradient value (default: red to gold)
+- `colorFrom` — start color of gradient (default: accent1)
+- `colorTo` — end color of gradient (default: accent2)
+- `gradientAngle` — gradient direction in degrees (default: 90)
 - `fontFamily` — font family
 - `fontSize` — font size in px (default: 120)
 - `fontWeight` — font weight (default: 800)
 - `lineHeight` — line height (default: 1)
+
+**Design:** Accepts semantic colors, builds gradient internally.
+No raw CSS gradient strings in the API.
 
 ### CardBlock
 
@@ -92,9 +99,13 @@ import { CardBlock } from "../components";
 
 <CardBlock
   number={1}
-  accentColor={theme.colors.accent2}
+  accent={theme.colors.accent2}
   title="Người dân & Doanh nghiệp"
   subtitle="Trung tâm · Chủ thể · Động lực chính"
+  background={theme.colors.card}
+  borderColor={theme.colors.line}
+  text={theme.colors.ink}
+  muted={theme.colors.muted}
   fontFamily={BV}
   width={420}
 />
@@ -102,22 +113,27 @@ import { CardBlock } from "../components";
 
 **Props:**
 - `number` — number in badge (null = no badge)
-- `accentColor` — badge border/accent color
+- `accent` — badge border/accent color
 - `title` — card title
 - `subtitle` — card subtitle
 - `width` — card width in px (default: 420)
-- `background` — card background
-- `border` — card border
+- `background` — card background (semantic: "card" from theme)
+- `borderColor` — card border (semantic: "line" from theme)
+- `text` — primary text color (semantic: "ink" from theme)
+- `muted` — secondary text color (semantic: "muted" from theme)
 - `borderRadius` — border radius (default: 24)
 - `padding` — card padding (default: "40px 34px")
 - `fontFamily` — font family
-- `titleFontSize` — title size (default: 34)
-- `titleColor` — title color
-- `subtitleFontSize` — subtitle size (default: 22)
-- `subtitleColor` — subtitle color
+- `titleSize` — title size (default: 34)
+- `titleWeight` — title weight (default: 700)
+- `subtitleSize` — subtitle size (default: 22)
+- `subtitleWeight` — subtitle weight (default: 500)
 - `badgeSize` — badge diameter (default: 86)
 - `badgeFontSize` — badge number size (default: 40)
 - `boxShadow` — card shadow
+
+**Design:** Uses semantic color names (text, muted, accent, background,
+borderColor) that map to theme tokens. Templates pass theme values.
 
 ## Extraction Evidence
 
@@ -167,9 +183,11 @@ const style = stagger({ frame, index: i, stagger: 14 });
 - Define reusable video UI patterns
 - Accept content via props
 - Use Design primitives for rendering
+- Use semantic color props (text, muted, accent)
 
 **Components does NOT:**
 - Know what content to display (template's job)
 - Know what colors/fonts to use (theme's job)
 - Know how things animate (motion's job)
+- Accept raw CSS strings where semantic inputs work
 - Import from `templates/`, `scenes/`, `compositions/`
