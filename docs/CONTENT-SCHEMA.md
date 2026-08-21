@@ -360,8 +360,10 @@ Template Scene Component (layout + motion + visual language)
   ↓
 Components (CardBlock, SectionLabel, GradientText)
   ↓
-Design Primitives (RingDraw, KaraokeReveal, fadeUp, FlowLine)
+Design Primitives (RingDraw, KaraokeReveal, FlowLine)
 ```
+
+Template-specific helpers (e.g. `fadeUp`) remain inside the template directory (`templates/{id}/helpers.tsx`), not in the Design layer.
 
 ### No additional runtime abstraction
 
