@@ -10,18 +10,17 @@ import { AbsoluteFill } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { SCENES, NQ57_CONTENT, sceneFrames } from "../../data/nq57";
-import { SCENE_REGISTRY } from "./scenes";
+import { renderScene } from "./scenes";
 
 const TRANSITION_FRAMES = 16;
 
 export const NQ57Template: React.FC = () => {
   const items: React.ReactNode[] = [];
   SCENES.forEach((s, i) => {
-    const Comp = SCENE_REGISTRY[s.id];
     const content = NQ57_CONTENT[s.id];
     items.push(
       <TransitionSeries.Sequence key={s.id} durationInFrames={sceneFrames(s.dur)}>
-        <Comp audio={s.audio} caption={s.caption} dur={s.dur} {...content} />
+        {renderScene(s.id, content, { audio: s.audio, caption: s.caption, dur: s.dur })}
       </TransitionSeries.Sequence>
     );
     if (i < SCENES.length - 1) {
