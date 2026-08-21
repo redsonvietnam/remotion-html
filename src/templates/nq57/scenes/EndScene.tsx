@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------------------
-// EndScene — NQ57 End Scene
+// EndScene — De An 06 End Scene
 //
 // Uses: RingDraw (design/svg), KaraokeReveal (design/typography)
-// Uses: fadeUp, Backdrop, EmblemBox (template-specific helpers)
+// Uses: slideUp, fadeIn, Backdrop, EmblemBox (template-specific helpers)
 // Theme: consumed via useTheme() — not imported directly
 // ---------------------------------------------------------------------------
 
@@ -18,42 +18,73 @@ import {
 import { RingDraw } from "../../../design/svg";
 import { KaraokeReveal } from "../../../design/typography";
 import { useTheme } from "../../../design/theme";
-import { fadeUp, Backdrop, EmblemBox } from "../helpers";
+import { slideUp, fadeIn, Backdrop, EmblemBox } from "../helpers";
 import type { NQ57EndContent } from "../../../data/nq57";
 
 type Props = { audio: string; caption: string; dur: number } & NQ57EndContent;
 
 export const EndScene: React.FC<Props> = ({
-  audio, caption, dur,
-  title, subtitle, reference,
+  audio,
+  caption,
+  dur,
+  title,
+  subtitle,
+  reference,
 }) => {
   const theme = useTheme();
   const BV = theme.fonts.display;
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const e = fadeUp(frame, 0, fps);
-  const ring = interpolate(frame, [0, 70], [0, 1], { extrapolateRight: "clamp" });
+
+  const ringAnim = interpolate(frame, [0, 90], [0, 1], { extrapolateRight: "clamp" });
+  const emblemAnim = slideUp(frame, 10, fps, 30);
+  const titleAnim = slideUp(frame, 25, fps, 50);
+  const subAnim = slideUp(frame, 45, fps, 40);
+  const refAnim = slideUp(frame, 65, fps, 30);
+
   return (
-    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", paddingBottom: "12%" }}>
+    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", paddingBottom: "10%" }}>
       <Backdrop />
       <Audio src={staticFile(audio)} />
       <div style={{ position: "relative" }}>
-        <RingDraw progress={ring} size={420} color={theme.colors.accent2} />
-        <EmblemBox size={360} />
+        <RingDraw progress={ringAnim} size={460} color={theme.colors.accent1} strokeWidth={5} />
+        <div style={{ ...emblemAnim }}>
+          <EmblemBox size={380} />
+        </div>
       </div>
-      <div style={{ ...e, textAlign: "center", padding: "0 8%", marginTop: -10 }}>
-        <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 82, lineHeight: 1.15,
-          background: `linear-gradient(90deg, ${theme.colors.accent1}, ${theme.colors.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{title}</div>
-        <div style={{ fontFamily: BV, fontWeight: 600, fontSize: 38, color: theme.colors.ink, marginTop: 18 }}>{subtitle}</div>
-        <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 4, fontSize: 24, color: theme.colors.muted, marginTop: 34 }}>{reference}</div>
+      <div
+        style={{
+          ...titleAnim,
+          textAlign: "center",
+          padding: "0 6%",
+          marginTop: -20,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: BV,
+            fontWeight: 800,
+            fontSize: 88,
+            lineHeight: 1.1,
+            background: `linear-gradient(135deg, ${theme.colors.accent1} 0%, ${theme.colors.accent3} 50%, ${theme.colors.accent2} 100%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            textShadow: "0 0 80px rgba(0,212,255,0.15)",
+          }}
+        >
+          {title}
+        </div>
+        <div style={{ ...subAnim, fontFamily: BV, fontWeight: 500, fontSize: 40, color: theme.colors.ink, marginTop: 22, lineHeight: 1.3 }}>{subtitle}</div>
+        <div style={{ ...refAnim, fontFamily: BV, fontWeight: 600, letterSpacing: 6, fontSize: 22, color: theme.colors.muted, marginTop: 40, textTransform: "uppercase" }}>{reference}</div>
       </div>
       <KaraokeReveal
         text={caption}
         dur={dur}
         fontFamily={BV}
-        activeColor={theme.colors.accent2}
+        activeColor={theme.colors.accent1}
         revealedColor={theme.colors.ink}
         borderColor={theme.colors.line}
+        fontSize={20}
       />
     </AbsoluteFill>
   );
