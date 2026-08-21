@@ -172,9 +172,9 @@ export const DEFAULT_WORD_SPRING: SpringConfig = {
 export const DEFAULT_ENTER_DIRECTION: EnterDirection = "up";
 
 export const DEFAULT_KARAOKE_CONFIG: Required<KaraokeConfig> = {
-  activeColor: "#f3c969",
-  revealedColor: "#f7f5ef",
-  pendingColor: "#f7f5ef",
+  activeColor: "#f3c969", // gold accent — template should override
+  revealedColor: "#f7f5ef", // light text — template should override
+  pendingColor: "#f7f5ef", // light text — template should override
   pendingOpacity: 0.2,
   activeFontWeight: 700,
   defaultFontWeight: 600,

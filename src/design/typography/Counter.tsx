@@ -39,7 +39,7 @@ export const Counter: React.FC<CounterProps> = ({
   text: _text, // unused — counter generates its own display
   target,
   unit = "",
-  color = "#f3c969",
+  color = "#f3c969", // gold accent — template should override
   unitColor,
   numberFontSize = 110,
   unitFontSize = 46,
