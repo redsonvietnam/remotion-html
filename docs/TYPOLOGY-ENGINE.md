@@ -4,8 +4,16 @@ Reusable typography primitives for Remotion video templates.
 
 ## Location
 
+**Canonical path:** `design/typography/` (per ARCHITECTURE.md)
+
+**Current (transitional) path:** `src/design/typography/`
+
+The typography engine lives inside `src/` until the full architecture migration
+moves `design/`, `core/`, `components/` to the project root. This is a
+transitional location — the canonical path is `design/typography/`.
+
 ```
-src/design/typography/
+src/design/typography/          ← transitional (inside src/)
   index.ts              Public API (barrel export)
   types.ts              Type contracts and defaults
   useFadeIn.ts          Basic fade+slide animation hook
@@ -13,7 +21,7 @@ src/design/typography/
   Text.tsx              Basic text with enter animation
   WordReveal.tsx        Word-by-word text reveal
   KaraokeReveal.tsx     Progressive word highlighting with marquee
-  Counter.tsx           Animated number counter
+  Counter.tsx           Animated number counter (candidate for motion/data-visual)
   __tests__/            Standalone unit tests
 ```
 
@@ -105,9 +113,15 @@ import { KaraokeReveal } from "../design/typography";
 - `enableMarquee` — auto-scroll long lines (default: true)
 - All standard text style props
 
-### Counter
+### Counter (candidate — motion/data-visual primitive)
 
 Animated number that counts up from 0 to a target value.
+
+**Note:** Counter is a candidate for a future `design/motion/` or
+`design/data-visual/` primitive. Its animation logic is not typography-specific.
+It is included here as a transitional extraction from NQ57. The `text` prop
+is required by the base interface but unused — this will be addressed when
+Counter moves to its proper home.
 
 ```tsx
 import { Counter } from "../design/typography";
@@ -235,3 +249,22 @@ All primitives follow Remotion's deterministic rendering rules:
 - Know what colors/fonts to use (that's the theme's job)
 - Know about specific video topics (NQ57, editorial, etc.)
 - Import from `templates/`, `components/`, or `compositions/`
+
+## Primitive Vocabulary (non-exhaustive)
+
+```
+Typography Engine
+  ├── Text              Basic text with enter animation
+  ├── WordReveal        Word-by-word reveal
+  ├── KaraokeReveal     Progressive word highlighting
+  └── Counter           (candidate → motion/data-visual)
+
+Motion Vocabulary (future WS6)
+  ├── useFadeIn
+  ├── useWordTimings
+  └── ...
+```
+
+Keep typography focused on text rendering and word-level animation.
+Data visualization (counters, gauges, charts) belongs in motion or
+data-visual primitives.
