@@ -1,6 +1,14 @@
-// Theme NQ57 — conforms to ThemeColors contract.
+// ---------------------------------------------------------------------------
+// Theme NQ57 — Canonical Theme contract conformance.
+//
 // accent1=red, accent2=gold, accent3=teal.
-export const nq57 = {
+// Uses createTheme() for contract validation.
+// ---------------------------------------------------------------------------
+
+import { createTheme } from "../design/theme";
+
+export const nq57 = createTheme({
+  name: "nq57",
   colors: {
     bg: "#0a0e1a",
     bg2: "#0f1525",
@@ -18,4 +26,4 @@ export const nq57 = {
     display: "'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif",
     body: "'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif",
   },
-} as const;
+});
