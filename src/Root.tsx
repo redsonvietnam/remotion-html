@@ -9,6 +9,7 @@ import { Composition } from "remotion";
 import { NQ57Template } from "./templates/nq57";
 import { SCENES, sceneFrames } from "./data/nq57";
 import { DE_AN06_SCENES, DE_AN06_CONTENT, sceneFrames as deAn06SceneFrames } from "./data/deAn06";
+import { deAn06 } from "./theme/deAn06";
 
 const FPS = 30;
 
@@ -41,6 +42,7 @@ export const Root: React.FC = () => {
         defaultProps={{
           scenes: DE_AN06_SCENES,
           content: DE_AN06_CONTENT,
+          theme: deAn06,
         }}
       />
     </>

@@ -1,13 +1,15 @@
 // ---------------------------------------------------------------------------
 // De An 06 Composition — Thin Remotion entry point
 //
-// Registers the De An 06 video using the NQ57 template with De An 06 data.
+// Registers the De An 06 video using the NQ57 template with De An 06 data
+// and De An 06 theme (blue/teal digital transformation palette).
 // ---------------------------------------------------------------------------
 
 import React from "react";
 import { Composition } from "remotion";
 import { NQ57Template } from "../templates/nq57";
 import { DE_AN06_SCENES, DE_AN06_CONTENT, sceneFrames } from "../data/deAn06";
+import { deAn06 } from "../theme/deAn06";
 
 const FPS = 30;
 
@@ -27,6 +29,7 @@ export const DeAn06Video: React.FC = () => {
       defaultProps={{
         scenes: DE_AN06_SCENES,
         content: DE_AN06_CONTENT,
+        theme: deAn06,
       }}
     />
   );

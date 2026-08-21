@@ -3,6 +3,7 @@
 //
 // Uses: RingDraw (design/svg), KaraokeReveal (design/typography)
 // Uses: fadeUp, Backdrop (template-specific helpers)
+// Theme: consumed via useTheme() — not imported directly
 // ---------------------------------------------------------------------------
 
 import React from "react";
@@ -17,8 +18,7 @@ import {
 } from "remotion";
 import { RingDraw } from "../../../design/svg";
 import { KaraokeReveal } from "../../../design/typography";
-import { nq57 } from "../../../theme/nq57";
-import { BV } from "../../../fonts/nq57";
+import { useTheme } from "../../../design/theme";
 import { fadeUp, Backdrop } from "../helpers";
 import type { NQ57VisionContent } from "../../../data/nq57";
 
@@ -28,6 +28,8 @@ export const VisionScene: React.FC<Props> = ({
   audio, caption, dur,
   label, targetValue, subtitle, description,
 }) => {
+  const theme = useTheme();
+  const BV = theme.fonts.display;
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const e = fadeUp(frame, 0, fps);
@@ -39,22 +41,22 @@ export const VisionScene: React.FC<Props> = ({
       <Backdrop />
       <Audio src={staticFile(audio)} />
       <div style={{ position: "relative" }}>
-        <RingDraw progress={ring} size={460} color={nq57.colors.accent1} />
+        <RingDraw progress={ring} size={460} color={theme.colors.accent1} />
         <div style={{ ...e, textAlign: "center", padding: "0 6%" }}>
-          <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 8, fontSize: 30, color: nq57.colors.accent2 }}>{label}</div>
+          <div style={{ fontFamily: BV, fontWeight: 700, letterSpacing: 8, fontSize: 30, color: theme.colors.accent2 }}>{label}</div>
           <div style={{ fontFamily: BV, fontWeight: 800, fontSize: 168, lineHeight: 1, margin: "6px 0",
-            background: `linear-gradient(90deg, ${nq57.colors.accent1}, ${nq57.colors.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{val}%</div>
+            background: `linear-gradient(90deg, ${theme.colors.accent1}, ${theme.colors.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{val}%</div>
         </div>
       </div>
-      <div style={{ fontFamily: BV, fontWeight: 600, fontSize: 38, color: nq57.colors.ink, marginTop: 10 }}>{subtitle}</div>
-      <div style={{ fontFamily: BV, fontWeight: 500, fontSize: 26, color: nq57.colors.muted, marginTop: 10 }}>{description}</div>
+      <div style={{ fontFamily: BV, fontWeight: 600, fontSize: 38, color: theme.colors.ink, marginTop: 10 }}>{subtitle}</div>
+      <div style={{ fontFamily: BV, fontWeight: 500, fontSize: 26, color: theme.colors.muted, marginTop: 10 }}>{description}</div>
       <KaraokeReveal
         text={caption}
         dur={dur}
         fontFamily={BV}
-        activeColor={nq57.colors.accent2}
-        revealedColor={nq57.colors.ink}
-        borderColor={nq57.colors.line}
+        activeColor={theme.colors.accent2}
+        revealedColor={theme.colors.ink}
+        borderColor={theme.colors.line}
       />
     </AbsoluteFill>
   );
