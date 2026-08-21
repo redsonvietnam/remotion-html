@@ -10,9 +10,8 @@ import { StatsScene } from "./StatsScene";
 import { VisionScene } from "./VisionScene";
 import { EndScene } from "./EndScene";
 
-export type SceneProps = { audio: string; caption: string; dur: number };
-
-export const SCENE_REGISTRY: Record<string, React.FC<SceneProps>> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SCENE_REGISTRY: Record<string, React.FC<any>> = {
   s1: TitleScene,
   s2: QuoteScene,
   s3: RolesScene,

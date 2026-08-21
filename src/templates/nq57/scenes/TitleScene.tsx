@@ -20,15 +20,17 @@ import { KaraokeReveal } from "../../../design/typography";
 import { nq57 } from "../../../theme/nq57";
 import { BV } from "../../../fonts/nq57";
 import { fadeUp, Backdrop, EmblemBox } from "../helpers";
+import type { NQ57TitleContent } from "../../../data/nq57";
 
-export const TitleScene: React.FC<{ audio: string; caption: string; dur: number }> = ({
-  audio,
-  caption,
-  dur,
+type Props = { audio: string; caption: string; dur: number } & NQ57TitleContent;
+
+export const TitleScene: React.FC<Props> = ({
+  audio, caption, dur,
+  badge, title, subtitle, tagline,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const badge = fadeUp(frame, 0, fps);
+  const badgeAnim = fadeUp(frame, 0, fps);
   const big = fadeUp(frame, 8, fps);
   const sub = fadeUp(frame, 26, fps);
   const foot = fadeUp(frame, 44, fps);
@@ -39,17 +41,17 @@ export const TitleScene: React.FC<{ audio: string; caption: string; dur: number 
       <Backdrop />
       <Audio src={staticFile(audio)} />
       <RingDraw progress={ring} size={520} color={nq57.colors.accent2} />
-      <div style={{ ...badge, fontFamily: BV, fontWeight: 700, letterSpacing: 6, fontSize: 22, color: nq57.colors.accent2 }}>BỘ CHÍNH TRỊ · 22/12/2024</div>
+      <div style={{ ...badgeAnim, fontFamily: BV, fontWeight: 700, letterSpacing: 6, fontSize: 22, color: nq57.colors.accent2 }}>{badge}</div>
       <EmblemBox size={430} />
       <div style={{ ...big, fontFamily: BV, fontWeight: 800, fontSize: 150, lineHeight: 1, marginTop: -10,
         background: `linear-gradient(90deg, ${nq57.colors.accent1}, ${nq57.colors.accent2})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-        NGHỊ QUYẾT 57
+        {title}
       </div>
       <div style={{ ...sub, fontFamily: BV, fontWeight: 600, fontSize: 34, color: nq57.colors.ink, textAlign: "center", maxWidth: "72%", marginTop: 14 }}>
-        Đột phá phát triển Khoa học – Công nghệ – Đổi mới sáng tạo & Chuyển đổi số quốc gia
+        {subtitle}
       </div>
       <LineDraw progress={ul} width={460} stroke={nq57.colors.accent2} />
-      <div style={{ ...foot, fontFamily: BV, fontWeight: 500, fontSize: 24, color: nq57.colors.muted, marginTop: 14 }}>Kỷ nguyên vươn mình của Dân tộc</div>
+      <div style={{ ...foot, fontFamily: BV, fontWeight: 500, fontSize: 24, color: nq57.colors.muted, marginTop: 14 }}>{tagline}</div>
       <KaraokeReveal
         text={caption}
         dur={dur}

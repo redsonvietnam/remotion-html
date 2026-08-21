@@ -1,4 +1,17 @@
+// ---------------------------------------------------------------------------
+// NQ57 Content Data
+//
+// All visual content for NQ57 scenes. No colors, no fonts, no positions.
+// Scene components consume this data and handle presentation.
+// ---------------------------------------------------------------------------
+
 export const FPS = 30;
+export const TAIL = 0.5;
+export const sceneFrames = (dur: number) => Math.ceil((dur + TAIL) * FPS);
+
+// ---------------------------------------------------------------------------
+// SceneDef — base scene metadata (audio, caption, duration)
+// ---------------------------------------------------------------------------
 
 export interface SceneDef {
   id: string;
@@ -6,6 +19,143 @@ export interface SceneDef {
   caption: string;
   dur: number;
 }
+
+// ---------------------------------------------------------------------------
+// NQ57 Content Types — scene-specific content (no presentation)
+// ---------------------------------------------------------------------------
+
+export interface NQ57TitleContent {
+  kind: "title";
+  badge: string;
+  title: string;
+  subtitle: string;
+  tagline: string;
+}
+
+export interface NQ57QuoteContent {
+  kind: "quote";
+  text: string;
+  keyPhrases: string[];
+}
+
+export interface NQ57RolesContent {
+  kind: "roles";
+  sectionTitle: string;
+  roles: { title: string; subtitle: string }[];
+}
+
+export interface NQ57PillarsContent {
+  kind: "pillars";
+  title: string;
+  subtitle: string;
+  pillars: string[];
+}
+
+export interface NQ57StatsContent {
+  kind: "stats";
+  title: string;
+  chartData: { label: string; value: number }[];
+  gauges: { value: number; max: number; label: string; unit: string }[];
+}
+
+export interface NQ57VisionContent {
+  kind: "vision";
+  label: string;
+  targetValue: number;
+  subtitle: string;
+  description: string;
+}
+
+export interface NQ57EndContent {
+  kind: "end";
+  title: string;
+  subtitle: string;
+  reference: string;
+}
+
+export type NQ57SceneContent =
+  | NQ57TitleContent
+  | NQ57QuoteContent
+  | NQ57RolesContent
+  | NQ57PillarsContent
+  | NQ57StatsContent
+  | NQ57VisionContent
+  | NQ57EndContent;
+
+// ---------------------------------------------------------------------------
+// NQ57 Content — all scene content, keyed by scene ID
+// ---------------------------------------------------------------------------
+
+export const NQ57_CONTENT: Record<string, NQ57SceneContent> = {
+  s1: {
+    kind: "title",
+    badge: "BỘ CHÍNH TRỊ · 22/12/2024",
+    title: "NGHỊ QUYẾT 57",
+    subtitle: "Đột phá phát triển Khoa học – Công nghệ – Đổi mới sáng tạo & Chuyển đổi số quốc gia",
+    tagline: "Kỷ nguyên vươn mình của Dân tộc",
+  },
+
+  s2: {
+    kind: "quote",
+    text: "Là đột phá quan trọng hàng đầu, là động lực chính để đưa đất nước bứt phá trong kỷ nguyên mới.",
+    keyPhrases: ["đột phá quan trọng hàng đầu", "động lực chính"],
+  },
+
+  s3: {
+    kind: "roles",
+    sectionTitle: "BA CHỦ THỂ",
+    roles: [
+      { title: "Người dân & Doanh nghiệp", subtitle: "Trung tâm · Chủ thể · Động lực chính" },
+      { title: "Nhà khoa học", subtitle: "Nhân tố then chốt" },
+      { title: "Nhà nước", subtitle: "Dẫn dắt · Kiến tạo" },
+    ],
+  },
+
+  s4: {
+    kind: "pillars",
+    title: "Năm trụ cột cốt lõi",
+    subtitle: "Thể chế là điều kiện tiên quyết — đi trước một bước",
+    pillars: ["Thể chế", "Nhân lực", "Hạ tầng", "Dữ liệu", "Công nghệ chiến lược"],
+  },
+
+  s5: {
+    kind: "stats",
+    title: "Mục tiêu 2030",
+    chartData: [
+      { label: "2024", value: 18 },
+      { label: "2025", value: 20 },
+      { label: "2026", value: 22 },
+      { label: "2027", value: 24 },
+      { label: "2028", value: 26 },
+      { label: "2029", value: 28 },
+      { label: "2030", value: 30 },
+    ],
+    gauges: [
+      { value: 30, max: 100, label: "Quy mô kinh tế số (% GDP)", unit: "%" },
+      { value: 80, max: 100, label: "Dịch vụ công trực tuyến", unit: "%" },
+      { value: 3, max: 10, label: "ASEAN về Trí tuệ nhân tạo", unit: " Top" },
+    ],
+  },
+
+  s6: {
+    kind: "vision",
+    label: "TẦM NHÌN 2045",
+    targetValue: 50,
+    subtitle: "Kinh tế số · Nước phát triển, thu nhập cao",
+    description: "Top 30 thế giới về đổi mới sáng tạo & chuyển đổi số",
+  },
+
+  s7: {
+    kind: "end",
+    title: "Kỷ nguyên vươn mình",
+    subtitle: "Hành động hôm nay — Việt Nam hùng cường ngày mai",
+    reference: "NGHỊ QUYẾT 57-NQ/TW",
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Scene definitions — ordered scene list with audio + timing
+// ---------------------------------------------------------------------------
 
 export const SCENES: SceneDef[] = [
   {
@@ -59,7 +209,3 @@ MC: Nghị quyết 57 — khởi động kỷ nguyên vươn mình của dân t�
     dur: 15.624,
   },
 ];
-
-// moi scene cong them 0.5s de khong cat mat tieng cuoi
-export const TAIL = 0.5;
-export const sceneFrames = (dur: number) => Math.ceil((dur + TAIL) * FPS);
