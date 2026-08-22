@@ -7,7 +7,7 @@ Read this first; do **not** rediscover the repository architecture.
 
 | Concern        | Where                                                        |
 |----------------|--------------------------------------------------------------|
-| Compositions   | `src/Root.tsx` (NghiQuyet57V2, DeAn06, NghiQuyet79, StoicLove) |
+| Compositions   | `src/Root.tsx` (NghiQuyet57V2, DeAn06, NghiQuyet79, StoicLove, CanCuoc) |
 | Templates      | `src/templates/<name>/` (nq57, deAn06, stoicLove)            |
 | Scene content  | `src/data/<name>.ts` (per-template scene arrays + timing)    |
 | Themes         | `src/theme/<name>.ts` (created via `createTheme`)            |
