@@ -15,6 +15,8 @@ import { NGHI_QUYET_79_SCENES, NGHI_QUYET_79_CONTENT, sceneFrames as nq79SceneFr
 import { nghiQuyet79 } from "./theme/nghiQuyet79";
 import { STOIC_LOVE_SCENES, STOIC_LOVE_CONTENT, sceneFrames as stoicLoveSceneFrames } from "./data/stoicLove";
 import { stoicLove } from "./theme/stoicLove";
+import { CAN_CUOC_SCENES, CAN_CUOC_CONTENT, sceneFrames as canCuocSceneFrames } from "./data/canCuoc";
+import { canCuoc } from "./theme/canCuoc";
 
 const FPS = 30;
 
@@ -32,6 +34,10 @@ const NGHI_QUYET_79_FRAMES =
 const STOIC_LOVE_FRAMES =
   STOIC_LOVE_SCENES.reduce((acc, s) => acc + stoicLoveSceneFrames(s.dur), 0) +
   (STOIC_LOVE_SCENES.length - 1) * 12;
+
+const CAN_CUOC_FRAMES =
+  CAN_CUOC_SCENES.reduce((acc, s) => acc + canCuocSceneFrames(s.dur), 0) +
+  (CAN_CUOC_SCENES.length - 1) * 16;
 
 export const Root: React.FC = () => {
   return (
@@ -82,6 +88,19 @@ export const Root: React.FC = () => {
           scenes: STOIC_LOVE_SCENES,
           content: STOIC_LOVE_CONTENT,
           theme: stoicLove,
+        }}
+      />
+      <Composition
+        id="CanCuoc"
+        component={NQ57Template}
+        durationInFrames={CAN_CUOC_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: CAN_CUOC_SCENES,
+          content: CAN_CUOC_CONTENT,
+          theme: canCuoc,
         }}
       />
     </>

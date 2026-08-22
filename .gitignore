@@ -16,8 +16,11 @@ public/nghiQuyet79/*.mp3
 public/nghiQuyet79/_*
 public/nghiQuyet79/durations.json
 public/stoicLove/*.mp3
-public/stoicLove/_*
+public/stoicLove/_
 public/stoicLove/durations.json
+public/canCuoc/*.mp3
+public/canCuoc/_
+public/canCuoc/durations.json
 
 # secrets (tuyet doi khong commit)
 gemini_key.txt

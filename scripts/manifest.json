@@ -47,6 +47,18 @@
       "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Stoic Love" },
       "aliases": ["stoic love", "stoicism", "tinh yeu stoic", "stoicism trong tinh yeu"],
       "keywords": ["stoic", "stoicism", "tinh yeu", "tình yêu stoic"]
+    },
+    "canCuoc": {
+      "id": "canCuoc",
+      "template": "nq57",
+      "composition": "CanCuoc",
+      "dataFile": "src/data/canCuoc.ts",
+      "tts": "gen_tts_canCuoc.py",
+      "output": "out/canCuoc.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Can Cuoc" },
+      "aliases": ["can cuoc", "luat can cuoc", "can cuoc cong dan", "căn cước", "căn cước công dân"],
+      "keywords": ["can cuoc", "luat can cuoc", "căn cước", "cccd", "định danh", "c06", "bộ công an"]
     }
   }
 }
