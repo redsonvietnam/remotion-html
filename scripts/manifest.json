@@ -1,0 +1,52 @@
+{
+  "productions": {
+    "nq57": {
+      "id": "nq57",
+      "template": "nq57",
+      "composition": "NghiQuyet57V2",
+      "dataFile": "src/data/nq57.ts",
+      "tts": "gen_tts_v2.py",
+      "output": "out/nq57.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "NQ57" },
+      "aliases": ["nghi quyet 57", "nghi quyet so 57", "nq57", "nq 57"],
+      "keywords": ["nghi quyet 57", "nghi quyet so 57"]
+    },
+    "dean06": {
+      "id": "dean06",
+      "template": "dean06",
+      "composition": "DeAn06",
+      "dataFile": "src/data/deAn06.ts",
+      "tts": "gen_tts_deAn06.py",
+      "output": "out/dean06.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "De An 06" },
+      "aliases": ["de an 06", "de an so 06", "dean06"],
+      "keywords": ["de an 06", "de an so 06", "đề án 06"]
+    },
+    "nq79": {
+      "id": "nq79",
+      "template": "nq79",
+      "composition": "NghiQuyet79",
+      "dataFile": "src/data/nghiQuyet79.ts",
+      "tts": "gen_tts_nghiQuyet79.py",
+      "output": "out/nghiQuyet79.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "NQ79" },
+      "aliases": ["nghi quyet 79", "nghi quyet so 79", "nq79", "nq 79"],
+      "keywords": ["nghi quyet 79", "nghi quyet so 79"]
+    },
+    "stoiclove": {
+      "id": "stoiclove",
+      "template": "stoiclove",
+      "composition": "StoicLove",
+      "dataFile": "src/data/stoicLove.ts",
+      "tts": "gen_tts_stoicLove.py",
+      "output": "out/stoicLove.mp4",
+      "resolution": "1080x1920",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Stoic Love" },
+      "aliases": ["stoic love", "stoicism", "tinh yeu stoic", "stoicism trong tinh yeu"],
+      "keywords": ["stoic", "stoicism", "tinh yeu", "tình yêu stoic"]
+    }
+  }
+}
