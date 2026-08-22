@@ -3,7 +3,7 @@ import * as nq57 from "./nq57";
 import * as deAn06 from "./deAn06";
 import * as nghiQuyet79 from "./nghiQuyet79";
 import * as stoicLove from "./stoicLove";
-import { validateProductionData, validateStoryboard, checkAudioAssets, TEMPLATE_SCHEMAS } from "./contract";
+import { validateProductionData, validateStoryboard, checkAudioAssets, checkAudioDurations, TEMPLATE_SCHEMAS } from "./contract";
 
 const baseScene = { id: "s1", audio: "x/s1.mp3", caption: "narration", dur: 5 };
 
@@ -182,6 +182,43 @@ describe("WS36 storyboard ↔ template validation", () => {
   it("valid storyboard for stoiclove", () => {
     const sb = { ...base, template: "stoiclove", scenes: [{ ...base.scenes[0], kind: "hook" }] };
     expect(validateStoryboard(sb).valid).toBe(true);
+  });
+});
+
+describe("WS37 real audio duration validation", () => {
+  const sc = (dur: number, audioDur: number) => [{ id: "s1", audio: "x/s1.mp3", caption: "c", dur }] as any;
+
+  it("audio duration fits scene", () => {
+    expect(checkAudioDurations(sc(10, 8), () => 8).length).toBe(0);
+  });
+
+  it("audio duration exactly equals scene duration", () => {
+    expect(checkAudioDurations(sc(10, 10), () => 10).length).toBe(0);
+  });
+
+  it("audio duration exceeds scene duration", () => {
+    const e = checkAudioDurations(sc(13, 14.82), () => 14.82);
+    expect(e.some((x) => x.code === "INVALID_AUDIO_DURATION")).toBe(true);
+  });
+
+  it("unreadable metadata (null duration)", () => {
+    const e = checkAudioDurations(sc(10, 0), () => null);
+    expect(e.some((x) => x.code === "INVALID_AUDIO_METADATA")).toBe(true);
+  });
+
+  it("zero/negative duration treated as metadata error", () => {
+    const e = checkAudioDurations(sc(10, 0), () => 0);
+    expect(e.some((x) => x.code === "INVALID_AUDIO_METADATA")).toBe(true);
+  });
+
+  it("multiple scenes with mixed valid/invalid durations", () => {
+    const scenes = [
+      { id: "s1", audio: "x/s1.mp3", caption: "c", dur: 10 },
+      { id: "s2", audio: "x/s2.mp3", caption: "c", dur: 5 },
+      { id: "s3", audio: "x/s3.mp3", caption: "c", dur: 5 },
+    ] as any;
+    const e = checkAudioDurations(scenes, (a: string) => (a.includes("s2") ? 9 : 4));
+    expect(e.filter((x) => x.code === "INVALID_AUDIO_DURATION").length).toBe(1);
   });
 });
 

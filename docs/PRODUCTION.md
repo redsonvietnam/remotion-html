@@ -170,6 +170,37 @@ content.
 A new topic reuses an existing template when its visual grammar fits; the
 storyboard + data file are the only new artifacts.
 
+## Audio duration / scene timing validation (WS37)
+
+The production contract enforces a hard scene-timing invariant:
+
+```
+0 < audioDuration <= sceneDuration   (per scene with narration)
+```
+
+This is checked by `checkAudioDurations(scenes, getDuration)` in
+`src/data/contract.ts`, with the duration resolver **injected** (pure contract
+logic stays free of any media probing). The CLI (`scripts/validate.mjs`) injects
+a resolver backed by `ffmpeg-static` (the MP3 duration is read from the asset
+itself, never hard-coded).
+
+Checks per scene:
+
+- audio file missing → `INVALID_AUDIO_ASSET` (WS36)
+- audio path invalid (absolute / `../` traversal / non-relative) → `INVALID_AUDIO_PATH`
+- audio file exists but its duration cannot be read → `INVALID_AUDIO_METADATA`
+- audio duration exceeds scene duration → `INVALID_AUDIO_DURATION`
+  (message: `Scene sN audio duration 14.82s exceeds scene duration 13.00s.`)
+
+Tolerance: `DURATION_TOLERANCE = 0.15s`, applied as
+`audioDuration <= sceneDuration + 0.15`. It absorbs fractional MP3/codec probing
+error only — deliberately too small to hide a real timing bug.
+
+Failure behavior: any of the above stops production **before render**. The
+duration gate runs **after TTS and after the asset-existence gate** (so freshly
+generated audio is probed) and **before render** — see the `produce.mjs` gate
+(`validate.mjs --check-assets --check-durations`).
+
 ## Adding a NEW topic that reuses an existing template
 
 1. **Research & storyboard** the topic (C1's manual work).

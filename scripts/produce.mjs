@@ -164,19 +164,19 @@ function produce(id, opts) {
     // Real-asset gate: after TTS, verify required audio files actually exist
     // before spending time rendering. (Skipped when validation is disabled.)
     if (!opts.skipValidation) {
-      console.log("\n▶ Real asset validation (audio files exist)");
-      const a = spawnSync("node", ["scripts/validate.mjs", "--project", id, "--check-assets"], {
-        cwd: ROOT,
-        stdio: "inherit",
-        shell: true,
-      });
+      console.log("\n▶ Real asset + duration validation (audio files exist, durations fit scenes)");
+      const a = spawnSync(
+        "node",
+        ["scripts/validate.mjs", "--project", id, "--check-assets", "--check-durations"],
+        { cwd: ROOT, stdio: "inherit", shell: true }
+      );
       if (a.status !== 0) {
-        console.error("  ✗ asset validation failed — stopping before render.");
+        console.error("  ✗ asset/duration validation failed — stopping before render.");
         return false;
       }
-      console.log("  ✓ required audio assets present");
+      console.log("  ✓ required audio assets present and durations fit scene timing");
     } else {
-      console.log("  · --skip-validation: skipped real-asset gate");
+      console.log("  · --skip-validation: skipped real-asset/duration gate");
     }
     const ok = run(`npx remotion render src/index.ts ${p.composition} ${p.output}`, `Render ${p.output}`);
     if (!ok) {

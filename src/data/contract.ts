@@ -211,6 +211,41 @@ export function checkAudioAssets(
   return errors;
 }
 
+// Small tolerance (seconds) absorbing fractional MP3/codec probing error.
+// Deliberately tiny: it must not hide real narration-vs-scene timing bugs.
+export const DURATION_TOLERANCE = 0.15;
+
+// Real audio duration validation. Pure: the caller injects `getDuration(audioPath)`
+// returning the asset duration in seconds, or null if it cannot be determined
+// (missing/unreadable). Enforces: 0 < audioDuration <= sceneDuration.
+export function checkAudioDurations(
+  scenes: SceneDef[],
+  getDuration: (audioPath: string) => number | null,
+  tolerance: number = DURATION_TOLERANCE
+): ContentError[] {
+  const errors: ContentError[] = [];
+  for (const s of scenes) {
+    if (!s.audio || typeof s.audio !== "string" || !s.audio.trim()) continue;
+    const d = getDuration(s.audio);
+    if (d === null || d === undefined || !isFinite(d) || d <= 0) {
+      errors.push({
+        code: "INVALID_AUDIO_METADATA",
+        scene: s.id,
+        message: `Scene ${s.id} references \`${s.audio}\`, but its duration could not be determined.`,
+      });
+      continue;
+    }
+    if (d > s.dur + tolerance) {
+      errors.push({
+        code: "INVALID_AUDIO_DURATION",
+        scene: s.id,
+        message: `Scene ${s.id} audio duration ${d.toFixed(2)}s exceeds scene duration ${s.dur.toFixed(2)}s.`,
+      });
+    }
+  }
+  return errors;
+}
+
 // ---------------------------------------------------------------------------
 // Storyboard Contract - the higher-level artifact C1 produces from research +
 // fact-checking, BEFORE generating src/data/<project>.ts.
