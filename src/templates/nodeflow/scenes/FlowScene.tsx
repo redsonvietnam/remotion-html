@@ -14,7 +14,7 @@ import { useTheme } from "../../../design/theme";
 import { Backdrop, SceneContainer, SectionLabel, HRule, SignalIndicator, textIn, nodeIn, reveal, edgeDraw } from "../helpers";
 import { SystemNode, EdgeLine, SignalPulse, DataBadge } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
-import type { NodeFlowFlowContent } from "../../../data/baoHiem2024";
+import type { NodeFlowFlowContent } from "../types";
 
 type Props = { audio: string; caption: string; dur: number } & NodeFlowFlowContent;
 

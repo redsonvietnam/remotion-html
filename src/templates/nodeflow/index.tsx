@@ -5,7 +5,7 @@
 // amber data labels, electric cyan signal flow.
 // Resolution: 1920x1080 (YouTube/Facebook horizontal)
 //
-// Accepts optional scenes/content/theme props for topic reuse.
+// Accepts scenes/content/theme props for topic reuse.
 // ---------------------------------------------------------------------------
 
 import React from "react";
@@ -13,10 +13,9 @@ import { AbsoluteFill } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { ThemeProvider } from "../../design/theme";
-import { BAO_HIEM_SCENES, BAO_HIEM_CONTENT, sceneFrames } from "../../data/baoHiem2024";
-import { baoHiem2024 } from "../../theme/baoHiem2024";
 import { renderScene } from "./scenes";
-import type { SceneDef, NodeFlowSceneContent } from "../../data/baoHiem2024";
+import { sceneFrames } from "../../data/nq57";
+import type { SceneDef, NodeFlowSceneContent } from "./types";
 import type { Theme } from "../../design/theme";
 
 // Custom slide transition duration for NodeFlow
@@ -24,16 +23,16 @@ import type { Theme } from "../../design/theme";
 const TRANSITION_FRAMES = 20;
 
 type TemplateProps = {
-  scenes?: SceneDef[];
-  content?: Record<string, NodeFlowSceneContent>;
-  theme?: Theme;
+  scenes: SceneDef[];
+  content: Record<string, NodeFlowSceneContent>;
+  theme: Theme;
 };
 
 export const NodeFlowTemplate: React.FC<TemplateProps> = ({
-  scenes = BAO_HIEM_SCENES,
-  content = BAO_HIEM_CONTENT,
-  theme = baoHiem2024,
-} = {}) => {
+  scenes,
+  content,
+  theme,
+}) => {
   const items: React.ReactNode[] = [];
 
   scenes.forEach((s, i) => {

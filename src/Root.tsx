@@ -20,7 +20,7 @@ import { CAN_CUOC_SCENES, CAN_CUOC_CONTENT, sceneFrames as canCuocSceneFrames } 
 import { canCuoc } from "./theme/canCuoc";
 import { LUAT_GTDB_SCENES, LUAT_GTDB_CONTENT, sceneFrames as luatGTDBSceneFrames } from "./data/luatGTDB";
 import { luatGTDB } from "./theme/luatGTDB";
-import { BAO_HIEM_SCENES, sceneFrames as baoHiemSceneFrames } from "./data/baoHiem2024";
+import { BAO_HIEM_SCENES, BAO_HIEM_CONTENT, sceneFrames as baoHiemSceneFrames } from "./data/baoHiem2024";
 import { baoHiem2024 } from "./theme/baoHiem2024";
 
 const FPS = 30;
@@ -136,7 +136,11 @@ export const Root: React.FC = () => {
         fps={FPS}
         width={1920}
         height={1080}
-        defaultProps={{}}
+        defaultProps={{
+          scenes: BAO_HIEM_SCENES,
+          content: BAO_HIEM_CONTENT,
+          theme: baoHiem2024,
+        }}
       />
     </>
   );

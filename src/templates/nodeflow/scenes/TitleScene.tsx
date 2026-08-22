@@ -13,7 +13,7 @@ import { useTheme } from "../../../design/theme";
 import { Backdrop, SceneContainer, SectionLabel, LawBadge, SignalIndicator, textIn, nodeIn, reveal, edgeDraw } from "../helpers";
 import { NodeBox, EdgeLine, SignalPulse } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
-import type { NodeFlowTitleContent } from "../../../data/baoHiem2024";
+import type { NodeFlowTitleContent } from "../types";
 
 type Props = { audio: string; caption: string; dur: number } & NodeFlowTitleContent;
 

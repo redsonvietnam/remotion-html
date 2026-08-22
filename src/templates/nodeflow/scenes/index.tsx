@@ -9,7 +9,7 @@ import { ContributionScene } from "./ContributionScene";
 import { BenefitScene } from "./BenefitScene";
 import { CompareScene } from "./CompareScene";
 import { EndScene } from "./EndScene";
-import type { NodeFlowSceneContent } from "../../../data/baoHiem2024";
+import type { NodeFlowSceneContent } from "../types";
 
 type BaseProps = { audio: string; caption: string; dur: number };
 

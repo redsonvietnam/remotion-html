@@ -20,70 +20,11 @@
 
 import { FPS, TAIL, sceneFrames } from "./nq57";
 import type { SceneDef } from "./nq57";
+import type { NodeFlowSceneContent } from "../templates/nodeflow/types";
 
 export { FPS, TAIL, sceneFrames };
 export type { SceneDef };
-
-// ---------------------------------------------------------------------------
-// NodeFlow Content Types — scene-specific content
-// ---------------------------------------------------------------------------
-
-export interface NodeFlowTitleContent {
-  kind: "title";
-  lawCode: string;
-  title: string;
-  subtitle: string;
-  tagline: string;
-  nodes: { label: string; role?: string }[];
-}
-
-export interface NodeFlowFlowContent {
-  kind: "flow";
-  title: string;
-  description: string[];
-  flowNodes: { label: string; sublabel?: string; rate?: string }[];
-  edges: { from: number; to: number; label: string }[];
-}
-
-export interface NodeFlowContributionContent {
-  kind: "contribution";
-  title: string;
-  rows: { party: string; type: string; pct: number; rateLabel: string }[];
-  totalLabel: string;
-  totalValue: string;
-  note?: string;
-}
-
-export interface NodeFlowBenefitContent {
-  kind: "benefit";
-  title: string;
-  description: string;
-  benefits: { icon: string; label: string; value?: string }[];
-}
-
-export interface NodeFlowCompareContent {
-  kind: "compare";
-  title: string;
-  before: { items: { label: string; value?: string }[] };
-  after: { items: { label: string; value?: string; highlight?: boolean }[] };
-  changeLabel?: string;
-}
-
-export interface NodeFlowEndContent {
-  kind: "end";
-  closingTitle: string;
-  closingSubtitle: string;
-  stats: { label: string; value: string }[];
-  reference: string;
-}
-
-export type NodeFlowSceneContent =
-  | NodeFlowTitleContent
-  | NodeFlowFlowContent
-  | NodeFlowContributionContent
-  | NodeFlowBenefitContent
-  | NodeFlowCompareContent
-  | NodeFlowEndContent;
+export type { NodeFlowSceneContent };
 
 // ---------------------------------------------------------------------------
 // BaoHiem2024 Scene Content — keyed by scene ID
