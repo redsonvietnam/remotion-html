@@ -8,6 +8,7 @@ import React from "react";
 import { Composition } from "remotion";
 import { NQ57Template } from "./templates/nq57";
 import { StoicLoveTemplate } from "./templates/stoicLove";
+import { NodeFlowTemplate } from "./templates/nodeflow";
 import { SCENES, sceneFrames } from "./data/nq57";
 import { DE_AN06_SCENES, DE_AN06_CONTENT, sceneFrames as deAn06SceneFrames } from "./data/deAn06";
 import { deAn06 } from "./theme/deAn06";
@@ -19,6 +20,8 @@ import { CAN_CUOC_SCENES, CAN_CUOC_CONTENT, sceneFrames as canCuocSceneFrames } 
 import { canCuoc } from "./theme/canCuoc";
 import { LUAT_GTDB_SCENES, LUAT_GTDB_CONTENT, sceneFrames as luatGTDBSceneFrames } from "./data/luatGTDB";
 import { luatGTDB } from "./theme/luatGTDB";
+import { BAO_HIEM_SCENES, sceneFrames as baoHiemSceneFrames } from "./data/baoHiem2024";
+import { baoHiem2024 } from "./theme/baoHiem2024";
 
 const FPS = 30;
 
@@ -44,6 +47,10 @@ const CAN_CUOC_FRAMES =
 const LUAT_GTDB_FRAMES =
   LUAT_GTDB_SCENES.reduce((acc, s) => acc + luatGTDBSceneFrames(s.dur), 0) +
   (LUAT_GTDB_SCENES.length - 1) * 16;
+
+const BAO_HIEM_FRAMES =
+  BAO_HIEM_SCENES.reduce((acc, s) => acc + baoHiemSceneFrames(s.dur), 0) +
+  (BAO_HIEM_SCENES.length - 1) * 20;
 
 export const Root: React.FC = () => {
   return (
@@ -121,6 +128,15 @@ export const Root: React.FC = () => {
           content: LUAT_GTDB_CONTENT,
           theme: luatGTDB,
         }}
+      />
+      <Composition
+        id="BaoHiem2024"
+        component={NodeFlowTemplate}
+        durationInFrames={BAO_HIEM_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{}}
       />
     </>
   );

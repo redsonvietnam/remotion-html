@@ -71,6 +71,18 @@
       "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Luật GTDB" },
       "aliases": ["luật trật tự an toàn giao thông đường bộ", "luật 36/2024", "luật giao thông đường bộ 2024", "luatgtdb"],
       "keywords": ["luật giao thông", "an toàn giao thông", "luật 36", "36/2024", "trật tự giao thông"]
+    },
+    "baoHiem2024": {
+      "id": "baoHiem2024",
+      "template": "nodeflow",
+      "composition": "BaoHiem2024",
+      "dataFile": "src/data/baoHiem2024.ts",
+      "tts": "gen_tts_baoHiem2024.py",
+      "output": "out/baoHiem2024.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "BHXH 2024" },
+      "aliases": ["bao hiem xa hoi 2024", "luat bhxh 2024", "luat 41/2024", "bhxh 2024", "bảo hiểm xã hội 2024"],
+      "keywords": ["bhxh", "bảo hiểm xã hội", "lương hưu", "thai sản", "ốm đau", "luật 41", "41/2024/qh15"]
     }
   }
 }

@@ -56,6 +56,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["hook", "statement", "split", "concept", "impermanence", "ending"],
     requiredTextFields: { hook: ["mainQuestion"], statement: ["lines"] },
   },
+  nodeflow: {
+    allowedKinds: ["title", "flow", "contribution", "benefit", "compare", "end"],
+    requiredTextFields: { title: ["title"], flow: ["title"], contribution: ["title"], benefit: ["title"], compare: ["title"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {
