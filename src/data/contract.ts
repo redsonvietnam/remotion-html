@@ -10,6 +10,8 @@
 // content Record (named <NAME>_CONTENT) keyed by scene id.
 // ---------------------------------------------------------------------------
 
+import path from "node:path";
+
 // Base scene metadata shared by every production.
 export interface SceneDef {
   id: string;
@@ -125,6 +127,23 @@ export function validateProductionData(
     }
     if (!s.audio || typeof s.audio !== "string" || !s.audio.trim()) {
       errors.push({ code: "INVALID_AUDIO_PATH", scene: s.id, message: `Scene ${s.id} missing audio path.` });
+    } else if (
+      path.isAbsolute(s.audio) ||
+      /^[A-Za-z]:[\\/]/.test(s.audio) ||
+      s.audio.startsWith("/") ||
+      s.audio.startsWith("\\")
+    ) {
+      errors.push({
+        code: "INVALID_AUDIO_PATH",
+        scene: s.id,
+        message: `Scene ${s.id} audio path must be relative, not absolute: "${s.audio}".`,
+      });
+    } else if (s.audio.split("/").includes("..") || s.audio.split("\\").includes("..")) {
+      errors.push({
+        code: "INVALID_AUDIO_PATH",
+        scene: s.id,
+        message: `Scene ${s.id} audio path must not contain ".." traversal: "${s.audio}".`,
+      });
     }
     if (!s.caption || typeof s.caption !== "string" || !s.caption.trim()) {
       errors.push({ code: "MISSING_NARRATION", scene: s.id, message: `Scene ${s.id} missing caption/narration text.` });
@@ -168,6 +187,28 @@ export function validateProductionData(
   }
 
   return { valid: errors.length === 0, errors, sceneCount: scenes.length };
+}
+
+// Real asset existence check. Kept free of direct filesystem access: the caller
+// injects an `exists(audioPath)` predicate (e.g. backed by fs in the CLI).
+// Only reports scenes whose structural audio path already passed (non-empty),
+// so missing/absolute/traversal paths are not double-reported here.
+export function checkAudioAssets(
+  scenes: SceneDef[],
+  exists: (audioPath: string) => boolean
+): ContentError[] {
+  const errors: ContentError[] = [];
+  for (const s of scenes) {
+    if (!s.audio || typeof s.audio !== "string" || !s.audio.trim()) continue;
+    if (!exists(s.audio)) {
+      errors.push({
+        code: "INVALID_AUDIO_ASSET",
+        scene: s.id,
+        message: `Scene ${s.id} references \`${s.audio}\`, but the file does not exist.`,
+      });
+    }
+  }
+  return errors;
 }
 
 // ---------------------------------------------------------------------------
@@ -215,12 +256,24 @@ export function validateStoryboard(sb: unknown): ValidationResult {
   if (!platforms.includes(s.platform)) errors.push({ code: "INVALID_PLATFORM", message: `Platform "${s.platform}" not allowed.` });
   const aspects: AspectRatio[] = [];
   if (!["16:9", "9:16"].includes(s.aspectRatio as string)) errors.push({ code: "INVALID_ASPECT", message: `Aspect ratio "${s.aspectRatio}" not allowed.` });
-  if (!s.template || !String(s.template).trim()) errors.push({ code: "MISSING_TEMPLATE", message: "Storyboard missing template." });
+  if (!s.template || !String(s.template).trim()) {
+    errors.push({ code: "MISSING_TEMPLATE", message: "Storyboard missing template." });
+  } else if (!TEMPLATE_SCHEMAS[s.template]) {
+    errors.push({ code: "INVALID_TEMPLATE", message: `Unknown template "${s.template}".` });
+  }
   if (!Array.isArray(s.scenes) || s.scenes.length === 0) {
     errors.push({ code: "EMPTY_SCENES", message: "Storyboard has no scenes." });
   } else {
     for (const sc of s.scenes) {
       if (!sc.id) errors.push({ code: "SCENE_NO_ID", scene: String(sc.id), message: "Scene missing id." });
+      const schema = TEMPLATE_SCHEMAS[s.template];
+      if (schema && !schema.allowedKinds.includes(sc.kind)) {
+        errors.push({
+          code: "INVALID_SCENE_KIND",
+          scene: sc.id,
+          message: `Scene ${sc.id} kind "${sc.kind}" is not allowed for template "${s.template}".`,
+        });
+      }
       for (const f of ["purpose", "narration", "onScreenText", "visualConcept"] as const) {
         if (!sc[f] || !String(sc[f]).trim()) {
           errors.push({ code: "MISSING_STORYBOARD_FIELD", scene: sc.id, message: `Scene ${sc.id} missing "${f}".` });
