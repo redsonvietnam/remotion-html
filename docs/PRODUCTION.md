@@ -3,6 +3,84 @@
 This document is the single entry point for producing a video from a topic.
 Read this first; do **not** rediscover the repository architecture.
 
+## Fresh Machine → Ready to Work (Bootstrap)
+
+**Prerequisites:** Node.js 18+, npm, Python 3.10+, pip, ffmpeg (bundled via `ffmpeg-static`).
+
+### A. Fresh clone
+
+```bash
+git clone https://github.com/redsonvietnam/remotion-html.git
+cd remotion-html
+```
+
+### B. Existing clone / resume after machine change
+
+```bash
+git checkout master
+git pull
+```
+
+To continue feature work on `feat/nq57-repo-cleanup-2026-08-20`:
+
+```bash
+git checkout feat/nq57-repo-cleanup-2026-08-20
+git pull
+```
+
+### C. Install dependencies
+
+```bash
+npm ci
+pip install edge-tts mutagen
+```
+
+### D. Regenerate TTS audio (all 5 productions)
+
+```bash
+python gen_tts_v2.py --backend edge
+python gen_tts_deAn06.py --backend edge
+python gen_tts_nghiQuyet79.py --backend edge
+python gen_tts_stoicLove.py --backend edge
+python gen_tts_canCuoc.py --backend edge
+```
+
+### E. Verify machine health
+
+```bash
+npm run verify
+```
+
+This runs `tsc --noEmit` + `npm test` + production-matrix gate. All must PASS.
+
+### F. Launch preview
+
+```bash
+npm run preview
+```
+
+Open `http://localhost:4321/` in browser.
+
+### G. Produce a video
+
+```bash
+node scripts/produce.mjs --project stoiclove --skip-tts   # skip TTS if audio exists
+node scripts/produce.mjs --project nq57                   # full pipeline
+```
+
+### Generated Asset Policy
+
+| Asset | Location | Gitignored | Must regenerate? |
+|-------|----------|------------|-----------------|
+| TTS audio | `public/<name>/*.mp3` | Yes | Yes — after fresh checkout |
+| Duration data | `public/<name>/durations.json` | Yes | Yes — via `gen_tts_*.py` |
+| Rendered video | `out/*.mp4` | Yes | Optional — via `remotion render` |
+| Source code | `src/` | No | No |
+| Package lock | `package-lock.json` | No | No |
+
+**Key rule:** `npm run verify` is the canonical health gate. It does NOT render video.
+To produce a watchable video, use `node scripts/produce.mjs --project <alias>`.
+
 ## What already exists (do not rebuild)
 
 | Concern        | Where                                                        |
