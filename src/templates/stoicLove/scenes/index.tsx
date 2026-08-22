@@ -32,7 +32,7 @@ export function renderScene(
     case "split":
       return <SplitScene {...props} {...content} />;
     case "concept":
-      return <ConceptScene {...props} {...content} />;
+      return <ConceptScene sceneId={sceneId} {...props} {...content} />;
     case "impermanence":
       return <ImpermanenceScene {...props} {...content} />;
     case "ending":
