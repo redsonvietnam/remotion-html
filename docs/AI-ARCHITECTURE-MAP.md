@@ -18,7 +18,8 @@ src/Root.tsx
   ├── NghiQuyet79 → NQ57Template + nghiQuyet79 SCENES/CONTENT + nghiQuyet79 theme
   ├── StoicLove → StoicLoveTemplate + stoicLove SCENES/CONTENT + stoicLove theme
   ├── CanCuoc → NQ57Template + canCuoc SCENES/CONTENT + canCuoc theme
-  └── LuatGTDB → NQ57Template + luatGTDB SCENES/CONTENT + luatGTDB theme
+  ├── LuatGTDB → NQ57Template + luatGTDB SCENES/CONTENT + luatGTDB theme
+  └── BaoHiem2024 → NodeFlowTemplate + baoHiem2024 SCENES/CONTENT + baoHiem2024 theme
 ```
 
 ## Template Map
@@ -60,6 +61,25 @@ index.tsx — StoicLoveTemplate component
 
 Scene kinds: `hook | statement | split | concept | impermanence | ending`
 
+### nodeflow template (`src/templates/nodeflow/`)
+
+```
+index.tsx — NodeFlowTemplate component
+  ├── helpers.tsx — nodeIn, textIn, reveal, edgeDraw, Backdrop, SceneContainer, SectionLabel, SignalIndicator, HRule
+  ├── scenes/index.tsx — switch(content.kind) dispatcher
+  │     ├── TitleScene.tsx
+  │     ├── FlowScene.tsx
+  │     ├── ContributionScene.tsx
+  │     ├── BenefitScene.tsx
+  │     ├── CompareScene.tsx
+  │     └── EndScene.tsx
+  └── svg/
+        ├── index.ts — barrel export
+        └── visuals.tsx — GridBackground, NodeBox, EdgeLine, SignalPulse, DataBadge, SystemNode, ProgressBar
+```
+
+Scene kinds: `title | flow | contribution | benefit | compare | end`
+
 ## Design System (`src/design/`)
 
 ```
@@ -78,13 +98,14 @@ Dependencies flow: templates → design/* → React/Remotion
 
 ```
 src/data/
-  ├── contract.ts     — SceneDef, TEMPLATE_SCHEMAS, validateProductionData()
-  ├── nq57.ts         — NQ57_SCENES + NQ57_CONTENT (exports FPS, TAIL, sceneFrames)
-  ├── deAn06.ts       — imports from nq57.ts, exports DE_AN06_SCENES + DE_AN06_CONTENT
-  ├── nghiQuyet79.ts  — imports from nq57.ts, exports NGHI_QUYET_79_SCENES + NGHI_QUYET_79_CONTENT
-  ├── stoicLove.ts    — standalone (stoicLove template has own types)
-  ├── canCuoc.ts      — imports from nq57.ts, exports CAN_CUOC_SCENES + CAN_CUOC_CONTENT
-  └── luatGTDB.ts     — imports from nq57.ts, exports LUAT_GTDB_SCENES + LUAT_GTDB_CONTENT
+  ├── contract.ts       — SceneDef, TEMPLATE_SCHEMAS, validateProductionData()
+  ├── nq57.ts           — NQ57_SCENES + NQ57_CONTENT (exports FPS, TAIL, sceneFrames)
+  ├── deAn06.ts         — imports from nq57.ts, exports DE_AN06_SCENES + DE_AN06_CONTENT
+  ├── nghiQuyet79.ts    — imports from nq57.ts, exports NGHI_QUYET_79_SCENES + NGHI_QUYET_79_CONTENT
+  ├── stoicLove.ts      — standalone (stoicLove template has own types)
+  ├── canCuoc.ts        — imports from nq57.ts, exports CAN_CUOC_SCENES + CAN_CUOC_CONTENT
+  ├── luatGTDB.ts       — imports from nq57.ts, exports LUAT_GTDB_SCENES + LUAT_GTDB_CONTENT
+  └── baoHiem2024.ts    — imports FPS/TAIL/sceneFrames/SceneDef from nq57.ts, defines NodeFlow content types, exports BAO_HIEM_SCENES + BAO_HIEM_CONTENT
 ```
 
 Note: nq57.ts exports `SceneDef`, `NQ57SceneContent`, `FPS`, `TAIL`, `sceneFrames` — reused by all nq57-family data files.
@@ -99,7 +120,7 @@ src/theme/
   ├── stoicLove.ts      — warm gold/amber
   ├── canCuoc.ts        — (similar to nq57)
   ├── luatGTDB.ts       — blue/yellow
-  └── baoHiem2024.ts    — unused (no composition)
+  └── baoHiem2024.ts    — blueprint navy/cyan/amber (BaoHiem2024 production)
 ```
 
 All themes use `createTheme()` from `src/design/theme/index.ts`.
@@ -108,7 +129,7 @@ All themes use `createTheme()` from `src/design/theme/index.ts`.
 
 ```
 scripts/
-  ├── manifest.json    — Production registry (6 productions)
+  ├── manifest.json    — Production registry (7 productions)
   ├── produce.mjs      — Orchestrator: topic → route → validate → TTS → render
   ├── validate.mjs     — Content-contract validator CLI
   ├── verify.mjs       — Production-matrix verification gate (CI)

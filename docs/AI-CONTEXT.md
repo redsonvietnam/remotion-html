@@ -37,8 +37,9 @@ Single Remotion codebase, multiple production lines, shared design system.
 |----------|------------|--------|---------|
 | `nq57` | 1920×1080 | title, quote, roles, pillars, stats, vision, end | nq57, dean06, nq79, canCuoc, luatGTDB |
 | `stoicLove` | 1080×1920 | hook, statement, split, concept, impermanence, ending | stoicLove |
+| `nodeflow` | 1920×1080 | title, flow, contribution, benefit, compare, end | baoHiem2024 |
 
-## Current Production Lines (6)
+## Current Production Lines (7)
 
 | ID | Template | Composition | Data File | TTS Script | Output |
 |----|----------|-------------|-----------|------------|--------|
@@ -48,6 +49,7 @@ Single Remotion codebase, multiple production lines, shared design system.
 | stoiclove | stoicLove | StoicLove | `src/data/stoicLove.ts` | `gen_tts_stoicLove.py` | `out/stoicLove.mp4` |
 | canCuoc | nq57 | CanCuoc | `src/data/canCuoc.ts` | `gen_tts_canCuoc.py` | `out/canCuoc.mp4` |
 | luatGTDB | nq57 | LuatGTDB | `src/data/luatGTDB.ts` | `gen_tts_luatGTDB.py` | `out/luatGTDB.mp4` |
+| baoHiem2024 | nodeflow | BaoHiem2024 | `src/data/baoHiem2024.ts` | `gen_tts_baoHiem2024.py` | `out/baoHiem2024.mp4` |
 
 ## Content/Data Contract
 
@@ -133,9 +135,9 @@ Voice: `vi-VN-NamMinhNeural` (Edge TTS). All scripts support `--backend edge`.
 
 ## Current Baseline
 
-- **Branch**: master
-- **HEAD**: `f7d70e5` (WS44 — New Topic Production Trial)
-- **Productions**: 6 registered, all validated
+- **Branch**: master / feat/creative-template-nodeflow
+- **HEAD**: `497d328` (fix: complete nodeflow type contract)
+- **Productions**: 7 registered, all validated
 - **Tests**: 214 passing (11 test files)
 - **CI**: Active on push/PR to master
 

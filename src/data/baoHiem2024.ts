@@ -199,41 +199,41 @@ export const BAO_HIEM_SCENES: SceneDef[] = [
     audio: "baoHiem2024/s1.mp3",
     caption:
       "Luật Bảo hiểm Xã hội số 41 năm 2024 — những điểm mới quan trọng mà người lao động và doanh nghiệp cần nắm rõ.",
-    dur: 7.5,
+    dur: 12.836,
   },
   {
     id: "s2",
     audio: "baoHiem2024/s2.mp3",
     caption:
       "Hệ thống BHXH hoạt động theo cơ chế đóng góp ba bên: người lao động, doanh nghiệp và Nhà nước cùng xây dựng quỹ chung.",
-    dur: 9.0,
+    dur: 8.108,
   },
   {
     id: "s3",
     audio: "baoHiem2024/s3.mp3",
     caption:
       "Tỷ lệ đóng BHXH bắt buộc: doanh nghiệp đóng 17,5% — người lao động đóng 8% — tổng cộng 25,5% mức lương làm căn cứ.",
-    dur: 10.5,
+    dur: 12.404,
   },
   {
     id: "s4",
     audio: "baoHiem2024/s4.mp3",
     caption:
       "Người lao động tham gia BHXH bắt buộc được hưởng 6 chế độ: ốm đau, thai sản, tai nạn lao động, hưu trí, tử tuất và thất nghiệp.",
-    dur: 11.0,
+    dur: 9.548,
   },
   {
     id: "s5",
     audio: "baoHiem2024/s5.mp3",
     caption:
       "Điểm mới nổi bật: giảm điều kiện hưởng lương hưu từ 20 xuống còn 15 năm đóng; hạn chế rút BHXH một lần; mở rộng đối tượng tham gia.",
-    dur: 13.0,
+    dur: 11.588,
   },
   {
     id: "s6",
     audio: "baoHiem2024/s6.mp3",
     caption:
       "BHXH bảo vệ tương lai của bạn. Luật 41/2024 hiệu lực từ 01 tháng 7 năm 2025.",
-    dur: 7.0,
+    dur: 9.308,
   },
 ];

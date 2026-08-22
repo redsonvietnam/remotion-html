@@ -126,3 +126,23 @@ A template should introduce a new visual grammar — different scene structure, 
 If a new production can use the NQ57 template with only palette/content changes, it does not need a new template. But if the content demands a different visual treatment, that is when a new template should be created.
 
 The test: "Could someone tell which template this video uses without seeing the title card?" If the answer is "no, it looks like all the others," the template needs more differentiation.
+
+## G. NodeFlow Template (New)
+
+**Visual Grammar**: Blueprint engineering grid, node-edge network diagrams, electric cyan signal flow, amber data badges, system node orbits.
+
+**Location**: `src/templates/nodeflow/`
+
+**Components**:
+- SVG primitives: `GridBackground`, `NodeBox`, `EdgeLine`, `SignalPulse`, `DataBadge`, `SystemNode`, `ProgressBar` (in `svg/visuals.tsx`)
+- Motion helpers: `nodeIn`, `textIn`, `reveal`, `edgeDraw`, `Backdrop`, `SceneContainer`, `SectionLabel`, `SignalIndicator` (in `helpers.tsx`)
+- Scene registry: 6 scenes (title, flow, contribution, benefit, compare, end)
+
+**Creative Principles Applied**:
+- Custom SVG vocabulary (not borrowed from NQ57 or StoicLove)
+- Procedural visual metaphors: network topology = social insurance system
+- Motion carries meaning: edges draw = money flow, signal pulses = system activity
+- Typography as data display: amber badges for percentages, mono for rates
+- No external images, no card layouts
+
+**Production**: BaoHiem2024 (Luật 41/2024/QH15)
