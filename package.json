@@ -9,6 +9,7 @@
     "still": "remotion still src/index.ts NghiQuyet57V2 out/nq57-thumb.png",
     "test": "vitest run",
     "test:watch": "vitest",
+    "preview": "node preview/serve.mjs",
     "upgrade": "remotion upgrade"
   },
   "dependencies": {
