@@ -284,3 +284,24 @@ topic
   → TTS + render             (remotion render / produce)
   → HTML preview             (npm run preview → http://localhost:4321/)
 ```
+
+## Continuous Verification (GitHub Actions) — WS41
+
+`npm run verify` is the canonical local gate (above). The same gate is enforced
+automatically by `.github/workflows/verify.yml` for:
+
+- every **push to `master`**
+- every **pull request targeting `master`**
+
+The workflow runs `npm ci` (reproducible install from `package-lock.json`),
+then generates the (gitignored) narration audio with the existing
+`gen_tts_*.py` scripts via `edge_tts`, then runs `npm run verify`.
+
+**CI verifies:** TypeScript, unit/contract tests, manifest completeness,
+topic routing, production-data validation, required audio-asset existence, and
+audio-duration validity.
+
+**CI intentionally does NOT render** the MP4s — rendering stays a local /
+release-time concern. No generated MP3/MP4 artifacts are committed; CI
+regenerates real narration audio before verifying, so the gate checks genuine
+assets rather than weakening verification.
