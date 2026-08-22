@@ -59,6 +59,18 @@
       "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Can Cuoc" },
       "aliases": ["can cuoc", "luat can cuoc", "can cuoc cong dan", "căn cước", "căn cước công dân"],
       "keywords": ["can cuoc", "luat can cuoc", "căn cước", "cccd", "định danh", "c06", "bộ công an"]
+    },
+    "luatGTDB": {
+      "id": "luatGTDB",
+      "template": "nq57",
+      "composition": "LuatGTDB",
+      "dataFile": "src/data/luatGTDB.ts",
+      "tts": "gen_tts_luatGTDB.py",
+      "output": "out/luatGTDB.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Luật GTDB" },
+      "aliases": ["luật trật tự an toàn giao thông đường bộ", "luật 36/2024", "luật giao thông đường bộ 2024", "luatgtdb"],
+      "keywords": ["luật giao thông", "an toàn giao thông", "luật 36", "36/2024", "trật tự giao thông"]
     }
   }
 }

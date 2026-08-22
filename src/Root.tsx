@@ -17,6 +17,8 @@ import { STOIC_LOVE_SCENES, STOIC_LOVE_CONTENT, sceneFrames as stoicLoveSceneFra
 import { stoicLove } from "./theme/stoicLove";
 import { CAN_CUOC_SCENES, CAN_CUOC_CONTENT, sceneFrames as canCuocSceneFrames } from "./data/canCuoc";
 import { canCuoc } from "./theme/canCuoc";
+import { LUAT_GTDB_SCENES, LUAT_GTDB_CONTENT, sceneFrames as luatGTDBSceneFrames } from "./data/luatGTDB";
+import { luatGTDB } from "./theme/luatGTDB";
 
 const FPS = 30;
 
@@ -38,6 +40,10 @@ const STOIC_LOVE_FRAMES =
 const CAN_CUOC_FRAMES =
   CAN_CUOC_SCENES.reduce((acc, s) => acc + canCuocSceneFrames(s.dur), 0) +
   (CAN_CUOC_SCENES.length - 1) * 16;
+
+const LUAT_GTDB_FRAMES =
+  LUAT_GTDB_SCENES.reduce((acc, s) => acc + luatGTDBSceneFrames(s.dur), 0) +
+  (LUAT_GTDB_SCENES.length - 1) * 16;
 
 export const Root: React.FC = () => {
   return (
@@ -101,6 +107,19 @@ export const Root: React.FC = () => {
           scenes: CAN_CUOC_SCENES,
           content: CAN_CUOC_CONTENT,
           theme: canCuoc,
+        }}
+      />
+      <Composition
+        id="LuatGTDB"
+        component={NQ57Template}
+        durationInFrames={LUAT_GTDB_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: LUAT_GTDB_SCENES,
+          content: LUAT_GTDB_CONTENT,
+          theme: luatGTDB,
         }}
       />
     </>
