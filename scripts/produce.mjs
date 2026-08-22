@@ -131,6 +131,23 @@ function produce(id, opts) {
     return true;
   }
 
+  // Content-contract gate: stop before TTS/render if data is invalid.
+  if (!opts.skipValidation) {
+    console.log("\n▶ Content contract validation");
+    const v = spawnSync("node", ["scripts/validate.mjs", "--project", id], {
+      cwd: ROOT,
+      stdio: "inherit",
+      shell: true,
+    });
+    if (v.status !== 0) {
+      console.error("  ✗ content validation failed — stopping before TTS/render.");
+      return false;
+    }
+    console.log("  ✓ content contract valid");
+  } else {
+    console.log("  · --skip-validation: skipped content validation");
+  }
+
   if (!opts.skipTts) {
     const py = findPython();
     if (!py) {
@@ -182,6 +199,7 @@ function main() {
   const skipTts = has("--skip-tts");
   const skipRender = has("--skip-render");
   const routeOnly = has("--route-only");
+  const skipValidation = has("--skip-validation");
 
   if (!projectArg && !topicArg) {
     console.error("Provide --project <alias|comp> or --topic \"<topic>\". Run --list for options.");
@@ -206,7 +224,7 @@ function main() {
     routedFrom = topicArg;
   }
 
-  const ok = produce(id, { topic: topicArg || projectArg, skipTts, skipRender, routeOnly, routedFrom });
+  const ok = produce(id, { topic: topicArg || projectArg, skipTts, skipRender, routeOnly, skipValidation, routedFrom });
   process.exit(ok ? 0 : 1);
 }
 

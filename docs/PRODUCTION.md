@@ -121,6 +121,55 @@ Routing is deterministic over the contract in `scripts/manifest.json`:
 Content research/fact-checking is always C1's responsibility before the
 manifest is finalized; this layer only routes and orchestrates.
 
+## Content contract & validation (WS35)
+
+Every production's data must satisfy a machine-checkable contract before it
+enters the pipeline. The contract lives in `src/data/contract.ts`:
+
+- `SceneDef` — base scene metadata: `id`, `audio` (path under `public/`),
+  `caption` (on-screen narration), `dur` (seconds). Every data file exports a
+  `SceneDef[]` (named `<NAME>_SCENES`) and a content `Record` (named
+  `<NAME>_CONTENT`) keyed by scene id.
+- `TEMPLATE_SCHEMAS` — per template, the allowed scene `kind`s and which kinds
+  must carry a non-empty primary text field.
+- `Storyboard` / `validateStoryboard` — the higher-level artifact C1 writes
+  from research + fact-checking (project, topic, platform, aspect ratio,
+  template, scenes with purpose / narration / on-screen text / visual concept /
+  factual claims + source + verified flag). `validateStoryboard` rejects
+  unverified or unsourced claims — fact-checking is enforced, not automated.
+
+The validator (`scripts/validate.mjs`) loads a data file via esbuild and runs
+`validateProductionData`. It checks: missing/empty scene array, missing content
+map, missing scene content, orphan content (scene-count mismatch), invalid or
+unsupported scene kind, missing narration, missing required text, invalid
+duration, invalid audio path. Errors are explicit; it never silently repairs
+content.
+
+`produce.mjs` runs validation **before** TTS/render and stops on failure
+(`--skip-validation` bypasses).
+
+### How to turn a topic into a production (canonical workflow)
+
+```
+1. TOPIC            "Làm video về <TOPIC>"
+2. RESEARCH         C1 researches + fact-checks (no API/automation)
+3. STORYBOARD       write a Storyboard (src/data/contract.ts shape):
+                      project, topic, platform, aspectRatio, template,
+                      scenes[] with purpose/narration/onScreenText/
+                      visualConcept + factualClaims[]{claim,source,verified}
+4. ROUTE            node scripts/produce.mjs --topic "<TOPIC>"
+                      → resolves to an existing template (or NO_MATCH)
+5. CONTENT DATA     author src/data/<project>.ts (SceneDef[] + content map);
+                      validate: node scripts/validate.mjs --project <alias>
+6. TTS              node scripts/produce.mjs --project <alias>  (runs TTS)
+7. RENDER           (same command continues to remotion render)
+8. PREVIEW          npm run preview  → http://localhost:4321/
+9. HANDOFF          report final video + preview URL
+```
+
+A new topic reuses an existing template when its visual grammar fits; the
+storyboard + data file are the only new artifacts.
+
 ## Adding a NEW topic that reuses an existing template
 
 1. **Research & storyboard** the topic (C1's manual work).
@@ -131,8 +180,8 @@ manifest is finalized; this layer only routes and orchestrates.
 3. **TTS.** Either parametrize the existing `gen_tts_*.py` to your content or
    write a small generator following the same `public/<name>/*.mp3` +
    `durations.json` contract.
-4. **Wire the orchestrator.** Add an entry to `PROJECTS` in
-   `scripts/produce.mjs` (alias → comp, tts, out, content, res).
+4. **Wire the orchestrator.** Add an entry to `scripts/manifest.json`
+    (alias → comp, tts, out, content, resolution, preview, aliases, keywords).
 5. **Render + preview.** `node scripts/produce.mjs --project <alias>`.
 6. **Expose in preview.** Add a tab to `PREVIEWS` in `preview/index.html`.
 
