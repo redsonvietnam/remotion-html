@@ -251,6 +251,71 @@ export function checkAudioDurations(
 }
 
 // ---------------------------------------------------------------------------
+// NodeFlow Template Content Contract
+//
+// Canonical content types for the NodeFlow template (blueprint grid,
+// node-edge diagrams, signal flow). These are pure content types —
+// no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface NodeFlowTitleContent {
+  kind: "title";
+  lawCode: string;
+  title: string;
+  subtitle: string;
+  tagline: string;
+  nodes: { label: string; role?: string }[];
+}
+
+export interface NodeFlowFlowContent {
+  kind: "flow";
+  title: string;
+  description: string[];
+  flowNodes: { label: string; sublabel?: string; rate?: string }[];
+  edges: { from: number; to: number; label: string }[];
+}
+
+export interface NodeFlowContributionContent {
+  kind: "contribution";
+  title: string;
+  rows: { party: string; type: string; pct: number; rateLabel: string }[];
+  totalLabel: string;
+  totalValue: string;
+  note?: string;
+}
+
+export interface NodeFlowBenefitContent {
+  kind: "benefit";
+  title: string;
+  description: string;
+  benefits: { icon: string; label: string; value?: string }[];
+}
+
+export interface NodeFlowCompareContent {
+  kind: "compare";
+  title: string;
+  before: { items: { label: string; value?: string }[] };
+  after: { items: { label: string; value?: string; highlight?: boolean }[] };
+  changeLabel?: string;
+}
+
+export interface NodeFlowEndContent {
+  kind: "end";
+  closingTitle: string;
+  closingSubtitle: string;
+  stats: { label: string; value: string }[];
+  reference: string;
+}
+
+export type NodeFlowSceneContent =
+  | NodeFlowTitleContent
+  | NodeFlowFlowContent
+  | NodeFlowContributionContent
+  | NodeFlowBenefitContent
+  | NodeFlowCompareContent
+  | NodeFlowEndContent;
+
+// ---------------------------------------------------------------------------
 // Storyboard Contract - the higher-level artifact C1 produces from research +
 // fact-checking, BEFORE generating src/data/<project>.ts.
 // ---------------------------------------------------------------------------

@@ -51,7 +51,36 @@ describe("Architecture: NodeFlow template must not import BaoHiem2024", () => {
   }
 });
 
-describe("Architecture: NodeFlow template imports only from shared types", () => {
+describe("Architecture: Data layer must not import template layer", () => {
+  const dataFiles = [
+    "data/baoHiem2024.ts",
+    "data/nq57.ts",
+    "data/deAn06.ts",
+    "data/nghiQuyet79.ts",
+    "data/stoicLove.ts",
+    "data/canCuoc.ts",
+    "data/luatGTDB.ts",
+    "data/contract.ts",
+  ];
+
+  for (const file of dataFiles) {
+    it(`${file} does not import from templates/`, () => {
+      const imports = getImports(file);
+      for (const imp of imports) {
+        expect(imp).not.toMatch(/templates/);
+      }
+    });
+  }
+});
+
+describe("Architecture: NodeFlow template imports from neutral contract layer", () => {
+  // types.ts should re-export from data/contract
+  it("templates/nodeflow/types.ts re-exports from data/contract", () => {
+    const content = readFile("templates/nodeflow/types.ts");
+    expect(content).toMatch(/from\s+["']\.\.\/\.\.\/data\/contract["']/);
+  });
+
+  // Scene files should import from ../types (which re-exports from contract)
   const nodeflowSceneFiles = [
     "templates/nodeflow/scenes/index.tsx",
     "templates/nodeflow/scenes/TitleScene.tsx",
@@ -63,7 +92,7 @@ describe("Architecture: NodeFlow template imports only from shared types", () =>
   ];
 
   for (const file of nodeflowSceneFiles) {
-    it(`${file} imports types from templates/nodeflow/types.ts`, () => {
+    it(`${file} imports types from ../types (which re-exports from contract)`, () => {
       const content = readFile(file);
       expect(content).toMatch(/from\s+["']\.\.\/types["']/);
     });

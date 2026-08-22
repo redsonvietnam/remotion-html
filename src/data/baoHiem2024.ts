@@ -20,7 +20,7 @@
 
 import { FPS, TAIL, sceneFrames } from "./nq57";
 import type { SceneDef } from "./nq57";
-import type { NodeFlowSceneContent } from "../templates/nodeflow/types";
+import type { NodeFlowSceneContent } from "./contract";
 
 export { FPS, TAIL, sceneFrames };
 export type { SceneDef };
