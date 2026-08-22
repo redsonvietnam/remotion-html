@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "preview": "node preview/serve.mjs",
     "produce": "node scripts/produce.mjs",
+    "verify": "tsc --noEmit && npm test && node scripts/verify.mjs",
     "upgrade": "remotion upgrade"
   },
   "dependencies": {

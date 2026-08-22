@@ -225,3 +225,62 @@ Only create a brand-new visual template if no existing grammar fits.
 - Architecture must stay 5-layer (compositions → templates → components →
   design → core). Design must not import templates; components must not import
   a specific theme.
+
+## Verification / CI gate (WS40)
+
+The baseline ships one deterministic command that answers:
+
+> "Is `master` structurally valid and safe to continue from?"
+
+```bash
+npm run verify
+```
+
+`npm run verify` runs, in order:
+
+1. `tsc --noEmit` — type safety
+2. `npm test` — the unit / contract test suite
+3. `node scripts/verify.mjs` — the production-matrix gate (below)
+
+### What `scripts/verify.mjs` checks
+
+For **every** production registered in `scripts/manifest.json` it runs
+`scripts/validate.mjs --check-assets --check-durations` (content contract +
+real audio asset existence + `0 < audioDuration ≤ sceneDuration`). It also
+checks:
+
+- **Manifest completeness** — the five baseline production lines
+  (`nq57`, `dean06`, `nq79`, `stoiclove`, `canCuoc`) must all be present; if
+  one disappears, verify fails.
+- **Topic routing** — a set of known topics must still route to their expected
+  compositions via `scripts/produce.mjs --route-only`.
+
+It exits non-zero on any failure, so it is safe as a CI gate. It does **not**
+render video and does **not** duplicate the validation algorithms.
+
+### CI vs local / render-time checks
+
+| Check                              | Where it runs              | Command                                        |
+| ---------------------------------- | -------------------------- | ---------------------------------------------- |
+| Typecheck                          | CI / local                 | `npx tsc --noEmit`                             |
+| Unit & contract tests              | CI / local                 | `npm test`                                     |
+| Contract + real audio + duration   | CI / local (no render)     | `scripts/verify.mjs` (via `npm run verify`)    |
+| Topic routing                      | CI / local                 | `scripts/verify.mjs`                           |
+| TTS audio generation               | local / render-time        | `gen_tts_*.py` (via `produce`)                 |
+| MP4 render                         | local / render-time only   | `remotion render` / `produce`                  |
+| Standalone preview                 | local                      | `npm run preview` → `http://localhost:4321/`   |
+
+The render (Remotion → `out/*.mp4`) is intentionally **not** part of
+`npm run verify`, because `out/` is a generated artifact. To produce a
+watchable video, run `node scripts/produce.mjs --project <alias>`.
+
+### Pipeline recap
+
+```text
+topic
+  → storyboard / data        (src/data/<name>.ts)
+  → validation               (scripts/validate.mjs: contract + assets + duration)
+  → real audio assets        (gen_tts_*.py → public/<name>/*.mp3)
+  → TTS + render             (remotion render / produce)
+  → HTML preview             (npm run preview → http://localhost:4321/)
+```
