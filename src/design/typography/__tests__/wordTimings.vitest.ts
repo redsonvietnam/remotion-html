@@ -5,6 +5,7 @@ import {
   computeWordTimings,
   getActiveWordIndex,
   getWordProgress,
+  chunkCaptionText,
 } from "../useWordTimings";
 import type { WordTiming } from "../types";
 
@@ -163,5 +164,126 @@ describe("getWordProgress", () => {
     const mid = getWordProgress(timing, 15, 30);
     expect(mid).toBeGreaterThan(0.4);
     expect(mid).toBeLessThan(0.6);
+  });
+});
+
+describe("chunkCaptionText", () => {
+  it("short text under maxWords returns unchanged", () => {
+    expect(chunkCaptionText("Hello World")).toBe("Hello World");
+    expect(chunkCaptionText("One two three four five six")).toBe("One two three four five six");
+  });
+
+  it("long text splits into 4-7 word chunks", () => {
+    const text = "One two three four five six seven eight nine ten eleven twelve";
+    const result = chunkCaptionText(text);
+    console.log("Long text result:", JSON.stringify(result));
+    console.log("Lines:", result.split("\n").map(l => l.split(/\s+/).filter(Boolean).length));
+    const lines = result.split("\n");
+    expect(lines.length).toBeGreaterThan(1);
+    lines.forEach((line) => {
+      const words = line.split(/\s+/).filter(Boolean);
+      expect(words.length).toBeGreaterThanOrEqual(4);
+      expect(words.length).toBeLessThanOrEqual(7);
+    });
+  });
+
+  it("preserves number + unit combinations", () => {
+    const text = "Số năm đóng bảo hiểm tối thiểu là 15 năm để hưởng lương hưu";
+    const result = chunkCaptionText(text);
+    // "15 năm" should stay together
+    expect(result).not.toContain("15\nnăm");
+    // Check that "15 năm" appears intact in some chunk
+    const chunks = result.split("\n");
+    const has15nam = chunks.some((c) => c.includes("15 năm"));
+    expect(has15nam).toBe(true);
+  });
+
+  it("preserves percentages", () => {
+    const text = "Tỷ lệ đóng là 25,5% mức lương làm căn cứ";
+    const result = chunkCaptionText(text);
+    expect(result).not.toContain("25,5\n%");
+    const chunks = result.split("\n");
+    const hasPercent = chunks.some((c) => c.includes("25,5%"));
+    expect(hasPercent).toBe(true);
+  });
+
+  it("preserves dates", () => {
+    const text = "Luật có hiệu lực từ ngày 01/07/2025 thay thế luật cũ";
+    const result = chunkCaptionText(text);
+    const chunks = result.split("\n");
+    // The date should appear intact in some chunk
+    const hasDate = chunks.some((c) => c.includes("01/07/2025"));
+    expect(hasDate).toBe(true);
+    // The date should not be split across lines
+    expect(result).not.toContain("01/07/2025\nthay");
+  });
+
+  it("preserves legal references", () => {
+    const text = "Theo Điều 64 số năm đóng bảo hiểm giảm từ 20 xuống 15 năm";
+    const result = chunkCaptionText(text);
+    expect(result).not.toContain("Điều\n64");
+    expect(result).not.toContain("20\nxuống");
+    const chunks = result.split("\n");
+    const hasDieu64 = chunks.some((c) => c.includes("Điều 64"));
+    expect(hasDieu64).toBe(true);
+  });
+
+  it("splits at punctuation boundaries", () => {
+    const text = "Clause one. Clause two, with comma. Clause three! Clause four? Clause five and six. Clause seven eight nine ten eleven twelve.";
+    const result = chunkCaptionText(text, 4, 7);
+    console.log("Punctuation test result:", JSON.stringify(result));
+    console.log("Lines:", result.split("\n").map(l => l.split(/\s+/).filter(Boolean).length));
+    const lines = result.split("\n");
+    // Should have multiple lines
+    expect(lines.length).toBeGreaterThan(1);
+    lines.forEach((line) => {
+      const words = line.split(/\s+/).filter(Boolean);
+      expect(words.length).toBeGreaterThanOrEqual(4);
+      expect(words.length).toBeLessThanOrEqual(7);
+    });
+  });
+
+  it("short caption returns unchanged", () => {
+    expect(chunkCaptionText("Short caption")).toBe("Short caption");
+    expect(chunkCaptionText("Một câu ngắn")).toBe("Một câu ngắn");
+  });
+
+  it("hard maximum respected", () => {
+    const longText = "One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen";
+    const result = chunkCaptionText(longText, 4, 7, 10);
+    const lines = result.split("\n");
+    lines.forEach((line) => {
+      const words = line.split(/\s+/).filter(Boolean);
+      expect(words.length).toBeLessThanOrEqual(10);
+    });
+  });
+
+  it("multi-word Vietnamese terms preserved", () => {
+    const text = "Luật Bảo hiểm xã hội 2024 có hiệu lực từ 01/07/2025";
+    const result = chunkCaptionText(text);
+    const chunks = result.split("\n");
+    // "Luật Bảo hiểm xã hội" should stay together if fits
+    const hasFullLaw = chunks.some((c) => c.includes("Luật Bảo hiểm xã hội"));
+    expect(hasFullLaw).toBe(true);
+  });
+
+  it("exact one-line output for KaraokeReveal", () => {
+    const text = "This is a very long caption that should be split into multiple lines for single row display in karaoke reveal component";
+    const result = chunkCaptionText(text);
+    console.log("Long caption result:", JSON.stringify(result));
+    console.log("Lines:", result.split("\n").map(l => l.split(/\s+/).filter(Boolean).length));
+    const lines = result.split("\n");
+    // Should create multiple lines
+    expect(lines.length).toBeGreaterThan(1);
+    lines.forEach((line) => {
+      const words = line.split(/\s+/).filter(Boolean);
+      // Each line should have 4-7 words (or up to hard max 10)
+      expect(words.length).toBeGreaterThanOrEqual(4);
+      expect(words.length).toBeLessThanOrEqual(10);
+    });
+    // Total words preserved
+    const totalWords = lines.join(" ").split(/\s+/).filter(Boolean).length;
+    const originalWords = text.split(/\s+/).filter(Boolean).length;
+    expect(totalWords).toBe(originalWords);
   });
 });
