@@ -1,26 +1,31 @@
 // ---------------------------------------------------------------------------
 // ContributionScene — "Rate breakdown": horizontal stacked progress bars
 //
-// Visual: Employer and employee contribution rates displayed as progress bars
-// with amber data badges showing exact percentages. Bars build left-to-right
-// sequentially. Total sum appears at the bottom.
-// Right side: large numeric "total" treated as a data display.
+// Data component: receives frame/fps as props (no Remotion hooks).
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, staticFile, Audio } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { useTheme } from "../../../design/theme";
 import { Backdrop, SceneContainer, SectionLabel, HRule, SignalIndicator, textIn, reveal } from "../helpers";
 import { ProgressBar, DataBadge } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
 import type { NodeFlowContributionContent } from "../types";
 
-type Props = { audio: string; caption: string; dur: number } & NodeFlowContributionContent;
+export type ContributionSceneProps = {
+  audio: string;
+  caption: string;
+  dur: number;
+  frame: number;
+  fps: number;
+} & NodeFlowContributionContent;
 
-export const ContributionScene: React.FC<Props> = ({
+export const ContributionSceneData: React.FC<ContributionSceneProps> = ({
   audio,
   caption,
   dur,
+  frame,
+  fps,
   title,
   rows,
   totalLabel,
@@ -28,8 +33,6 @@ export const ContributionScene: React.FC<Props> = ({
   note,
 }) => {
   const theme = useTheme();
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const titleAnim = textIn(frame, 0, fps, 30);
   const noteAnim = textIn(frame, 90, fps, 20);
@@ -52,16 +55,15 @@ export const ContributionScene: React.FC<Props> = ({
   const SVG_H = 900;
 
   const rowColors = [
-    theme.colors.accent2,   // employer — amber
-    theme.colors.accent1,   // employee — cyan
-    theme.colors.accent3,   // state — green
-    theme.colors.muted,     // others
+    theme.colors.accent2,
+    theme.colors.accent1,
+    theme.colors.accent3,
+    theme.colors.muted,
   ];
 
   return (
     <AbsoluteFill>
-      <Backdrop />
-      <Audio src={staticFile(audio)} />
+      <Backdrop frame={frame} />
       <SignalIndicator label="DATA" frame={frame} />
 
       <SceneContainer>
@@ -101,7 +103,6 @@ export const ContributionScene: React.FC<Props> = ({
           const color = rowColors[i % rowColors.length];
           return (
             <g key={i} opacity={rowReveals[i]}>
-              {/* Row header label */}
               <text
                 x={0}
                 y={y - 8}
@@ -113,7 +114,6 @@ export const ContributionScene: React.FC<Props> = ({
               >
                 {row.party.toUpperCase()}
               </text>
-              {/* Bar */}
               <ProgressBar
                 x={BAR_X}
                 y={y}
@@ -125,7 +125,6 @@ export const ContributionScene: React.FC<Props> = ({
                 valueLabel={row.rateLabel}
                 color={color}
               />
-              {/* Data badge showing percentage */}
               <DataBadge
                 x={BAR_X + BAR_W * row.pct * barFills[i] + 16}
                 y={y + BAR_H / 2 - 6}

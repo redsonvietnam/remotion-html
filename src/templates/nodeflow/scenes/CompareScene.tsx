@@ -1,34 +1,37 @@
 // ---------------------------------------------------------------------------
 // CompareScene — "Before vs. After": side-by-side comparison
 //
-// Visual: Split screen with two NodeBox panels (OLD LAW vs NEW LAW).
-// A central dividing line animates. On the left: dim/inactive nodes.
-// On the right: bright/active nodes (new law wins).
-// Key changes highlighted with amber data badges.
+// Data component: receives frame/fps as props (no Remotion hooks).
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, staticFile, Audio } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { useTheme } from "../../../design/theme";
 import { Backdrop, SceneContainer, SectionLabel, SignalIndicator, textIn, reveal, edgeDraw } from "../helpers";
 import { NodeBox, EdgeLine, DataBadge } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
 import type { NodeFlowCompareContent } from "../types";
 
-type Props = { audio: string; caption: string; dur: number } & NodeFlowCompareContent;
+export type CompareSceneProps = {
+  audio: string;
+  caption: string;
+  dur: number;
+  frame: number;
+  fps: number;
+} & NodeFlowCompareContent;
 
-export const CompareScene: React.FC<Props> = ({
+export const CompareSceneData: React.FC<CompareSceneProps> = ({
   audio,
   caption,
   dur,
+  frame,
+  fps,
   title,
   before,
   after,
   changeLabel,
 }) => {
   const theme = useTheme();
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const titleAnim = textIn(frame, 0, fps, 30);
   const leftReveal = reveal(frame, 10, 25);
@@ -36,7 +39,6 @@ export const CompareScene: React.FC<Props> = ({
   const dividerReveal = edgeDraw(frame, 20, 20);
   const badgeReveal = reveal(frame, 60, 20);
 
-  // Card layout
   const CARD_W = 700;
   const CARD_H = 70;
   const CARD_GAP = 90;
@@ -49,8 +51,7 @@ export const CompareScene: React.FC<Props> = ({
 
   return (
     <AbsoluteFill>
-      <Backdrop />
-      <Audio src={staticFile(audio)} />
+      <Backdrop frame={frame} />
       <SignalIndicator label="COMPARE" frame={frame} />
 
       {/* Title bar */}

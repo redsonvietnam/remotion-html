@@ -71,3 +71,27 @@ npx remotion render src/index.ts <Composition> out/<id>.mp4
 2. `docs/PROJECT-KNOWLEDGE.md`
 
 Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
+
+---
+
+## 6. Renderer Boundary
+
+**Rule:** Remotion hooks are ONLY allowed in adapter files.
+
+- `useCurrentFrame`, `useVideoConfig` — ONLY in `RemotionScenes.tsx` (or equivalent adapter)
+- Data components receive `frame`/`fps` as props — NEVER call hooks
+- `AbsoluteFill`, `interpolate`, `spring` from remotion are acceptable in data components (pure functions)
+- Preview adapter computes frame/progress from its own clock, passes as props
+- Violation: any data component importing `useCurrentFrame` or `useVideoConfig`
+
+---
+
+## 7. Design Model Contract
+
+**Rule:** Shared motion must be deterministic and renderer-agnostic.
+
+- Motion primitives: `(ctx: FrameContext, ...args) => result`
+- Must NOT call `useCurrentFrame()`, `useVideoConfig()`, or any React hook
+- Must NOT depend on Remotion
+- Accept timing information through explicit arguments/context
+- `FrameContext`: `{ frame, fps, progress }` — canonical time unit

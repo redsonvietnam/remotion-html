@@ -167,11 +167,245 @@ Record of cross-production decisions. Statuses: CANDIDATE / ADOPTED / IMPLEMENTE
 
 ---
 
+## 16. Preview Studio Architecture
+
+**Status: ADOPTED**
+
+- Standalone HTML file (React 18 CDN + Babel standalone) — no build step
+- Independent of Remotion — pure preview/MQA tool
+- Supports multiple productions via `PRODUCTIONS` array
+- Supports 16:9 and 9:16 canvas formats via `CANVAS` object
+- Scene renderers are template-specific (NF_SCENES, CR7_SCENES)
+- Production selector, scene selector, play/pause, scrubber, frame/time display
+- Format switching changes canvas dimensions without layout recalculation
+- Served via `npm run studio` (node preview/serve.mjs studio)
+
+---
+
+## 17. Design Model Contract
+
+**Status: ADOPTED**
+
+- `FrameContext`: `{ frame, fps, progress }` — canonical time unit
+- `MotionPrimitive<T>`: `(ctx: FrameContext, ...args) => T` — pure function
+- `CanvasSize`: `{ width, height }` — standard formats: `CANVAS_16_9`, `CANVAS_9_16`
+- `PROJECT_FPS`: 30 — project-wide constant
+- `DesignScene`: `{ id, kind, timing, content }` — renderer-agnostic scene
+- Types are in `src/design/model/types.ts` — no React, no Remotion imports
+
+---
+
+## 18. Renderer Boundary
+
+**Status: ADOPTED**
+
+- Remotion hooks (`useCurrentFrame`, `useVideoConfig`) ONLY in `RemotionScenes.tsx` files
+- Data components receive `frame`/`fps` as props — never call hooks
+- Preview adapter computes frame/progress from its own clock, passes as props
+- `AbsoluteFill`, `interpolate`, `spring` from remotion are acceptable in data components (pure functions/components)
+- `useCurrentFrame`, `useVideoConfig` are violations in data components
+
+---
+
+## 19. Motion Classification
+
+**Status: ADOPTED**
+
+- Class A (reusable): `textIn`, `nodeIn`, `reveal`, `edgeDraw`, `countUp` — pure functions
+- Class B (template-specific): `Backdrop` (blueprint grid), `LawBadge` (legal domain)
+- Existing `design/motion` already covers similar patterns (fadeSlide, linearProgress)
+- No extraction performed — template-local helpers work as-is
+- Premature abstraction prevented: no UniversalAnimatedThing, GenericSceneEffect
+
+---
+
+## 20. Template vs Production Responsibilities
+
+**Status: ADOPTED**
+
+- **Template**: visual grammar, scene components, motion vocabulary, Remotion adapter
+- **Production**: scene definitions (`SceneDef[]`), content records, theme
+- **Shared design**: motion primitives, typography, layout, SVG math
+- **Data contract**: `src/data/contract.ts` — single source of truth for types
+- Adding a production = new data + theme + Composition; NO template code changes
+
+---
+
+## 21. Ronaldo Third-Template Experiment
+
+**Status: ADOPTED**
+
+- CR7 Records validates that Design Model is not secretly a "law video model"
+- Visual language materially different from NodeFlow:
+  - Dark warm background (not blueprint grid)
+  - Large typography-driven statistics (not node-edge diagrams)
+  - Gold/amber + red accents (not electric cyan)
+  - Minimal decoration (not signal flow)
+- Scene kinds: `hero`, `stat`, `milestone`, `closing` — different from NodeFlow's 6 kinds
+- Same Design Model supports both templates without modification
+- Template choice determines visual grammar — this is a hard coupling
+
+---
+
+## 22. What Is NOT Configurable
+
+**Status: ADOPTED**
+
+- Renderer boundary (hooks vs pure functions) — architectural invariant
+- Data/template layering boundary — hard constraint
+- Design Model contract — shared by all templates
+- Template scene types — each template defines its own
+- Content format — template-specific (NodeFlow needs flowNodes/edges; CR7 needs bigNumber/label)
+
+---
+
+## 23. Composer Decision
+
+**Status: DEFERRED (revalidated)**
+
+- Revalidated with evidence from 10 productions across 5 templates
+- nq57 template: 6 productions — reuse proven
+- cr7 template: 2 productions — reuse proven
+- Theme handles visual customization
+- Production workflow (data + Composition) is simple and proven
+- No production needs to mix scene types from multiple templates
+- No production needs dynamic template selection at runtime
+- Deferred until a production requires cross-template scene mixing
+
+---
+
+## 24. Production Workflow
+
+**Status: ADOPTED**
+
+Proven workflow for creating a new production:
+
+1. **Choose template** — select from registry (nodeflow, cr7, nq57, etc.)
+2. **Create data file** — `src/data/<production>.ts`
+   - Import `SceneDef`, `sceneFrames` from `contract.ts`
+   - Import content types from `contract.ts`
+   - Export `<NAME>_SCENES: SceneDef[]` (scene definitions)
+   - Export `<NAME>_CONTENT: Record<string, Content>` (scene content)
+3. **Create or reuse theme** — `src/theme/<name>.ts`
+   - Must satisfy `Theme` interface from `design/theme`
+4. **Register in Root.tsx** — add `Composition` with template, data, theme
+5. **Register in contract.ts** — add template schema to `TEMPLATE_SCHEMAS` (if new template)
+6. **Preview** — add to Preview Studio `PRODUCTIONS` array (if needed)
+7. **Generate TTS** — edge-tts with `vi-VN-NamMinhNeural`
+8. **Render** — `npx remotion render src/index.ts <Composition> out/<id>.mp4`
+
+**What is code**: template scene components, motion primitives, Remotion adapter
+**What is data**: scene definitions, content records, theme
+**What is template**: visual grammar, scene kinds, motion vocabulary
+**What is configurable**: theme (colors/fonts), format (16:9/9:16), content
+**What is fixed**: renderer boundary, data/template layering, Design Model contract
+
+---
+
+## 25. CR7 Template Reuse
+
+**Status: ADOPTED**
+
+- CR7 template proven reusable: two productions share one template
+- CR7 Records (career stats) + CR7 vs Messi (comparison) — same template code
+- No template duplication required
+- Adding a third CR7 production = new data file + Composition only
+- Template remains untouched when adding productions
+
+---
+
+## 26. contract.ts Must Not Import Node.js Built-ins
+
+**Status: ADOPTED**
+
+- `contract.ts` is imported by data files which get bundled by webpack for Remotion
+- webpack cannot resolve `node:path` or other Node.js built-ins
+- Removed `import path from "node:path"` — replaced `path.isAbsolute()` with inline regex
+- All `path`-dependent validation logic now lives in `scripts/validate.mjs` (esbuild, Node-only)
+- Rule: `contract.ts` must never import Node.js built-ins
+
+---
+
+## 27. CR7 TTS Production Workflow
+
+**Status: ADOPTED**
+
+- TTS scripts: `gen_tts_cr7Records.py`, `gen_tts_cr7VsMessi.py`
+- Voice: `vi-VN-NamMinhNeural` ( Vietnamese voice, works with English text)
+- Retry logic: 3 attempts per scene (intermittent `NoAudioReceived` errors)
+- Audio output: `public/cr7/s1.mp3` ... `s7.mp3`, `public/cr7vsMessi/s1.mp3` ... `s7.mp3`
+- Duration metadata: `public/<id>/durations.json` (auto-generated by TTS script)
+- Scene durations in data files must match actual audio durations (tolerance: 0.15s)
+- Manifest: `tts` field points to the Python script; `--skip-tts` flag available
+
+---
+
+## 28. CR7 Full Production Pipeline
+
+**Status: IMPLEMENTED**
+
+- End-to-end pipeline proven for CR7 Records and CR7 vs Messi
+- Data → TTS → manifest → Remotion → MP4 → Preview Studio
+- Both MP4s render successfully (2181 and 2814 frames respectively)
+- Template unchanged between productions — only data differs
+- 10 productions now registered in manifest (8 with audio, 2 CR7 with audio)
+
+---
+
+## 29. Creative Studio Architecture
+
+**Status: ADOPTED**
+
+- Three-file architecture: `studio.html` (shell) + `studio.css` (styles) + `studio.jsx` (React app)
+- Standalone HTML + React 18 CDN + Babel — no build step, no framework migration needed
+- Studio Model: `Production { id, name, template, format, theme, scenes, content }`
+- Template visibility: production → template relationship shown in header badge
+- Format control: per-template supported formats (`TEMPLATE_FORMATS`), unsupported formats disabled
+- Scene inspection: frame reset on select, progress bar per scene, duration display
+- Motion inspection: frame stepping (left/right), scene jumping (up/down), keyboard shortcuts (Space, arrows, Home/End)
+- Visual QA: safe-area overlay toggle, canvas dimensions indicator, FPS badge, progress percentage
+- Template/production boundary: Studio knows `production → template → renderer` but never contains production-specific rendering logic
+- Scene renderers: `NF_SCENES` (NodeFlow) and `CR7_SCENES` (CR7) — template-specific, co-located in JSX
+- Preview is design QA only — no TTS, no MP4 render, no audio playback
+
+---
+
+## 30. Studio Keyboard Shortcuts
+
+**Status: ADOPTED**
+
+- Space: play/pause
+- Left arrow: previous frame
+- Right arrow: next frame
+- Up arrow: previous scene
+- Down arrow: next scene
+- Home: jump to frame 0
+- End: jump to last frame
+- Scene click: select scene + reset to frame 0
+
+---
+
+## 31. Format Support Contract
+
+**Status: ADOPTED**
+
+- Each template declares supported formats via `TEMPLATE_FORMATS`
+- `cr7`: 16:9, 9:16
+- `nodeflow`: 16:9 only
+- `nq57`: 16:9 only
+- `stoiclove`: 9:16 only
+- `blueprint`: 16:9 only
+- Unsupported formats are visually disabled in the Studio with explanation (tooltip)
+- Switching production auto-selects a supported format if current is unsupported
+
+---
+
 ## Template Registry
 
-| Template | Scene Kinds | Status | Productions |
-|----------|-------------|--------|-------------|
-| nq57 | title, quote, roles, pillars, stats, vision, end | ADOPTED | 5 |
-| stoicLove | hook, statement, split, concept, impermanence, ending | ADOPTED | 1 |
-| nodeflow | title, flow, contribution, benefit, compare, end | ADOPTED | 1 |
-| blueprint | title, pillars, measure, detail, process, seal | ADOPTED | 1 (BHXH V2) |
+| Template | Scene Kinds | Formats | Status | Productions |
+|----------|-------------|---------|--------|-------------|
+| nq57 | title, quote, roles, pillars, stats, vision, end | 16:9 | ADOPTED | 5 |
+| stoicLove | hook, statement, split, concept, impermanence, ending | 9:16 | ADOPTED | 1 |
+| nodeflow | title, flow, contribution, benefit, compare, end | 16:9 | ADOPTED | 1 |
+| blueprint | title, pillars, measure, detail, process, seal | 16:9 | ADOPTED | 1 (BHXH V2) |
+| cr7 | hero, stat, milestone, closing | 16:9, 9:16 | ADOPTED | 2 (CR7 Records, CR7 vs Messi) |

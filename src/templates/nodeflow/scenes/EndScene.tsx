@@ -1,34 +1,37 @@
 // ---------------------------------------------------------------------------
 // EndScene — Closing: system status "ALL NODES ONLINE" + key summary
 //
-// Visual: Full network topology showing all 3 entity nodes fully active and
-// connected. All edges illuminated with signal pulses. Bottom: 3 summary
-// stat boxes. A "SYSTEM READY" or equivalent closing stamp.
-// The network completes and steadies into a calm, live state.
+// Data component: receives frame/fps as props (no Remotion hooks).
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, staticFile, Audio } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { useTheme } from "../../../design/theme";
 import { Backdrop, SignalIndicator, textIn, reveal, edgeDraw } from "../helpers";
 import { SystemNode, EdgeLine, SignalPulse, NodeBox } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
 import type { NodeFlowEndContent } from "../types";
 
-type Props = { audio: string; caption: string; dur: number } & NodeFlowEndContent;
+export type EndSceneProps = {
+  audio: string;
+  caption: string;
+  dur: number;
+  frame: number;
+  fps: number;
+} & NodeFlowEndContent;
 
-export const EndScene: React.FC<Props> = ({
+export const EndSceneData: React.FC<EndSceneProps> = ({
   audio,
   caption,
   dur,
+  frame,
+  fps,
   closingTitle,
   closingSubtitle,
   stats,
   reference,
 }) => {
   const theme = useTheme();
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const titleAnim = textIn(frame, 5, fps, 40);
   const subAnim = textIn(frame, 22, fps, 30);
@@ -59,8 +62,7 @@ export const EndScene: React.FC<Props> = ({
 
   return (
     <AbsoluteFill>
-      <Backdrop />
-      <Audio src={staticFile(audio)} />
+      <Backdrop frame={frame} />
       <SignalIndicator label="COMPLETE" frame={frame} />
 
       {/* Background network SVG */}
@@ -70,7 +72,6 @@ export const EndScene: React.FC<Props> = ({
         viewBox={`0 0 ${W} ${H}`}
         style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
       >
-        {/* Edges — all three connections */}
         {[[0, 1], [1, 2], [0, 2]].map(([a, b], i) => (
           <g key={i}>
             <EdgeLine
@@ -97,7 +98,6 @@ export const EndScene: React.FC<Props> = ({
           </g>
         ))}
 
-        {/* Nodes */}
         {[0, 1, 2].map((i) => (
           <SystemNode
             key={i}
@@ -114,7 +114,6 @@ export const EndScene: React.FC<Props> = ({
           />
         ))}
 
-        {/* Stat boxes */}
         {stats.map((s, i) => (
           <g key={i}>
             <NodeBox

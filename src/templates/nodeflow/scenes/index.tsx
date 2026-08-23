@@ -1,14 +1,9 @@
 // ---------------------------------------------------------------------------
-// NodeFlow Scene Registry — Maps scene kind to component
+// NodeFlow Scene Registry — Maps scene kind to Remotion wrapper component
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { TitleScene } from "./TitleScene";
-import { FlowScene } from "./FlowScene";
-import { ContributionScene } from "./ContributionScene";
-import { BenefitScene } from "./BenefitScene";
-import { CompareScene } from "./CompareScene";
-import { EndScene } from "./EndScene";
+import { TitleScene, FlowScene, ContributionScene, BenefitScene, CompareScene, EndScene } from "./RemotionScenes";
 import type { NodeFlowSceneContent } from "../types";
 
 type BaseProps = { audio: string; caption: string; dur: number };
@@ -39,3 +34,11 @@ export function renderScene(
     }
   }
 }
+
+// Re-export data components for Preview Studio
+export { TitleSceneData } from "./TitleScene";
+export { FlowSceneData } from "./FlowScene";
+export { ContributionSceneData } from "./ContributionScene";
+export { BenefitSceneData } from "./BenefitScene";
+export { CompareSceneData } from "./CompareScene";
+export { EndSceneData } from "./EndScene";

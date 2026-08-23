@@ -1,23 +1,17 @@
 // ---------------------------------------------------------------------------
 // BenefitScene — "What you get": right to left list of benefits
 //
-// Visual: A vertical cascade of node-cards representing benefit types.
-// Each card has an icon-like SVG glyph on the left and a label + value on the
-// right. Cards build from top to bottom. Connecting line (edge) runs along
-// the left side. On the right, a large "rights hierarchy" diagram.
+// Data component: receives frame/fps as props (no Remotion hooks).
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, staticFile, Audio, interpolate } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { useTheme } from "../../../design/theme";
 import { Backdrop, SceneContainer, SectionLabel, HRule, SignalIndicator, textIn, reveal } from "../helpers";
 import { NodeBox, EdgeLine } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
 import type { NodeFlowBenefitContent } from "../types";
 
-type Props = { audio: string; caption: string; dur: number } & NodeFlowBenefitContent;
-
-// Simple SVG icons as compact paths
 const ICONS: Record<string, string> = {
   pension: "M8 4 L8 16 M4 8 L12 8 M4 12 L12 12",
   health: "M6 12 L10 12 M8 10 L8 14 M12 8 A4 4 0 1 1 4 8 A4 4 0 1 1 12 8",
@@ -46,22 +40,29 @@ const BenefitIcon: React.FC<{
   );
 };
 
-export const BenefitScene: React.FC<Props> = ({
+export type BenefitSceneProps = {
+  audio: string;
+  caption: string;
+  dur: number;
+  frame: number;
+  fps: number;
+} & NodeFlowBenefitContent;
+
+export const BenefitSceneData: React.FC<BenefitSceneProps> = ({
   audio,
   caption,
   dur,
+  frame,
+  fps,
   title,
   description,
   benefits,
 }) => {
   const theme = useTheme();
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const titleAnim = textIn(frame, 0, fps, 30);
   const descAnim = textIn(frame, 12, fps, 25);
 
-  // Each benefit card reveals in sequence
   const cardReveals = benefits.map((_, i) => reveal(frame, 20 + i * 22, 25));
 
   const CARD_W = 760;
@@ -77,8 +78,7 @@ export const BenefitScene: React.FC<Props> = ({
 
   return (
     <AbsoluteFill>
-      <Backdrop />
-      <Audio src={staticFile(audio)} />
+      <Backdrop frame={frame} />
       <SignalIndicator label="RIGHTS" frame={frame} />
 
       {/* Left panel: text */}
@@ -141,7 +141,6 @@ export const BenefitScene: React.FC<Props> = ({
           overflow: "visible",
         }}
       >
-        {/* Vertical edge line connecting all cards */}
         <EdgeLine
           x1={60}
           y1={CARD_H / 2}
@@ -158,9 +157,7 @@ export const BenefitScene: React.FC<Props> = ({
           const c = colorCycle[i % colorCycle.length];
           return (
             <g key={i} opacity={cardReveals[i]}>
-              {/* Icon */}
               <BenefitIcon type={b.icon} x={36} y={y + (CARD_H - ICON_SIZE) / 2} color={c} size={ICON_SIZE} />
-              {/* Card */}
               <NodeBox
                 x={CARD_X}
                 y={y}
@@ -173,7 +170,6 @@ export const BenefitScene: React.FC<Props> = ({
                 color={c}
                 textSize={18}
               />
-              {/* Connector dot on vertical line */}
               <circle cx={60} cy={y + CARD_H / 2} r={4} fill={c} opacity={cardReveals[i] * 0.9} />
             </g>
           );

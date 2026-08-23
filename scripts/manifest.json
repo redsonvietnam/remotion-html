@@ -95,6 +95,30 @@
       "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Luat BHXH" },
       "aliases": ["luat bao hiem xa hoi", "luat bhxh 2024", "luatbhxh", "bao hiem xa hoi 2024"],
       "keywords": ["bảo hiểm xã hội", "luật bhxh", "41/2024/qh15", "lương hưu", "bhxh một lần"]
+    },
+    "cr7Records": {
+      "id": "cr7Records",
+      "template": "cr7",
+      "composition": "CR7Records",
+      "dataFile": "src/data/cr7Records.ts",
+      "tts": "gen_tts_cr7Records.py",
+      "output": "out/cr7Records.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "CR7 Records" },
+      "aliases": ["cr7 records", "cristiano ronaldo records", "ronaldo records"],
+      "keywords": ["cr7 records", "ronaldo records", "cristiano records"]
+    },
+    "cr7VsMessi": {
+      "id": "cr7VsMessi",
+      "template": "cr7",
+      "composition": "CR7VsMessi",
+      "dataFile": "src/data/cr7VsMessi.ts",
+      "tts": "gen_tts_cr7VsMessi.py",
+      "output": "out/cr7VsMessi.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "CR7 vs Messi" },
+      "aliases": ["cr7 vs messi", "ronaldo vs messi", "messi vs ronaldo"],
+      "keywords": ["ronaldo vs messi", "messi vs ronaldo", "cr7 vs messi"]
     }
   }
 }

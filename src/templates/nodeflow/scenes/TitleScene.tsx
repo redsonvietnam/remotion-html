@@ -1,26 +1,32 @@
 // ---------------------------------------------------------------------------
 // TitleScene — Opening: law title + system status panel
 //
-// Visual: Large law number dominates center. Below, a "system boot" sequence
-// where 3 entity nodes (NHÀ NƯỚC / NGƯỜI LAO ĐỘNG / DOANH NGHIỆP) light up
-// one by one as if the network is coming online. Edge lines draw between them.
-// A law badge floats top-left. Blinking status indicator top-right.
+// Data component: receives frame/fps as props (no Remotion hooks).
+// Remotion wrapper: useTitleScene.tsx passes useCurrentFrame/useVideoConfig.
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, staticFile, Audio } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { useTheme } from "../../../design/theme";
 import { Backdrop, SceneContainer, SectionLabel, LawBadge, SignalIndicator, textIn, nodeIn, reveal, edgeDraw } from "../helpers";
 import { NodeBox, EdgeLine, SignalPulse } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
 import type { NodeFlowTitleContent } from "../types";
 
-type Props = { audio: string; caption: string; dur: number } & NodeFlowTitleContent;
+export type TitleSceneProps = {
+  audio: string;
+  caption: string;
+  dur: number;
+  frame: number;
+  fps: number;
+} & NodeFlowTitleContent;
 
-export const TitleScene: React.FC<Props> = ({
+export const TitleSceneData: React.FC<TitleSceneProps> = ({
   audio,
   caption,
   dur,
+  frame,
+  fps,
   lawCode,
   title,
   subtitle,
@@ -28,8 +34,6 @@ export const TitleScene: React.FC<Props> = ({
   nodes,
 }) => {
   const theme = useTheme();
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const badgeAnim = textIn(frame, 0, fps);
   const titleAnim = textIn(frame, 8, fps, 40);
@@ -49,7 +53,6 @@ export const TitleScene: React.FC<Props> = ({
 
   // Node positions (bottom strip)
   const W = 1920;
-  const NY = 820;
   const NW = 260;
   const NH = 70;
   const NX = [240, W / 2 - NW / 2, W - 240 - NW];
@@ -57,8 +60,7 @@ export const TitleScene: React.FC<Props> = ({
 
   return (
     <AbsoluteFill>
-      <Backdrop />
-      <Audio src={staticFile(audio)} />
+      <Backdrop frame={frame} />
       <SignalIndicator label="ONLINE" frame={frame} />
 
       <SceneContainer>

@@ -25,6 +25,10 @@ import { LUAT_BHXH_SCENES, LUAT_BHXH_CONTENT, sceneFrames as luatBHXHSceneFrames
 import { blueprint } from "./theme/blueprint";
 import { BAO_HIEM_SCENES, BAO_HIEM_CONTENT, sceneFrames as baoHiemSceneFrames } from "./data/baoHiem2024";
 import { baoHiem2024 } from "./theme/baoHiem2024";
+import { CR7Template } from "./templates/cr7";
+import { CR7_SCENES, CR7_CONTENT, sceneFrames as cr7SceneFrames } from "./data/cr7Records";
+import { cr7 } from "./theme/cr7";
+import { CR7_VS_MESSI_SCENES, CR7_VS_MESSI_CONTENT, sceneFrames as cr7VsMessiSceneFrames } from "./data/cr7VsMessi";
 
 const FPS = 30;
 
@@ -58,6 +62,14 @@ const LUAT_BHXH_FRAMES =
 const BAO_HIEM_FRAMES =
   BAO_HIEM_SCENES.reduce((acc, s) => acc + baoHiemSceneFrames(s.dur), 0) +
   (BAO_HIEM_SCENES.length - 1) * 20;
+
+const CR7_FRAMES =
+  CR7_SCENES.reduce((acc, s) => acc + cr7SceneFrames(s.dur), 0) +
+  (CR7_SCENES.length - 1) * 16;
+
+const CR7_VS_MESSI_FRAMES =
+  CR7_VS_MESSI_SCENES.reduce((acc, s) => acc + cr7VsMessiSceneFrames(s.dur), 0) +
+  (CR7_VS_MESSI_SCENES.length - 1) * 16;
 
 export const Root: React.FC = () => {
   return (
@@ -147,6 +159,45 @@ export const Root: React.FC = () => {
           scenes: LUAT_BHXH_SCENES,
           content: LUAT_BHXH_CONTENT,
           theme: blueprint,
+        }}
+      />
+      <Composition
+        id="BaoHiem2024"
+        component={NodeFlowTemplate}
+        durationInFrames={BAO_HIEM_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: BAO_HIEM_SCENES,
+          content: BAO_HIEM_CONTENT,
+          theme: baoHiem2024,
+        }}
+      />
+      <Composition
+        id="CR7Records"
+        component={CR7Template}
+        durationInFrames={CR7_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: CR7_SCENES,
+          content: CR7_CONTENT,
+          theme: cr7,
+        }}
+      />
+      <Composition
+        id="CR7VsMessi"
+        component={CR7Template}
+        durationInFrames={CR7_VS_MESSI_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: CR7_VS_MESSI_SCENES,
+          content: CR7_VS_MESSI_CONTENT,
+          theme: cr7,
         }}
       />
     </>

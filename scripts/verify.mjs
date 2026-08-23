@@ -22,7 +22,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MANIFEST_PATH = path.join(ROOT, "scripts", "manifest.json");
 
 // Production lines that must always be present in the baseline.
-export const EXPECTED_PRODUCTIONS = ["nq57", "dean06", "nq79", "stoiclove", "canCuoc"];
+export const EXPECTED_PRODUCTIONS = ["nq57", "dean06", "nq79", "stoiclove", "canCuoc", "cr7Records", "cr7VsMessi"];
 
 // Known topic -> expected composition (routing contract). If any of these
 // stops resolving correctly, routing is considered broken.
@@ -32,6 +32,8 @@ export const ROUTING_CONTRACT = [
   { topic: "nghị quyết 57", expect: "NghiQuyet57V2" },
   { topic: "stoic love", expect: "StoicLove" },
   { topic: "luật căn cước 2023", expect: "CanCuoc" },
+  { topic: "cr7 records", expect: "CR7Records" },
+  { topic: "ronaldo vs messi", expect: "CR7VsMessi" },
 ];
 
 export function loadManifest() {

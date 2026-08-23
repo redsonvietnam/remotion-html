@@ -5,20 +5,9 @@
 // Scene components consume this data and handle presentation.
 // ---------------------------------------------------------------------------
 
-export const FPS = 30;
-export const TAIL = 0.5;
-export const sceneFrames = (dur: number) => Math.ceil((dur + TAIL) * FPS);
-
-// ---------------------------------------------------------------------------
-// SceneDef — base scene metadata (audio, caption, duration)
-// ---------------------------------------------------------------------------
-
-export interface SceneDef {
-  id: string;
-  audio: string;
-  caption: string;
-  dur: number;
-}
+export { FPS, TAIL, sceneFrames } from "./contract";
+import type { SceneDef } from "./contract";
+export type { SceneDef } from "./contract";
 
 // ---------------------------------------------------------------------------
 // NQ57 Content Types — scene-specific content (no presentation)

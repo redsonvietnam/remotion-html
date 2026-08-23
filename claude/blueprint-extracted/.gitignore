@@ -1,0 +1,42 @@
+# dependencies
+node_modules/
+
+# build / cache
+out/
+.remotion/
+
+# generated TTS audio + artifacts (tao lai bang gen_tts_v2.py / gen_tts_deAn06.py / gen_tts_nghiQuyet79.py / gen_tts_stoicLove.py)
+public/nq57/*.mp3
+public/nq57/_*
+public/nq57/durations.json
+public/deAn06/*.mp3
+public/deAn06/_*
+public/deAn06/durations.json
+public/nghiQuyet79/*.mp3
+public/nghiQuyet79/_*
+public/nghiQuyet79/durations.json
+public/stoicLove/*.mp3
+public/stoicLove/_
+public/stoicLove/durations.json
+public/canCuoc/*.mp3
+public/canCuoc/_
+public/canCuoc/durations.json
+public/luatBHXH/*.mp3
+public/luatBHXH/_*
+public/luatBHXH/durations.json
+
+# secrets (tuyet doi khong commit)
+gemini_key.txt
+proxy_key.txt
+.env
+*.local
+
+# misc
+*.log
+.DS_Store
+Thumbs.db
+
+# python cache
+__pycache__/
+*.pyc
+

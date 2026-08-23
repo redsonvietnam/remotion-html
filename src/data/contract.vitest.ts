@@ -3,6 +3,8 @@ import * as nq57 from "./nq57";
 import * as deAn06 from "./deAn06";
 import * as nghiQuyet79 from "./nghiQuyet79";
 import * as stoicLove from "./stoicLove";
+import * as cr7Records from "./cr7Records";
+import * as cr7VsMessi from "./cr7VsMessi";
 import { validateProductionData, validateStoryboard, checkAudioAssets, checkAudioDurations, TEMPLATE_SCHEMAS } from "./contract";
 
 const baseScene = { id: "s1", audio: "x/s1.mp3", caption: "narration", dur: 5 };
@@ -23,6 +25,20 @@ describe("existing productions validate", () => {
   it("stoiclove", () => {
     const r = validateProductionData(stoicLove as any, "stoiclove");
     expect(r.valid).toBe(true);
+  });
+  it("cr7", () => {
+    const r = validateProductionData(cr7Records as any, "cr7");
+    // CR7 audio files don't exist yet — only audio path errors are expected
+    const nonAudioErrors = r.errors.filter(e => e.code !== "INVALID_AUDIO_PATH");
+    expect(nonAudioErrors).toEqual([]);
+    expect(r.sceneCount).toBe(7);
+  });
+  it("cr7VsMessi", () => {
+    const r = validateProductionData(cr7VsMessi as any, "cr7");
+    // CR7 vs Messi audio files don't exist yet — only audio path errors expected
+    const nonAudioErrors = r.errors.filter(e => e.code !== "INVALID_AUDIO_PATH");
+    expect(nonAudioErrors).toEqual([]);
+    expect(r.sceneCount).toBe(7);
   });
 });
 
@@ -223,8 +239,8 @@ describe("WS37 real audio duration validation", () => {
 });
 
 describe("template schemas", () => {
-  it("covers all four templates", () => {
-    for (const t of ["nq57", "dean06", "nq79", "stoiclove"]) {
+  it("covers all templates", () => {
+    for (const t of ["nq57", "dean06", "nq79", "stoiclove", "nodeflow", "blueprint", "cr7"]) {
       expect(TEMPLATE_SCHEMAS[t]).toBeDefined();
     }
   });

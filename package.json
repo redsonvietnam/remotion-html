@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "node preview/serve.mjs",
+    "studio": "node preview/serve.mjs studio",
     "produce": "node scripts/produce.mjs",
     "verify": "tsc --noEmit && npm test && node scripts/verify.mjs",
     "upgrade": "remotion upgrade"

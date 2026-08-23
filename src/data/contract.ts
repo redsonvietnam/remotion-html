@@ -5,12 +5,10 @@
 // Pure logic + types (no React, no Remotion imports). Imported by vitest for
 // unit validation and by scripts/validate.mjs (via esbuild) for the CLI path.
 //
-// The four existing data files (nq57, deAn06, nghiQuyet79, stoicLove) already
-// follow this shape: each exports a SceneDef[] (named <NAME>_SCENES) and a
-// content Record (named <NAME>_CONTENT) keyed by scene id.
+// NOTE: This file must NOT import Node.js built-ins (e.g. "path") because it
+// gets bundled by webpack for Remotion rendering.  The `path`-dependent checks
+// live in scripts/validate.mjs (esbuild, Node-only).
 // ---------------------------------------------------------------------------
-
-import path from "node:path";
 
 // Base scene metadata shared by every production.
 export interface SceneDef {
@@ -19,6 +17,15 @@ export interface SceneDef {
   caption: string; // on-screen narration text
   dur: number; // seconds
 }
+
+// Project-wide FPS constant.
+export const FPS = 30;
+
+// Tail buffer in seconds added to each scene's duration.
+export const TAIL = 0.5;
+
+// Convert scene duration (seconds) to frames.
+export const sceneFrames = (dur: number) => Math.ceil((dur + TAIL) * FPS);
 
 export interface ContentError {
   code: string;
@@ -63,6 +70,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
   blueprint: {
     allowedKinds: ["title", "pillars", "measure", "detail", "process", "seal"],
     requiredTextFields: { title: ["title"], pillars: ["heading"], measure: ["heading"], detail: ["heading"], process: ["heading"], seal: ["heading"] },
+  },
+  cr7: {
+    allowedKinds: ["hero", "stat", "milestone", "closing"],
+    requiredTextFields: { hero: ["name"], stat: ["bigNumber"], milestone: ["title"], closing: ["title"] },
   },
 };
 
@@ -136,7 +147,6 @@ export function validateProductionData(
     if (!s.audio || typeof s.audio !== "string" || !s.audio.trim()) {
       errors.push({ code: "INVALID_AUDIO_PATH", scene: s.id, message: `Scene ${s.id} missing audio path.` });
     } else if (
-      path.isAbsolute(s.audio) ||
       /^[A-Za-z]:[\\/]/.test(s.audio) ||
       s.audio.startsWith("/") ||
       s.audio.startsWith("\\")
@@ -318,6 +328,49 @@ export type NodeFlowSceneContent =
   | NodeFlowBenefitContent
   | NodeFlowCompareContent
   | NodeFlowEndContent;
+
+// ---------------------------------------------------------------------------
+// CR7 Template Content Contract
+//
+// Canonical content types for the CR7 template (typography-driven,
+// large statistics, dark background). Pure content types —
+// no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface CR7HeroContent {
+  kind: "hero";
+  name: string;
+  tagline: string;
+  subtitle: string;
+}
+
+export interface CR7StatContent {
+  kind: "stat";
+  label: string;
+  bigNumber: string;
+  sub: string;
+  detail: string;
+  color: "accent1" | "accent2" | "accent3";
+}
+
+export interface CR7MilestoneContent {
+  kind: "milestone";
+  title: string;
+  items: { label: string; value: string }[];
+}
+
+export interface CR7ClosingContent {
+  kind: "closing";
+  title: string;
+  subtitle: string;
+  reference: string;
+}
+
+export type CR7SceneContent =
+  | CR7HeroContent
+  | CR7StatContent
+  | CR7MilestoneContent
+  | CR7ClosingContent;
 
 // ---------------------------------------------------------------------------
 // Storyboard Contract - the higher-level artifact C1 produces from research +

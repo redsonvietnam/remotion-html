@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Stoic Love — Standalone Preview</title>
+    <style>
+      :root {
+        --bg: #07070a;
+        --panel: #111114;
+        --line: rgba(212, 168, 67, 0.22);
+        --gold: #d4a843;
+        --ivory: #f5e6c8;
+        --muted: #9a8c7a;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background:
+          radial-gradient(120% 80% at 50% -10%, #15151b 0%, var(--bg) 70%);
+        color: var(--ivory);
+        font-family: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      body { display: flex; flex-direction: column; min-height: 100%; }
+      header {
+        padding: 18px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+      }
+      .brand { display: flex; flex-direction: column; gap: 2px; }
+      .brand .title { font-weight: 800; font-size: 18px; letter-spacing: 0.5px; }
+      .brand .meta { font-size: 12px; color: var(--muted); letter-spacing: 0.4px; }
+      .spacer { flex: 1; }
+      .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+      .tab {
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+      .tab:hover { color: var(--ivory); border-color: var(--gold); }
+      .tab.active { color: #0a0a0c; background: var(--gold); border-color: var(--gold); }
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .frame {
+        position: relative;
+        aspect-ratio: 9 / 16;
+        height: min(88vh, 92vw * 16 / 9);
+        background: #000;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
+      }
+      .frame video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #000;
+        display: block;
+      }
+      .overlay {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: linear-gradient(0deg, rgba(0,0,0,0.65), transparent);
+        pointer-events: none;
+      }
+      .readout {
+        font-variant-numeric: tabular-nums;
+        font-size: 13px;
+        color: var(--ivory);
+        letter-spacing: 0.4px;
+      }
+      .fs-btn {
+        pointer-events: auto;
+        margin-left: auto;
+        border: 1px solid var(--line);
+        background: rgba(0,0,0,0.35);
+        color: var(--ivory);
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .fs-btn:hover { border-color: var(--gold); }
+      .notice {
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+        min-height: 16px;
+      }
+      footer {
+        padding: 12px 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+      }
+      code { color: var(--gold); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="title" id="comp-title">Stoic Love — Standalone Preview</div>
+        <div class="meta" id="comp-meta">Composition: StoicLove · 1080×1920 · Vietnamese narration · H.264/AAC</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="tabs" id="tabs"></div>
+    </header>
+
+    <main>
+      <div>
+        <div class="frame" id="frame">
+          <video id="video" controls playsinline preload="metadata"></video>
+          <div class="overlay">
+            <span class="readout" id="readout">0:00 / 0:00</span>
+            <button class="fs-btn" id="fs">⛶ Fullscreen</button>
+          </div>
+        </div>
+        <div class="notice" id="notice"></div>
+      </div>
+    </main>
+
+    <footer>
+      Independent browser preview (no Remotion required to watch). Render with
+      <code> npx remotion render src/index.ts &lt;Comp&gt; out/&lt;comp&gt;.mp4 </code>
+      · Launch with <code>npm run preview</code>
+    </footer>
+
+    <script>
+      // Data-driven: reusable shell. Add entries as new templates are rendered.
+      const PREVIEWS = [
+        {
+          id: "StoicLove",
+          label: "Stoic Love",
+          src: "../out/stoicLove.mp4",
+          meta: "Composition: StoicLove · 1080×1920 · Vietnamese narration · H.264/AAC",
+          title: "Stoic Love — Standalone Preview",
+        },
+        {
+          id: "NQ57",
+          label: "NQ57",
+          src: "../out/nq57.mp4",
+          meta: "Composition: NghiQuyet57V2 · 1920×1080 · Vietnamese narration",
+          title: "NQ57 — Standalone Preview",
+        },
+        {
+          id: "DeAn06",
+          label: "De An 06",
+          src: "../out/dean06.mp4",
+          meta: "Composition: DeAn06 · 1920×1080 · Vietnamese narration",
+          title: "De An 06 — Standalone Preview",
+        },
+        {
+          id: "NQ79",
+          label: "NQ79",
+          src: "../out/nghiQuyet79.mp4",
+          meta: "Composition: NghiQuyet79 · 1920×1080 · Vietnamese narration · H.264/AAC",
+          title: "NQ79 — Standalone Preview",
+        },
+        {
+          id: "CanCuoc",
+          label: "Căn Cước 2023",
+          src: "../out/canCuoc.mp4",
+          meta: "Composition: CanCuoc · 1920×1080 · Vietnamese narration · H.264/AAC",
+          title: "Luật Căn cước 2023 — Standalone Preview",
+        },
+        {
+          id: "LuatGTDB",
+          label: "Luật GTDB 2024",
+          src: "../out/luatGTDB.mp4",
+          meta: "Composition: LuatGTDB · 1920×1080 · Vietnamese narration · H.264/AAC",
+          title: "Luật Trật tự, an toàn giao thông đường bộ 2024 — Standalone Preview",
+        },
+        {
+          id: "LuatBHXH",
+          label: "Luật BHXH 2024",
+          src: "../out/luatBHXH.mp4",
+          meta: "Composition: LuatBHXH · 1920×1080 · Blueprint template · Vietnamese narration · H.264/AAC",
+          title: "Luật Bảo hiểm xã hội 2024 — Standalone Preview",
+        },
+      ];
+
+      const video = document.getElementById("video");
+      const tabs = document.getElementById("tabs");
+      const readout = document.getElementById("readout");
+      const notice = document.getElementById("notice");
+      const titleEl = document.getElementById("comp-title");
+      const metaEl = document.getElementById("comp-meta");
+      const fsBtn = document.getElementById("fs");
+
+      let active = PREVIEWS[0];
+
+      function fmt(t) {
+        if (!isFinite(t)) return "0:00";
+        const m = Math.floor(t / 60);
+        const s = Math.floor(t % 60);
+        return m + ":" + String(s).padStart(2, "0");
+      }
+
+      function select(p) {
+        active = p;
+        titleEl.textContent = p.title;
+        metaEl.textContent = p.meta;
+        document.querySelectorAll(".tab").forEach((b) => {
+          b.classList.toggle("active", b.dataset.id === p.id);
+        });
+        notice.textContent = "";
+        video.src = p.src;
+        video.load();
+      }
+
+      PREVIEWS.forEach((p) => {
+        const b = document.createElement("button");
+        b.className = "tab";
+        b.dataset.id = p.id;
+        b.textContent = p.label;
+        b.addEventListener("click", () => select(p));
+        tabs.appendChild(b);
+      });
+
+      video.addEventListener("timeupdate", () => {
+        readout.textContent = fmt(video.currentTime) + " / " + fmt(video.duration);
+      });
+      video.addEventListener("loadedmetadata", () => {
+        readout.textContent = fmt(video.currentTime) + " / " + fmt(video.duration);
+      });
+      video.addEventListener("error", () => {
+        notice.textContent =
+          "Video not found: " + active.src + " — render it first via remotion render.";
+      });
+
+      fsBtn.addEventListener("click", () => {
+        const el = document.getElementById("frame");
+        if (document.fullscreenElement) document.exitFullscreen();
+        else el.requestFullscreen && el.requestFullscreen();
+      });
+
+      select(active);
+    </script>
+  </body>
+</html>

@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PREVIEW_PORT || 4321);
+const STUDIO_MODE = process.argv.includes("studio");
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -36,7 +37,7 @@ function send(res, status, body, type) {
 const server = http.createServer((req, res) => {
   try {
     let urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
-    if (urlPath === "/") urlPath = "/preview/index.html";
+    if (urlPath === "/") urlPath = STUDIO_MODE ? "/preview/studio.html" : "/preview/index.html";
 
     const resolved = path.normalize(path.join(ROOT, urlPath));
     // Prevent path traversal outside ROOT.
@@ -56,7 +57,8 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log("Stoic Love standalone preview:");
+  const mode = STUDIO_MODE ? "Preview Studio (HTML)" : "standalone preview (MP4)";
+  console.log(`NodeFlow ${mode}:`);
   console.log("  → http://localhost:" + PORT + "/");
   console.log("Serving root: " + ROOT);
 });

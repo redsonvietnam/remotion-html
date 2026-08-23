@@ -14,7 +14,7 @@
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from "remotion";
+import { AbsoluteFill, interpolate, spring } from "remotion";
 import { useTheme } from "../../design/theme";
 import { GridBackground } from "./svg";
 
@@ -64,9 +64,9 @@ export const countUp = (frame: number, delay: number, duration: number, target: 
 
 // ─── Backdrop — blueprint dark navy substrate ────────────────────────────────
 
-export const Backdrop: React.FC = () => {
+/** Backdrop — blueprint dark navy substrate. Accepts frame as prop (no hook). */
+export const Backdrop: React.FC<{ frame: number }> = ({ frame }) => {
   const theme = useTheme();
-  const frame = useCurrentFrame();
   // Slow radial drift in corner to keep the scene alive
   const a = interpolate(frame, [0, 200], [0, 1], { extrapolateRight: "clamp" });
   const x1 = 10 + Math.sin(frame / 180) * 5;

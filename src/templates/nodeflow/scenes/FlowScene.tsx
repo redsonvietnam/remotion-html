@@ -1,35 +1,37 @@
 // ---------------------------------------------------------------------------
 // FlowScene — "How it works": system diagram with 3 entity nodes + edges
 //
-// Visual grammar: The 3 parties (NLĐ / DOANH NGHIỆP / QUỸ BHXH) arranged in
-// a triangle. Edges draw sequentially showing money flow direction.
-// Data badges float on edges showing contribution rates.
-// Signal pulses travel along edges.
-// Left panel: narrative text. Right panel: live SVG diagram.
+// Data component: receives frame/fps as props (no Remotion hooks).
 // ---------------------------------------------------------------------------
 
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, staticFile, Audio } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { useTheme } from "../../../design/theme";
 import { Backdrop, SceneContainer, SectionLabel, HRule, SignalIndicator, textIn, nodeIn, reveal, edgeDraw } from "../helpers";
 import { SystemNode, EdgeLine, SignalPulse, DataBadge } from "../svg";
 import { KaraokeReveal } from "../../../design/typography";
 import type { NodeFlowFlowContent } from "../types";
 
-type Props = { audio: string; caption: string; dur: number } & NodeFlowFlowContent;
+export type FlowSceneProps = {
+  audio: string;
+  caption: string;
+  dur: number;
+  frame: number;
+  fps: number;
+} & NodeFlowFlowContent;
 
-export const FlowScene: React.FC<Props> = ({
+export const FlowSceneData: React.FC<FlowSceneProps> = ({
   audio,
   caption,
   dur,
+  frame,
+  fps,
   title,
   description,
   flowNodes,
   edges,
 }) => {
   const theme = useTheme();
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const titleAnim = textIn(frame, 0, fps, 30);
   const descAnim = textIn(frame, 12, fps, 25);
@@ -47,17 +49,16 @@ export const FlowScene: React.FC<Props> = ({
   const SVG_H = 680;
   // Node positions in diagram (cx, cy, r)
   const nodePositions = [
-    { cx: 210, cy: 160, r: 88 },   // node 0 — top-left (NLĐ)
-    { cx: 670, cy: 160, r: 88 },   // node 1 — top-right (DOANH NGHIỆP)
-    { cx: 440, cy: 500, r: 98 },   // node 2 — bottom-center (QUỸ BHXH)
+    { cx: 210, cy: 160, r: 88 },
+    { cx: 670, cy: 160, r: 88 },
+    { cx: 440, cy: 500, r: 98 },
   ];
 
   const nodeColors = [theme.colors.accent1, theme.colors.accent2, theme.colors.accent3];
 
   return (
     <AbsoluteFill>
-      <Backdrop />
-      <Audio src={staticFile(audio)} />
+      <Backdrop frame={frame} />
       <SignalIndicator label="FLOW" frame={frame} />
 
       {/* Left text panel */}
