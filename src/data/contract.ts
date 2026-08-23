@@ -60,6 +60,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["title", "flow", "contribution", "benefit", "compare", "end"],
     requiredTextFields: { title: ["title"], flow: ["title"], contribution: ["title"], benefit: ["title"], compare: ["title"] },
   },
+  blueprint: {
+    allowedKinds: ["title", "pillars", "measure", "detail", "process", "seal"],
+    requiredTextFields: { title: ["title"], pillars: ["heading"], measure: ["heading"], detail: ["heading"], process: ["heading"], seal: ["heading"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {

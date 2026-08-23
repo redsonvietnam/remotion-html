@@ -20,6 +20,9 @@ import { CAN_CUOC_SCENES, CAN_CUOC_CONTENT, sceneFrames as canCuocSceneFrames } 
 import { canCuoc } from "./theme/canCuoc";
 import { LUAT_GTDB_SCENES, LUAT_GTDB_CONTENT, sceneFrames as luatGTDBSceneFrames } from "./data/luatGTDB";
 import { luatGTDB } from "./theme/luatGTDB";
+import { BlueprintTemplate } from "./templates/blueprint";
+import { LUAT_BHXH_SCENES, LUAT_BHXH_CONTENT, sceneFrames as luatBHXHSceneFrames } from "./data/luatBHXH";
+import { blueprint } from "./theme/blueprint";
 import { BAO_HIEM_SCENES, BAO_HIEM_CONTENT, sceneFrames as baoHiemSceneFrames } from "./data/baoHiem2024";
 import { baoHiem2024 } from "./theme/baoHiem2024";
 
@@ -47,6 +50,10 @@ const CAN_CUOC_FRAMES =
 const LUAT_GTDB_FRAMES =
   LUAT_GTDB_SCENES.reduce((acc, s) => acc + luatGTDBSceneFrames(s.dur), 0) +
   (LUAT_GTDB_SCENES.length - 1) * 16;
+
+const LUAT_BHXH_FRAMES =
+  LUAT_BHXH_SCENES.reduce((acc, s) => acc + luatBHXHSceneFrames(s.dur), 0) +
+  (LUAT_BHXH_SCENES.length - 1) * 14;
 
 const BAO_HIEM_FRAMES =
   BAO_HIEM_SCENES.reduce((acc, s) => acc + baoHiemSceneFrames(s.dur), 0) +
@@ -116,7 +123,7 @@ export const Root: React.FC = () => {
           theme: canCuoc,
         }}
       />
-      <Composition
+<Composition
         id="LuatGTDB"
         component={NQ57Template}
         durationInFrames={LUAT_GTDB_FRAMES}
@@ -130,16 +137,16 @@ export const Root: React.FC = () => {
         }}
       />
       <Composition
-        id="BaoHiem2024"
-        component={NodeFlowTemplate}
-        durationInFrames={BAO_HIEM_FRAMES}
+        id="LuatBHXH"
+        component={BlueprintTemplate}
+        durationInFrames={LUAT_BHXH_FRAMES}
         fps={FPS}
         width={1920}
         height={1080}
         defaultProps={{
-          scenes: BAO_HIEM_SCENES,
-          content: BAO_HIEM_CONTENT,
-          theme: baoHiem2024,
+          scenes: LUAT_BHXH_SCENES,
+          content: LUAT_BHXH_CONTENT,
+          theme: blueprint,
         }}
       />
     </>

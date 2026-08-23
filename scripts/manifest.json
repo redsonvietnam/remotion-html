@@ -83,6 +83,18 @@
       "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "BHXH 2024" },
       "aliases": ["bao hiem xa hoi 2024", "luat bhxh 2024", "luat 41/2024", "bhxh 2024", "bảo hiểm xã hội 2024"],
       "keywords": ["bhxh", "bảo hiểm xã hội", "lương hưu", "thai sản", "ốm đau", "luật 41", "41/2024/qh15"]
+    },
+    "luatBHXH": {
+      "id": "luatBHXH",
+      "template": "blueprint",
+      "composition": "LuatBHXH",
+      "dataFile": "src/data/luatBHXH.ts",
+      "tts": "gen_tts_luatBHXH.py",
+      "output": "out/luatBHXH.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Luat BHXH" },
+      "aliases": ["luat bao hiem xa hoi", "luat bhxh 2024", "luatbhxh", "bao hiem xa hoi 2024"],
+      "keywords": ["bảo hiểm xã hội", "luật bhxh", "41/2024/qh15", "lương hưu", "bhxh một lần"]
     }
   }
 }
