@@ -120,6 +120,53 @@ Record of cross-production decisions. Statuses: CANDIDATE / ADOPTED / IMPLEMENTE
 
 ---
 
+## 12. Caption Word Count Budget
+
+**Status: ADOPTED**
+
+- Preferred: 4–7 words per chunk
+- Acceptable: 8–10 when semantics demand (e.g., long legal name + identifier)
+- Protected unit exception: 3 words allowed (e.g., "Theo Điều 64,")
+- Hard maximum: 10 words (override for protected units only)
+- Break signals must be contextual: conjunctions only break when starting new clause
+
+---
+
+## 13. Protected Semantic Units
+
+**Status: ADOPTED**
+
+- Vietnamese captions require protected spans that must not be split across chunks
+- Categories: dates, law names+identifiers, legal refs, number+unit compounds, proper nouns, domain terms
+- Detection via `PROTECTED_UNIT_PATTERNS` regex array in `useWordTimings.ts`
+- Protected units can override word count minimum (3 words allowed)
+- Overlap detection handles trailing punctuation on protected spans
+
+---
+
+## 14. Scored Breakpoint Selection
+
+**Status: ADOPTED**
+
+- Caption chunking uses scored breakpoints (0-100 scale)
+- Priority: punctuation > protected boundary > conjunction > chunk balance
+- Greedy left-to-right selection with hardMax override
+- Known limitation: compound phrases spanning multiple words require lookahead (e.g., "có hiệu lực")
+- Future improvement: bidirectional scoring or phrase-level protection
+
+---
+
+## 15. Blueprint Template Validation
+
+**Status: ADOPTED**
+
+- Blueprint template validated with BHXH V2 production (6 scenes)
+- Visual grammar: blueprint grid, pillar cards, measure blocks, process steps, official seal
+- Confirmed preference for law/policy storytelling (Decision #11)
+- Blueprint added to template registry with ADOPTED status
+
+---
+
 ## Template Registry
 
 | Template | Scene Kinds | Status | Productions |
@@ -127,4 +174,4 @@ Record of cross-production decisions. Statuses: CANDIDATE / ADOPTED / IMPLEMENTE
 | nq57 | title, quote, roles, pillars, stats, vision, end | ADOPTED | 5 |
 | stoicLove | hook, statement, split, concept, impermanence, ending | ADOPTED | 1 |
 | nodeflow | title, flow, contribution, benefit, compare, end | ADOPTED | 1 |
-| blueprint | title, pillars, measure, detail, process, seal | REJECTED | 1 (prototype) |
+| blueprint | title, pillars, measure, detail, process, seal | ADOPTED | 1 (BHXH V2) |
