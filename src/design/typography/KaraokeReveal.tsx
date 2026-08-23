@@ -1,15 +1,16 @@
 import React from "react";
-import { useCurrentFrame, useVideoConfig, interpolate, AbsoluteFill } from "remotion";
-import { useWordTimings, getActiveWordIndex, parseTextLines, countWords } from "./useWordTimings";
+import { useCurrentFrame, useVideoConfig, AbsoluteFill } from "remotion";
+import { useWordTimings, getActiveWordIndex, parseTextLines, countWords, chunkCaptionText } from "./useWordTimings";
 import type { TypographyBaseProps, KaraokeConfig } from "./types";
 import { DEFAULT_KARAOKE_CONFIG } from "./types";
 
 // ---------------------------------------------------------------------------
-// KaraokeReveal — Progressive word highlighting with marquee scroll
+// KaraokeReveal — Progressive word highlighting with chunk replacement
 //
-// Caption-style typography: words are revealed progressively, the current
-// word is highlighted, and long lines scroll (marquee) to keep the active
-// word visible.
+// Caption-style typography: long text is split into semantic 4–7 word chunks
+// via chunkCaptionText(). Only the current chunk is displayed. Words within
+// the active chunk are revealed progressively with the current word highlighted.
+// When the chunk completes, it is replaced by the next chunk.
 //
 // This is the "karaoke" effect used for TTS captions in video.
 //
@@ -70,10 +71,10 @@ export const KaraokeReveal: React.FC<KaraokeRevealProps> = ({
   pendingOpacity = DEFAULT_KARAOKE_CONFIG.pendingOpacity,
   activeFontWeight = DEFAULT_KARAOKE_CONFIG.activeFontWeight,
   defaultFontWeight = DEFAULT_KARAOKE_CONFIG.defaultFontWeight,
-  enableMarquee = DEFAULT_KARAOKE_CONFIG.enableMarquee,
-  containerWidth = DEFAULT_KARAOKE_CONFIG.containerWidth,
+  enableMarquee: _enableMarquee = DEFAULT_KARAOKE_CONFIG.enableMarquee,
+  containerWidth: _containerWidth = DEFAULT_KARAOKE_CONFIG.containerWidth,
   fontSize: karaokeFontSize = DEFAULT_KARAOKE_CONFIG.fontSize,
-  charWidthRatio = DEFAULT_KARAOKE_CONFIG.charWidthRatio,
+  charWidthRatio: _charWidthRatio = DEFAULT_KARAOKE_CONFIG.charWidthRatio,
   // Style props
   fontFamily,
   fontWeight = 600,
@@ -88,11 +89,12 @@ export const KaraokeReveal: React.FC<KaraokeRevealProps> = ({
   backdropBlur = true,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps } = useVideoConfig();
 
-  const totalFrames = dur != null ? Math.round(dur * fps) : durationInFrames;
+  // Chunk text into semantic 4-7 word lines for one-row display
+  const chunkedText = chunkCaptionText(text);
 
-  // Compute word timings
+  // Compute word timings (internally uses chunked text)
   const { timings, totalWords } = useWordTimings({
     text,
     dur,
@@ -102,13 +104,12 @@ export const KaraokeReveal: React.FC<KaraokeRevealProps> = ({
 
   if (totalWords === 0 || timings.length === 0) return null;
 
-  // Find the currently active line (the line containing the active word)
-  const lines = parseTextLines(text);
+  // Parse chunked lines (not raw text) for display
+  const lines = parseTextLines(chunkedText);
   const wordsPerLine = lines.map(countWords);
   const activeWordIdx = getActiveWordIndex(timings, frame);
-  const activeTiming = timings[activeWordIdx];
 
-  // Determine which line is active
+  // Determine which chunk is active
   let accumulatedWords = 0;
   let activeLineIdx = 0;
   for (let i = 0; i < wordsPerLine.length; i++) {
@@ -120,40 +121,21 @@ export const KaraokeReveal: React.FC<KaraokeRevealProps> = ({
     activeLineIdx = i;
   }
 
-  // Get the active line's words
+  // Get the active chunk's words
   const activeLine = lines[activeLineIdx] || "";
   const tokens = activeLine.split(/(\s+)/);
 
-  // Compute marquee scroll
-  const estWidth = activeLine.length * fontSize * charWidthRatio;
-  const maxScroll = Math.max(0, estWidth - containerWidth);
-
-  // Progress within the active line for marquee calculation
-  const lineStartFrame = timings[accumulatedWords]?.startFrame ?? 0;
-  const lineEndFrame =
-    timings[accumulatedWords + wordsPerLine[activeLineIdx] - 1]?.endFrame ??
-    totalFrames;
-  const localProgress = interpolate(
-    frame,
-    [lineStartFrame, lineEndFrame],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-
-  const scrollX =
-    maxScroll > 0
-      ? -Math.max(0, Math.min(maxScroll, localProgress * estWidth - containerWidth / 2))
-      : 0;
-
-  // Render tokens with highlighting
+  // Render tokens with highlighting — only the active chunk is visible
   let wordCounter = 0;
+  const lineStartWordIdx = accumulatedWords;
   const renderedTokens = tokens.map((token, ti) => {
     if (/^\s+$/.test(token)) {
       return <span key={ti}>{" "}</span>;
     }
 
-    const isRevealed = wordCounter < activeWordIdx + 1;
-    const isCurrent = wordCounter === activeWordIdx;
+    const globalWordIdx = lineStartWordIdx + wordCounter;
+    const isRevealed = globalWordIdx < activeWordIdx + 1;
+    const isCurrent = globalWordIdx === activeWordIdx;
     wordCounter++;
 
     return (
@@ -184,7 +166,7 @@ export const KaraokeReveal: React.FC<KaraokeRevealProps> = ({
         style={{
           maxWidth,
           display: "flex",
-          justifyContent: maxScroll > 0 ? "flex-start" : "center",
+          justifyContent: "center",
           overflow: "hidden",
           whiteSpace: "nowrap",
           fontFamily,
@@ -202,7 +184,6 @@ export const KaraokeReveal: React.FC<KaraokeRevealProps> = ({
           style={{
             display: "inline-block",
             whiteSpace: "nowrap",
-            transform: `translateX(${scrollX}px)`,
           }}
         >
           {renderedTokens}

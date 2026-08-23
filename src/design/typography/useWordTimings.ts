@@ -14,168 +14,225 @@ import type { WordTiming, WordTimingsResult } from "./types";
 // ---------------------------------------------------------------------------
 // Semantic Caption Chunking — Vietnamese-aware one-line caption chunker
 //
-// Splits long caption text into short semantic chunks (4-7 words target,
-// up to ~10 when preserving a semantic unit). Splits on punctuation/clause
-// boundaries first, then semantic phrase boundaries. Preserves important
-// units: numbers+units, percentages, dates, legal references, proper nouns.
+// Splits long caption text into short semantic chunks.
+// Priority: meaning → speech pause → semantic unit integrity → visual rhythm
+//           → word count (4-7 preferred, 8-10 acceptable, 12 hard max).
 // ---------------------------------------------------------------------------
 
-const SEMANTIC_PRESERVE_PATTERNS = [
-  // Percentages: 25,5%, 25.5%, 100%
-  /\d+(?:[.,]\d+)?\s*%/g,
-  // Numbers with units: 15 năm, 81%, 41/2024, 36/2024
-  /\d+(?:[.,]\d+)?\s*(?:năm|tháng|ngày|tuổi|triệu|tỷ|%|điểm)/gi,
-  // Legal references: Điều 64, Điều 70, Luật 41/2024, Luật 36/2024
-  /(?:Điều|Luật|Nghị quyết|Quyết định)\s+\d+(?:\/\d+)?/gi,
-  // Dates: 29/06/2024, 01/07/2025, 23/05/2018
+// --- Protected Semantic Units (NEVER split across chunks) ---
+
+interface ProtectedRange {
+  start: number;
+  end: number;
+}
+
+const PROTECTED_UNIT_PATTERNS: RegExp[] = [
+  // Vietnamese text dates: ngày 1 tháng 7 năm 2025
+  /ngày\s+\d{1,2}\s+tháng\s+\d{1,2}\s+năm\s+\d{4}/gi,
+  // Slash dates: 29/06/2024, 01/07/2025
   /\d{1,2}\/\d{1,2}\/\d{4}/g,
-  // Vietnamese multi-word proper nouns (capitalized sequences)
-  /(?:Luật|Bảo hiểm|Xã hội|Quốc hội|Chính phủ|Bộ|Cục|VNeID|BHXH|BHYT|GPLX|CCCD)(?:\s+[A-ZĐ][a-zàáâãèéêìíòóôõùúăđĩơư]+)*/g,
-  // Currency: 400.000đ, 50.000.000đ
-  /\d+(?:\.\d{3})*(?:,\d+)?\s*đ/g,
-  // Fractions: 25,5%, 17,5%
-  /\d+[.,]\d+\s*%/g,
+  // Law name + identifier: Luật Bảo hiểm xã hội số 41/2024/QH15
+  /Luật\s+\S+(?:\s+\S+)*\s+số\s+\S+/gi,
+  // Legal references: Điều 64, Nghị quyết 28, Quyết định 15
+  /(?:Điều|Nghị quyết|Quyết định)\s+\d+/gi,
+  // Law name without identifier: Luật Bảo hiểm xã hội, Luật Lao động (with optional year)
+  /Luật\s+(?:Bảo hiểm xã hội|Lao động|Doanh nghiệp|Thuế|Hình sự|Dân sự|Đất đai|Xây dựng|Giao thông)(?:\s+\d{4})?/gi,
+  // Number + unit (compound Vietnamese): mười lăm năm, hai mươi tuổi, hai mươi năm
+  /(?:hai|ba|bốn|năm|sáu|bảy|tám|chín|mười|hai mươi|ba mươi|bốn mươi|năm mươi)\s+(?:lăm|bốn|hai|ba|sáu|bảy|tám|chín)\s+(?:năm|tháng|ngày|tuổi|phần trăm)|(?:hai|ba|bốn|năm|sáu|bảy|tám|chín|mười|hai mươi|ba mươi|bốn mươi|năm mươi)\s+(?:năm|tháng|ngày|tuổi|phần trăm)/g,
+  // Number + unit (digit form): 15 năm, 41/2024, 2024
+  /\d+\s*(?:năm|tháng|ngày|tuổi|phần trăm)/g,
+  // Percentages: 25,5%, 100%
+  /\d+(?:[.,]\d+)?\s*%/g,
+  // Domain terms (multi-word): bảo hiểm xã hội, an sinh xã hội, lương hưu
+  /bảo hiểm xã hội|an sinh xã hội|hưởng lương hưu|rút bảo hiểm|đóng bảo hiểm|lương hưu|Trung ương Đảng|Quốc hội|người lao động|bền vững và bao trùm/gi,
 ];
 
-function splitIntoWords(text: string): string[] {
-  return text.split(/(\s+)/).filter((t) => t.trim().length > 0);
+function buildProtectedRanges(text: string): ProtectedRange[] {
+  const ranges: ProtectedRange[] = [];
+  for (const pattern of PROTECTED_UNIT_PATTERNS) {
+    const re = new RegExp(pattern.source, pattern.flags);
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      ranges.push({ start: m.index, end: m.index + m[0].length });
+    }
+  }
+  ranges.sort((a, b) => a.start - b.start);
+  return ranges;
 }
 
-function isPreservedUnit(word: string, nextWord: string): boolean {
-  // Check single word against patterns (for dates, percentages, etc.)
-  if (SEMANTIC_PRESERVE_PATTERNS.some((pattern) => pattern.test(word))) {
-    return true;
-  }
-  // Check two-word combinations
-  if (nextWord) {
-    const combined = word + " " + nextWord;
-    return SEMANTIC_PRESERVE_PATTERNS.some((pattern) => pattern.test(combined));
+function isCharInProtected(charIndex: number, ranges: ProtectedRange[]): boolean {
+  for (const r of ranges) {
+    if (charIndex >= r.start && charIndex < r.end) return true;
+    if (r.start > charIndex) break;
   }
   return false;
 }
 
-function shouldBreakAfter(word: string, nextWord: string, currentChunkLength: number): boolean {
-  // Always break after sentence-ending punctuation
-  if (/[.!?]$/.test(word)) return true;
-  // Break after clause-separating commas in longer chunks
-  if (/,/.test(word) && currentChunkLength >= 4) return true;
-  // Don't break semantic units
-  if (nextWord && isPreservedUnit(word, nextWord)) return false;
-  // Don't break if would create too-short chunk
-  if (currentChunkLength < 4) return false;
-  // Break at natural phrase boundaries (prepositions, conjunctions)
-  const phraseEnders = [
-    "và", "hoặc", "nhưng", "mà", "khi", "nếu", "thì", "là", "của", "cho",
-    "từ", "tới", "đến", "với", "theo", "theo đó", "do đó", "vì vậy",
-  ];
-  if (phraseEnders.some((p) => word.toLowerCase().endsWith(" " + p) || word.toLowerCase() === p)) {
-    return currentChunkLength >= 4;
+function isWordInProtected(charStart: number, charEnd: number, ranges: ProtectedRange[]): boolean {
+  for (const r of ranges) {
+    // Word overlaps with protected range (handles trailing punctuation)
+    if (charStart < r.end && charEnd > r.start) return true;
+    if (r.start >= charEnd) break;
   }
   return false;
 }
+
+// --- Word Tokenizer ---
+
+interface WordToken {
+  word: string;
+  charStart: number;
+  charEnd: number;
+}
+
+function tokenizeWords(text: string): WordToken[] {
+  const tokens: WordToken[] = [];
+  const re = /\S+/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    tokens.push({ word: m[0], charStart: m.index, charEnd: m.index + m[0].length });
+  }
+  return tokens;
+}
+
+// --- Break Scoring ---
+
+const CONJUNCTIONS = ["và", "hoặc", "nhưng", "mà", "khi", "nếu", "thì"];
+const PREPOSITIONS = ["của", "cho", "từ", "tới", "đến", "với", "theo"];
+
+function scoreBreakPosition(
+  word: WordToken,
+  wordIndex: number,
+  words: WordToken[],
+  chunkLen: number,
+  protectedRanges: ProtectedRange[],
+): number {
+  const w = word.word;
+  const isLast = wordIndex === words.length - 1;
+  if (isLast) return 200;
+
+  const next = words[wordIndex + 1];
+
+  // Inside protected unit: never break
+  const curProtected = isWordInProtected(word.charStart, word.charEnd, protectedRanges);
+  const nextProtected = isWordInProtected(next.charStart, next.charEnd, protectedRanges);
+  if (curProtected && nextProtected) return -100;
+
+  // At boundary of protected unit
+  const atProtectedEnd = curProtected && !nextProtected;
+
+  let score = 0;
+
+  // Punctuation strength (0–30)
+  if (/[.!?]$/.test(w)) score += 30;
+  else if (/;/.test(w)) score += 25;
+  else if (/:/.test(w)) score += 18;
+  else if (/,/.test(w)) score += 10;
+
+  // Protected unit boundary
+  if (atProtectedEnd) score += 20;
+
+  // Conjunction as clause boundary
+  const clean = w.toLowerCase().replace(/[,.]$/, "");
+  if (CONJUNCTIONS.includes(clean) && chunkLen >= 3) score += 10;
+
+  // Preposition (weak, needs decent chunk)
+  if (PREPOSITIONS.includes(clean) && chunkLen >= 4) score += 5;
+
+  // Chunk size preference
+  if (chunkLen >= 3 && chunkLen <= 7) score += 10;
+  else if (chunkLen >= 8 && chunkLen <= 10) score += 3;
+  else if (chunkLen < 3) score -= 20;
+  else if (chunkLen > 10) score -= 20;
+
+  return score;
+}
+
+// --- Main Chunking Function ---
 
 export function chunkCaptionText(text: string, minWords = 4, maxWords = 7, hardMax = 10): string {
-  const words = splitIntoWords(text);
+  const words = tokenizeWords(text);
   if (words.length <= maxWords) return text;
 
-  // First pass: identify natural break points
-  const breakPoints: boolean[] = new Array(words.length).fill(false);
-  for (let i = 0; i < words.length; i++) {
-    if (i === words.length - 1) {
-      breakPoints[i] = true; // Always break at end
+  const protectedRanges = buildProtectedRanges(text);
+  const breaks: number[] = [words.length - 1]; // end is always a break
+
+  // Left-to-right greedy: accumulate words, break at best local position
+  let chunkStart = 0;
+  let i = 0;
+  while (i < words.length - 1) {
+    const chunkLen = i - chunkStart + 1;
+
+    // Force break at hardMax — overrides everything (including protected units)
+    if (chunkLen >= hardMax) {
+      breaks.push(i);
+      chunkStart = i + 1;
+      i++;
       continue;
     }
-    const word = words[i];
-    const nextWord = words[i + 1];
-    
-    // Always break after sentence-ending punctuation
-    if (/[.!?]$/.test(word)) {
-      breakPoints[i] = true;
-      continue;
-    }
-    // Break after clause-separating commas in longer chunks
-    if (/,/.test(word)) {
-      breakPoints[i] = true;
-      continue;
-    }
-    // Don't break semantic units
-    if (isPreservedUnit(word, words[i + 1] || "")) {
-      breakPoints[i] = false;
-      continue;
-    }
-    // Break at phrase boundaries
-    const phraseEnders = ["và", "hoặc", "nhưng", "mà", "khi", "nếu", "thì", "là", "của", "cho", "từ", "tới", "đến", "với", "theo", "theo đó", "do đó", "vì vậy"];
-    if (phraseEnders.some(p => word.toLowerCase().endsWith(" " + p) || word.toLowerCase() === p)) {
-      breakPoints[i] = true;
-      continue;
-    }
-  }
 
-  // Second pass: build chunks respecting min/max limits
-  const chunks: string[] = [];
-  let currentChunk: string[] = [];
+    const score = scoreBreakPosition(words[i], i, words, chunkLen, protectedRanges);
 
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i];
-    const nextWord = i + 1 < words.length ? words[i + 1] : "";
-    const nextIsPreserved = nextWord && isPreservedUnit(word, nextWord);
+    // Accept break if: good score AND chunk >= minWords AND not splitting protected unit
+    const next = words[i + 1];
+    const curInProt = isWordInProtected(words[i].charStart, words[i].charEnd, protectedRanges);
+    const nextOverlapsProt = isWordInProtected(next.charStart, next.charEnd, protectedRanges);
 
-    // BEFORE adding, check if adding this word would exceed maxWords
-    // If so, break BEFORE adding (unless it's a preserved unit)
-    const wouldExceedMax = currentChunk.length >= 7 && !isPreservedUnit(currentChunk[currentChunk.length - 1] || "", word);
-    if (wouldExceedMax && currentChunk.length > 0) {
-      chunks.push(currentChunk.join(" "));
-      currentChunk = [];
-    }
+    // Lookahead: prevent break when BOTH current and next words are in protected ranges
+    // This preserves protected units (dates, law names, number+unit, etc.)
+    // But allow break when current word is NOT protected (natural break point)
+    const splittingProtected = curInProt && nextOverlapsProt && !/[.!?;:]$/.test(words[i].word);
 
-    // Add current word
-    currentChunk.push(word);
-
-    // If next word is preserved with current, add it too
-    if (nextIsPreserved) {
-      currentChunk.push(nextWord);
-      i++; // skip next
-    }
-
-    // Check if we should break
-    // Check if we should break
-    const atHardMax = currentChunk.length >= 10;
-    const atEnd = i === words.length - 1;
-    
-    // Only break at breakPoints if chunk has enough words (>= minWords)
-    // This prevents creating too-short chunks at punctuation
-    const canBreakAtBreakPoint = breakPoints[i] && currentChunk.length >= 4;
-    const shouldBreak = currentChunk.length >= 10 || i === words.length - 1 || (breakPoints[i] && currentChunk.length >= 4);
+    const shouldBreak =
+      !splittingProtected &&
+      (chunkLen >= minWords || (curInProt && !nextOverlapsProt)) &&
+      (score >= 10 || chunkLen >= hardMax || /[.!?;]$/.test(words[i].word));
 
     if (shouldBreak) {
-      chunks.push(currentChunk.join(" "));
-      currentChunk = [];
+      breaks.push(i);
+      chunkStart = i + 1;
+      i++;
+      continue;
+    }
+
+    i++;
+  }
+
+  // Build chunks from breaks (sorted ascending, deduplicated)
+  const sortedBreaks = [...new Set(breaks)].sort((a, b) => a - b);
+  const chunks: string[] = [];
+  let prev = -1;
+  const chunkRanges: { start: number; end: number }[] = [];
+  for (const b of sortedBreaks) {
+    const chunkWords = words.slice(prev + 1, b + 1).map((w) => w.word);
+    chunks.push(chunkWords.join(" "));
+    chunkRanges.push({ start: prev + 1, end: b });
+    prev = b;
+  }
+
+  // Post-process: merge too-short chunks (<3 words) with neighbor
+  // Allow 3-word chunks only if they contain a protected unit
+  for (let ci = chunks.length - 1; ci > 0; ci--) {
+    const wc = chunks[ci].split(/\s+/).filter(Boolean).length;
+    if (wc >= 3) continue;
+    const range = chunkRanges[ci];
+    const chunkCharStart = words[range.start]?.charStart ?? 0;
+    const chunkCharEnd = words[range.end]?.charEnd ?? 0;
+    const isProtected = isWordInProtected(chunkCharStart, chunkCharEnd, protectedRanges);
+    if (!isProtected) {
+      chunks[ci - 1] = chunks[ci - 1] + " " + chunks[ci];
+      chunks.splice(ci, 1);
+      chunkRanges.splice(ci, 1);
     }
   }
 
-  // Handle leftover (shouldn't happen due to atEnd, but safety)
-  if (currentChunk.length > 0) {
-    chunks.push(currentChunk.join(" "));
-  }
-
-  // Post-process: merge any too-short final chunks (< 4 words) with previous
-  for (let i = chunks.length - 1; i > 0; i--) {
-    const wordsInChunk = chunks[i].split(/\s+/).filter(Boolean).length;
-    if (wordsInChunk < 4) {
-      // Merge with previous
-      chunks[i - 1] = chunks[i - 1] + " " + chunks[i];
-      chunks.splice(i, 1);
-    }
-  }
-
-  // Final safety: split any chunk that's still too long (>10 words)
+  // Safety: split any chunk still exceeding hardMax
   const finalChunks: string[] = [];
   for (const chunk of chunks) {
     const chunkWords = chunk.split(/\s+/).filter(Boolean);
-    if (chunkWords.length > 10) {
-      // Split this oversized chunk
-      for (let j = 0; j < chunkWords.length; j += 7) {
-        finalChunks.push(chunkWords.slice(j, j + 7).join(" "));
+    if (chunkWords.length > hardMax) {
+      for (let j = 0; j < chunkWords.length; j += maxWords) {
+        finalChunks.push(chunkWords.slice(j, j + maxWords).join(" "));
       }
     } else {
       finalChunks.push(chunk);

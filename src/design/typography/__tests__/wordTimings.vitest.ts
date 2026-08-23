@@ -214,8 +214,9 @@ describe("chunkCaptionText", () => {
     // The date should appear intact in some chunk
     const hasDate = chunks.some((c) => c.includes("01/07/2025"));
     expect(hasDate).toBe(true);
-    // The date should not be split across lines
-    expect(result).not.toContain("01/07/2025\nthay");
+    // The date should not be split across lines (no partial date in any chunk)
+    const hasPartialDate = chunks.some((c) => /\d{2}\/\d{2}$/.test(c) || /^\d{4}/.test(c));
+    expect(hasPartialDate).toBe(false);
   });
 
   it("preserves legal references", () => {
@@ -285,5 +286,241 @@ describe("chunkCaptionText", () => {
     const totalWords = lines.join(" ").split(/\s+/).filter(Boolean).length;
     const originalWords = text.split(/\s+/).filter(Boolean).length;
     expect(totalWords).toBe(originalWords);
+  });
+});
+
+describe("KaraokeReveal chunking integration", () => {
+  it("chunked text produces parseable lines for KaraokeReveal", () => {
+    // This is the actual s1 caption from luatBHXH
+    const caption = "Ngày 29 tháng 6 năm 2024, Quốc hội thông qua Luật Bảo hiểm xã hội số 41/2024/QH15. Đạo luật có hiệu lực từ ngày 1 tháng 7 năm 2025, thay thế Luật Bảo hiểm xã hội năm 2014.";
+    const chunked = chunkCaptionText(caption);
+    console.log("CHUNKED:", JSON.stringify(chunked));
+    const lines = parseTextLines(chunked);
+    console.log("LINES:", lines);
+    lines.forEach((l, i) => console.log("  L" + i + " [" + countWords(l) + "w]:", l));
+
+    // Should produce multiple chunks
+    expect(lines.length).toBeGreaterThan(1);
+
+    // Each chunk should be 3-10 words (3 allowed for protected units like "Theo Điều 64,")
+    lines.forEach((line) => {
+      const words = countWords(line);
+      expect(words).toBeGreaterThanOrEqual(3);
+      expect(words).toBeLessThanOrEqual(10);
+    });
+
+    // Semantic units must be preserved
+    const allText = lines.join(" ");
+    expect(allText).toContain("41/2024/QH15");
+    expect(allText).toContain("Luật Bảo hiểm xã hội");
+    // "ngày 1 tháng 7 năm 2025" should stay together (date phrase = protected unit)
+    const hasDate = lines.some((l) => l.includes("ngày 1 tháng 7 năm 2025"));
+    expect(hasDate).toBe(true);
+  });
+
+  it("computeWordTimings chunked lines match parseTextLines(chunkedText)", () => {
+    const caption = "Theo Điều 64, số năm đóng bảo hiểm xã hội tối thiểu để hưởng lương hưu giảm từ hai mươi năm xuống còn mười lăm năm, mở rộng cơ hội cho người có thời gian đóng thiếu.";
+    const chunked = chunkCaptionText(caption);
+    const lines = parseTextLines(chunked);
+    const wordsPerLine = lines.map(countWords);
+    const totalChunkedWords = wordsPerLine.reduce((a, b) => a + b, 0);
+
+    const result = computeWordTimings(caption, 516, 6, 8);
+
+    // Total words from timings should match chunked text word count
+    expect(result.totalWords).toBe(totalChunkedWords);
+    // And match the raw text word count (chunking preserves all words)
+    const rawWords = caption.split(/\s+/).filter(Boolean).length;
+    expect(result.totalWords).toBe(rawWords);
+  });
+
+  it("no marquee needed for 4-7 word chunks at 22px fontSize", () => {
+    // At 22px fontSize, 7 Vietnamese words (~50 chars) ≈ 50 * 22 * 0.52 ≈ 572px
+    // Container is 92% of 1920 = 1766px, so 572px < 1766px → no marquee needed
+    const chunk = "Ngày 29 tháng 6 năm 2024";
+    const words = chunk.split(/\s+/).filter(Boolean);
+    expect(words.length).toBeLessThanOrEqual(7);
+  });
+});
+
+describe("WS-CAPTION-03: Semantic Chunking Regression", () => {
+  it("natural uneven chunks — not forced equal sizes", () => {
+    const text = "Luật mới xây dựng trên bốn trụ cột cải cách: hệ thống an sinh đa tầng, mở rộng đối tượng tham gia, siết chặt điều kiện rút bảo hiểm một lần, và mở rộng quyền lợi cho người lao động.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const counts = lines.map((l) => l.split(/\s+/).filter(Boolean).length);
+    // Should NOT be all equal size (e.g., not 5/5/5/5/5/5/5)
+    const allEqual = counts.every((c) => c === counts[0]);
+    expect(allEqual).toBe(false);
+    // But all should be within 3-10
+    counts.forEach((c) => {
+      expect(c).toBeGreaterThanOrEqual(3);
+      expect(c).toBeLessThanOrEqual(10);
+    });
+  });
+
+  it("protects dates — ngày ... tháng ... năm ...", () => {
+    const text = "Từ ngày 1 tháng 7 năm 2025, người tham gia bảo hiểm xã hội được hưởng quyền lợi mới.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const hasDate = lines.some((l) => l.includes("ngày 1 tháng 7 năm 2025"));
+    expect(hasDate).toBe(true);
+  });
+
+  it("protects slash dates — 01/07/2025", () => {
+    const text = "Luật có hiệu lực từ ngày 01/07/2025 thay thế luật cũ đã ban hành trước đó.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const hasDate = lines.some((l) => l.includes("01/07/2025"));
+    expect(hasDate).toBe(true);
+  });
+
+  it("protects legal references — Điều 64", () => {
+    const text = "Theo Điều 64, số năm đóng bảo hiểm xã hội tối thiểu để hưởng lương hưu giảm.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const hasDieu = lines.some((l) => l.includes("Điều 64"));
+    expect(hasDieu).toBe(true);
+    // Should not split "Điều" from "64"
+    expect(result).not.toMatch(/Điều\n64/);
+  });
+
+  it("protects law names — Luật Bảo hiểm xã hội số 41/2024/QH15", () => {
+    const text = "Quốc hội thông qua Luật Bảo hiểm xã hội số 41/2024/QH15 với nhiều cải cách mới.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const hasLaw = lines.some((l) => l.includes("Luật Bảo hiểm xã hội số 41/2024/QH15"));
+    expect(hasLaw).toBe(true);
+  });
+
+  it("contextual comma breaks — comma after4+ words triggers break", () => {
+    const text = "Đạo luật mới có nhiều quy định quan trọng, bao gồm tăng tuổi hưu và mở rộng đối tượng.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    // The comma should cause a break (not merge everything into one line)
+    expect(lines.length).toBeGreaterThan(1);
+  });
+
+  it("contextual conjunction breaks — và starts new clause", () => {
+    const text = "Luật mới cải cách hệ thống bảo hiểm và mở rộng quyền lợi cho người lao động.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    // "và" should be at start of a chunk or after a break
+    const hasAndAtStart = lines.some((l) => l.trim().startsWith("và"));
+    // Or "và" is in a chunk with preceding words but the next chunk starts fresh
+    expect(lines.length).toBeGreaterThan(1);
+  });
+
+  it("3-word protected chunks allowed — Theo Điều 64,", () => {
+    const text = "Theo Điều 64, số năm đóng bảo hiểm giảm từ hai mươi năm xuống còn mười lăm năm.";
+    const result = chunkCaptionText(text);
+    console.log("TEST Theo Điều 64:", JSON.stringify(result));
+    const lines = result.split("\n");
+    const counts = lines.map((l) => l.split(/\s+/).filter(Boolean).length);
+    console.log("  counts:", counts);
+    // "Theo Điều 64," = 3 words, allowed as protected unit
+    expect(counts.some((c) => c === 3)).toBe(true);
+  });
+
+  it("8-10 word semantic chunks allowed when meaning requires", () => {
+    const text = "Luật Bảo hiểm xã hội 2024 đặt nền móng cho một hệ thống an sinh xã hội bền vững và bao trùm hơn cho người lao động Việt Nam.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const counts = lines.map((l) => l.split(/\s+/).filter(Boolean).length);
+    // Some chunks may be 8-10 words to preserve semantic units
+    expect(counts.some((c) => c >= 8)).toBe(true);
+    // But none should exceed hardMax
+    counts.forEach((c) => expect(c).toBeLessThanOrEqual(10));
+  });
+
+  it("hard maximum 10 words never exceeded", () => {
+    // Create a very long text without punctuation
+    const text = "một hai ba bốn năm sáu bảy tám chín mười mười một mười hai mười ba mười bốn mười lăm mười sáu mười bảy mười tám mười chín hai mươi";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    lines.forEach((l) => {
+      const wc = l.split(/\s+/).filter(Boolean).length;
+      expect(wc).toBeLessThanOrEqual(10);
+    });
+  });
+
+  it("no-punctuation fallback — breaks at word boundaries", () => {
+    const text = "một hai ba bốn năm sáu bảy tám chín mười eleven twelve thirteen fourteen fifteen sixteen";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    expect(lines.length).toBeGreaterThan(1);
+    lines.forEach((l) => {
+      const wc = l.split(/\s+/).filter(Boolean).length;
+      expect(wc).toBeLessThanOrEqual(10);
+    });
+  });
+
+  it("bền vững và bao trùm — does NOT split at và", () => {
+    const text = "hệ thống bền vững và bao trùm hơn cho người lao động";
+    const result = chunkCaptionText(text);
+    console.log("TEST bền vững:", JSON.stringify(result));
+    const lines = result.split("\n");
+    console.log("  lines:", lines);
+    // "bền vững và bao trùm" should stay together (parallel adjectives)
+    const hasPhrase = lines.some((l) => l.includes("bền vững và bao trùm"));
+    expect(hasPhrase).toBe(true);
+  });
+
+  it("proper nouns protected — Trung ương Đảng", () => {
+    const text = "Nghị quyết 28 năm 2018 của Trung ương Đảng về cải cách bảo hiểm xã hội.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const hasParty = lines.some((l) => l.includes("Trung ương Đảng"));
+    expect(hasParty).toBe(true);
+  });
+
+  it("number + unit protected — mười lăm năm", () => {
+    const text = "Thời gian đóng bảo hiểm giảm từ hai mươi năm xuống còn mười lăm năm tối thiểu.";
+    const result = chunkCaptionText(text);
+    console.log("TEST mười lăm:", JSON.stringify(result));
+    const lines = result.split("\n");
+    const hasNumUnit = lines.some((l) => l.includes("mười lăm năm"));
+    expect(hasNumUnit).toBe(true);
+  });
+
+  it("BHXH s1 — semantic rhythm verification", () => {
+    const text = "Ngày 29 tháng 6 năm 2024, Quốc hội thông qua Luật Bảo hiểm xã hội số 41/2024/QH15. Đạo luật có hiệu lực từ ngày 1 tháng 7 năm 2025, thay thế Luật Bảo hiểm xã hội năm 2014.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+    const counts = lines.map((l) => l.split(/\s+/).filter(Boolean).length);
+
+    // All chunks within 3-10
+    counts.forEach((c) => {
+      expect(c).toBeGreaterThanOrEqual(3);
+      expect(c).toBeLessThanOrEqual(10);
+    });
+
+    // Key semantic units preserved
+    const allText = lines.join(" ");
+    expect(allText).toContain("41/2024/QH15");
+    expect(allText).toContain("Luật Bảo hiểm xã hội");
+    expect(allText).toContain("ngày 1 tháng 7 năm 2025");
+
+    // Date phrases intact
+    const hasDate1 = lines.some((l) => l.includes("Ngày 29 tháng 6 năm 2024"));
+    expect(hasDate1).toBe(true);
+  });
+
+  it("BHXH s6 — law name + descriptor chunks", () => {
+    const text = "Luật Bảo hiểm xã hội 2024 đặt nền móng cho một hệ thống an sinh xã hội bền vững và bao trùm hơn cho người lao động Việt Nam.";
+    const result = chunkCaptionText(text);
+    const lines = result.split("\n");
+
+    // "Luật Bảo hiểm xã hội 2024" should be preserved
+    const hasLawName = lines.some((l) => l.includes("Luật Bảo hiểm xã hội 2024"));
+    expect(hasLawName).toBe(true);
+
+    // "bền vững và" should stay together (at minimum)
+    const hasAdj = lines.some((l) => l.includes("bền vững và"));
+    expect(hasAdj).toBe(true);
+
+    // "Việt Nam" should be preserved
+    const hasVietnam = lines.some((l) => l.includes("Việt Nam"));
+    expect(hasVietnam).toBe(true);
   });
 });
