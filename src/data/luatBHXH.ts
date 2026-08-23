@@ -100,8 +100,8 @@ export const LUAT_BHXH_SCENES: SceneDef[] = [
     id: "s1",
     audio: "luatBHXH/s1.mp3",
     caption:
-      "Ngày 29 tháng 6 năm 2024, Quốc hội thông qua Luật Bảo hiểm xã hội số 41 trên 2024. Đạo luật có hiệu lực từ ngày 1 tháng 7 năm 2025, thay thế Luật Bảo hiểm xã hội năm 2014.",
-    dur: 16.388,
+      "Ngày 29 tháng 6 năm 2024, Quốc hội thông qua Luật Bảo hiểm xã hội số 41/2024/QH15. Đạo luật có hiệu lực từ ngày 1 tháng 7 năm 2025, thay thế Luật Bảo hiểm xã hội năm 2014.",
+    dur: 17.204,
   },
   {
     id: "s2",
