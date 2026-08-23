@@ -110,6 +110,16 @@ Record of cross-production decisions. Statuses: CANDIDATE / ADOPTED / IMPLEMENTE
 
 ---
 
+## 11. BHXH V1 vs V2 — ADOPTED
+
+- Same topic produced using NodeFlow (V1) and Blueprint (V2)
+- Decision: Blueprint V2 preferred for law/policy storytelling because its visual grammar creates stronger narrative identity and communicates legal change more naturally
+- NodeFlow remains preferred for system/network explainers
+- Do not replace NodeFlow
+- Use template selection based on narrative structure
+
+---
+
 ## Template Registry
 
 | Template | Scene Kinds | Status | Productions |
