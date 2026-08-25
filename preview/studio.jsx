@@ -6,9 +6,121 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"] };
 
 const PRODUCTIONS = [
+  {
+    id: "nq57", name: "NQ57", template: "nq57", format: "16:9",
+    theme: { bg:"#0a0e1a",bg2:"#0f1525",card:"rgba(255,255,255,0.045)",line:"rgba(245,245,255,0.12)",a1:"#e23b3b",a1s:"#ff6b5e",a2:"#f3c969",a2s:"#ffe6a3",a3:"#5eead4",ink:"#f7f5ef",muted:"#9aa0b5",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    scenes: [
+      { id:"s1",dur:20.232,kind:"title" },{ id:"s2",dur:10.704,kind:"quote" },{ id:"s3",dur:14.616,kind:"roles" },
+      { id:"s4",dur:13.944,kind:"pillars" },{ id:"s5",dur:18.408,kind:"stats" },{ id:"s6",dur:17.088,kind:"vision" },
+      { id:"s7",dur:15.624,kind:"end" },
+    ],
+    content: {
+      s1:{kind:"title",title:"Nghị quyết 57-NQ/TW",subtitle:"Đổi mới tổ chức và hoạt động của cơ quan nhà nước",tagline:"BỘ CHÍNH TRỊ"},
+      s2:{kind:"quote",text:"Nghị quyết 57-NQ/TW ngày 25/12/2024"},
+      s3:{kind:"roles",sectionTitle:"Tổ chức thực hiện",roles:[{title:"Bộ Chính trị",subtitle:"Ban hành"},{title:"Thủ tướng",subtitle:"Chỉ đạo"},{title:"Các bộ, ngành",subtitle:"Tổ chức thực hiện"}]},
+      s4:{kind:"pillars",title:"3 trụ cột chính",subtitle:"Cải cách toàn diện",pillars:[{title:"Tổ chức",body:"Sáp nhập, sắp xếp"},{title:"Hoạt động",body:"Số hóa, chuyển đổi"},{title:"Nhân sự",body:"Cải cách tiền lương"}]},
+      s5:{kind:"stats",title:"Số liệu cụ thể",chartData:[{label:"Cơ quan",value:30},{label:"Đơn vị",value:50}],gauges:[{value:30,max:100,label:"Cắt giảm",unit:"%"}]},
+      s6:{kind:"vision",label:"Mục tiêu",targetValue:"2030",subtitle:"Phủ数字化 toàn bộ",description:"Hình thành nền tảng số quốc gia"},
+      s7:{kind:"end",title:"Nghị quyết 57-NQ/TW",subtitle:"Đổi mới tổ chức và hoạt động của cơ quan nhà nước",reference:"Bộ Chính trị — 25/12/2024"},
+    },
+  },
+  {
+    id: "dean06", name: "Đề án 06", template: "nq57", format: "16:9",
+    theme: { bg:"#061220",bg2:"#0a1a34",card:"rgba(255,255,255,0.04)",line:"rgba(160,200,255,0.1)",a1:"#00d4ff",a1s:"#66e0ff",a2:"#0099cc",a2s:"#33b5e5",a3:"#00ffcc",ink:"#f5faff",muted:"#7a9cc6",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    scenes: [
+      { id:"s1",dur:16.68,kind:"title" },{ id:"s2",dur:11.064,kind:"quote" },{ id:"s3",dur:13.032,kind:"roles" },
+      { id:"s4",dur:12.36,kind:"pillars" },{ id:"s5",dur:15.768,kind:"stats" },{ id:"s6",dur:14.424,kind:"vision" },
+      { id:"s7",dur:13.32,kind:"end" },
+    ],
+    content: {
+      s1:{kind:"title",title:"Đề án 06",subtitle:"Định danh số — Căn cước công dân",tagline:"BỘ CÔNG AN"},
+      s2:{kind:"quote",text:"Đề án 06 về định danh và xác thực điện tử"},
+      s3:{kind:"roles",sectionTitle:"Triển khai",roles:[{title:"Bộ Công An",subtitle:"Chủ trì"},{title:"Bộ TT&TT",subtitle:"Phối hợp"},{title:"UBND các tỉnh",subtitle:"Tổ chức thực hiện"}]},
+      s4:{kind:"pillars",title:"3 mục tiêu chính",subtitle:"Định danh số quốc gia",pillars:[{title:"Định danh",body:"CCCD gắn chip"},{title:"Xác thực",body:"eKYC, sinh trắc học"},{title:"Dịch vụ",body:"VssID, DVConNT"}]},
+      s5:{kind:"stats",title:"Tiến độ triển khai",chartData:[{label:"CCCD phát hành",value:80},{label:"Dịch vụ số",value:60}],gauges:[{value:80,max:100,label:"Tỷ lệ phủ",unit:"%"}]},
+      s6:{kind:"vision",label:"Mục tiêu",targetValue:"2025",subtitle:"Phủ 100% CCCD chip",description:"Mọi công dân đều có định danh số"},
+      s7:{kind:"end",title:"Đề án 06 — Định danh số",subtitle:"Căn cước công dân gắn chip — Nền tảng cho chính phủ số",reference:"Bộ Công An — Đề án 06"},
+    },
+  },
+  {
+    id: "nq79", name: "NQ79", template: "nq57", format: "16:9",
+    theme: { bg:"#050d1a",bg2:"#0a1628",card:"rgba(255,255,255,0.035)",line:"rgba(210,180,120,0.12)",a1:"#d4a843",a1s:"#e8c56d",a2:"#b8860b",a2s:"#d4a017",a3:"#c0392b",ink:"#fdfbf7",muted:"#a89a7c",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    scenes: [
+      { id:"s1",dur:18.024,kind:"title" },{ id:"s2",dur:12.48,kind:"quote" },{ id:"s3",dur:15.192,kind:"roles" },
+      { id:"s4",dur:14.568,kind:"pillars" },{ id:"s5",dur:17.256,kind:"stats" },{ id:"s6",dur:16.032,kind:"vision" },
+      { id:"s7",dur:14.856,kind:"end" },
+    ],
+    content: {
+      s1:{kind:"title",title:"Nghị quyết 79-NQ/TW",subtitle:"Đẩy mạnh ứng dụng CNTT trong hoạt động của cơ quan nhà nước",tagline:"BỘ CHÍNH TRỊ"},
+      s2:{kind:"quote",text:"Nghị quyết 79-NQ/TW ngày 06/6/2025"},
+      s3:{kind:"roles",sectionTitle:"Tổ chức thực hiện",roles:[{title:"Bộ TT&TT",subtitle:"Phối hợp"},{title:"Các bộ, ngành",subtitle:"Tổ chức thực hiện"},{title:"Địa phương",subtitle:"Triển khai"}]},
+      s4:{kind:"pillars",title:"3 nhiệm vụ trọng tâm",subtitle:"Ứng dụng CNTT",pillars:[{title:"Số hóa",body:"Hồ sơ, giấy tờ"},{title:"Kết nối",body:"Cơ sở dữ liệu"},{title:"Dịch vụ",body:"Công trực tuyến"}]},
+      s5:{kind:"stats",title:"Mục tiêu cụ thể",chartData:[{label:"Dịch vụ trực tuyến",value:90},{label:"Hồ sơ số hóa",value:70}],gauges:[{value:90,max:100,label:"Phủ dịch vụ",unit:"%"}]},
+      s6:{kind:"vision",label:"Mục tiêu",targetValue:"2030",subtitle:"Chính phủ số toàn diện",description:"100% dịch vụ công trực tuyến mức 4"},
+      s7:{kind:"end",title:"NQ79 — Ứng dụng CNTT",subtitle:"Đẩy mạnh chuyển đổi số trong cơ quan nhà nước",reference:"Bộ Chính trị — 06/6/2025"},
+    },
+  },
+  {
+    id: "stoiclove", name: "Stoic Love", template: "stoiclove", format: "9:16",
+    theme: { bg:"#0a0a0c",bg2:"#111114",card:"rgba(255,250,240,0.03)",line:"rgba(210,180,120,0.15)",a1:"#f5e6c8",a1s:"#faf0e0",a2:"#d4a843",a2s:"#e8c56d",a3:"#8b7355",ink:"#faf8f3",muted:"#9a8c7a",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    scenes: [
+      { id:"s1",dur:5.64,kind:"hook" },{ id:"s2",dur:6.12,kind:"statement" },{ id:"s3",dur:14.88,kind:"split" },
+      { id:"s4",dur:4.944,kind:"concept" },{ id:"s5",dur:10.176,kind:"concept" },{ id:"s6",dur:8.592,kind:"impermanence" },
+      { id:"s7",dur:9.192,kind:"concept" },{ id:"s8",dur:7.896,kind:"concept" },{ id:"s9",dur:10.248,kind:"concept" },
+      { id:"s10",dur:4.44,kind:"ending" },
+    ],
+    content: {
+      s1:{kind:"hook",mainQuestion:"Tình yêu có phải là sở hữu?",subText:"Stoicism và tình yêu"},
+      s2:{kind:"statement",lines:["Tình yêu không phải là sở hữu","Mà là sự trân trọng hiện tại"]},
+      s3:{kind:"split",title:"Hai quan niệm",leftLabel:"THƯỜNG",leftItems:["Sở hữu","Kiểm soát","Lo lắng"],rightLabel:"STOIC",rightItems:["Tự do","Tin tưởng","Bình an"]},
+      s4:{kind:"concept",headline:"Amor Fati",bodyLines:["Yêu lấy số phận","Chấp nhận mọi thứ"]},
+      s5:{kind:"concept",headline:"Premeditatio Malorum",bodyLines:["Trước tưởng xấu","Để không sợ hãi"]},
+      s6:{kind:"impermanence",observation:"Mọi thứ đều thay đổi",reframe:"Vì vậy hãy trân trọng hiện tại"},
+      s7:{kind:"concept",headline:"Dichotomy of Control",bodyLines:["Phân biệt kiểm soát","Và buông bỏ"]},
+      s8:{kind:"concept",headline:"Memento Mori",bodyLines:["Nhớ mình sẽ chết","Để sống trọn vẹn"]},
+      s9:{kind:"concept",headline:"Sympatheia",bodyLines:["Mọi người liên kết","Là một phần của nhau"]},
+      s10:{kind:"ending",closingThought:"Tình yêu chân thật là tự do",signature:"Marcus Aurelius",tagline:"Stoicism trong tình yêu"},
+    },
+  },
+  {
+    id: "canCuoc", name: "Căn Cước 2023", template: "nq57", format: "16:9",
+    theme: { bg:"#081120",bg2:"#0d1a2e",card:"rgba(255,255,255,0.04)",line:"rgba(120,170,220,0.16)",a1:"#3b82f6",a1s:"#7cb0ff",a2:"#f4b740",a2s:"#ffd877",a3:"#2dd4bf",ink:"#f6f9ff",muted:"#9fb2c9",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    scenes: [
+      { id:"s1",dur:17.424,kind:"title" },{ id:"s2",dur:11.544,kind:"quote" },{ id:"s3",dur:13.848,kind:"roles" },
+      { id:"s4",dur:12.936,kind:"pillars" },{ id:"s5",dur:16.128,kind:"stats" },{ id:"s6",dur:14.712,kind:"vision" },
+      { id:"s7",dur:13.584,kind:"end" },
+    ],
+    content: {
+      s1:{kind:"title",title:"Luật Căn cước công dân 2023",subtitle:"Định danh và quản lý cư trú",tagline:"QUỐC HỘI"},
+      s2:{kind:"quote",text:"Luật Căn cước công dân số 26/2023/QH15"},
+      s3:{kind:"roles",sectionTitle:"Triển khai",roles:[{title:"Bộ Công An",subtitle:"Chủ trì"},{title:"UBND các tỉnh",subtitle:"Tổ chức"},{title:"Công dân",subtitle:"Đăng ký"}]},
+      s4:{kind:"pillars",title:"3 nội dung chính",subtitle:"Căn cước công dân",pillars:[{title:"Định danh",body:"CCCD gắn chip"},{title:"Quản lý",body:"Cơ sở dữ liệu"},{title:"Dịch vụ",body:"Công trực tuyến"}]},
+      s5:{kind:"stats",title:"Tiến độ",chartData:[{label:"CCCD phát hành",value:75},{label:"Phủ chip",value:60}],gauges:[{value:75,max:100,label:"Tỷ lệ",unit:"%"}]},
+      s6:{kind:"vision",label:"Mục tiêu",targetValue:"2025",subtitle:"Phủ 100% CCCD",description:"Mọi công dân từ 14 tuổi trở lên"},
+      s7:{kind:"end",title:"Luật Căn cước 2023",subtitle:"Nền tảng định danh số quốc gia",reference:"Quốc hội — 2023"},
+    },
+  },
+  {
+    id: "luatGTDB", name: "Luật GTDB", template: "nq57", format: "16:9",
+    theme: { bg:"#0a0f1e",bg2:"#0f1a30",card:"rgba(255,255,255,0.04)",line:"rgba(160,200,255,0.1)",a1:"#f59e0b",a1s:"#fbbf24",a2:"#3b82f6",a2s:"#60a5fa",a3:"#10b981",ink:"#f5faff",muted:"#7a9cc6",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    scenes: [
+      { id:"s1",dur:19.152,kind:"title" },{ id:"s2",dur:12.096,kind:"quote" },{ id:"s3",dur:14.256,kind:"roles" },
+      { id:"s4",dur:13.44,kind:"pillars" },{ id:"s5",dur:17.664,kind:"stats" },{ id:"s6",dur:16.416,kind:"vision" },
+      { id:"s7",dur:15.216,kind:"end" },
+    ],
+    content: {
+      s1:{kind:"title",title:"Luật Trật tự, an toàn giao thông đường bộ",subtitle:"Luật số 36/2024/QH15",tagline:"QUỐC HỘI"},
+      s2:{kind:"quote",text:"Luật 36/2024/QH15 — Hiệu lực từ 01/01/2025"},
+      s3:{kind:"roles",sectionTitle:"Áp dụng",roles:[{title:"Công an",subtitle:"Kiểm tra, xử phạt"},{title:"Giao thông",subtitle:"Tuân thủ"},{title:"Địa phương",subtitle:"Tổ chức thực hiện"}]},
+      s4:{kind:"pillars",title:"3 nhóm quy định chính",subtitle:"An toàn giao thông",pillars:[{title:"PATH lights",body:"Phương tiện"},{title:"Hành vi",body:"Nghiêm cấm"},{title:"Xử phạt",body:"Mức phạt mới"}]},
+      s5:{kind:"stats",title:"Thống kê",chartData:[{label:"Tai nạn/giảm",value:20},{label:"Ý thức%",value:70}],gauges:[{value:20,max:100,label:"Giảm TNGT",unit:"%"}]},
+      s6:{kind:"vision",label:"Mục tiêu",targetValue:"2030",subtitle:"An toàn giao thông",description:"Giảm 50% tai nạn giao thông"},
+      s7:{kind:"end",title:"Luật GTDB 2024",subtitle:"Trật tự, an toàn giao thông đường bộ",reference:"Quốc hội — Luật 36/2024"},
+    },
+  },
   {
     id: "baoHiem2024", name: "BHXH 2024", template: "nodeflow", format: "16:9",
     theme: { bg:"#0a0e1a",bg2:"#0f1423",card:"#141a2e",line:"rgba(255,255,255,0.08)",a1:"#00d4ff",a1s:"#00a3cc",a2:"#d4a843",a2s:"#b8922e",a3:"#34d399",ink:"#e8e6e1",muted:"#6b7280",fd:'"Inter","Segoe UI",system-ui,sans-serif',fm:'"JetBrains Mono","Fira Code",monospace' },
@@ -23,6 +135,22 @@ const PRODUCTIONS = [
       s4:{kind:"benefit",title:"6 che do BHXH bat buoc",description:"Nguoi lao dong duoc huong day du 6 che do.",benefits:[{icon:"health",label:"Om dau",value:"75% luong"},{icon:"maternity",label:"Thai san",value:"100% luong"},{icon:"work",label:"TNLĐ-BNN",value:"Toi da 100%"},{icon:"pension",label:"Huu tri",value:"Tu 15 nam"},{icon:"death",label:"Tu tuat",value:"60-100 thang"},{icon:"unemployment",label:"That nghiep",value:"60% luong"}]},
       s5:{kind:"compare",title:"Thay doi quan trong 2024",before:{items:[{label:"Dieu kien luong huu",value:"20 nam dong"},{label:"Rut BHXH 1 lan",value:"De dang"},{label:"Doi tuong tham gia",value:"Hop dong >= 3 thang"}]},after:{items:[{label:"Dieu kien luong huu",value:"15 nam dong",highlight:true},{label:"Rut BHXH 1 lan",value:"Han che",highlight:true},{label:"Doi tuong tham gia",value:"Mo rong",highlight:true}]},changeLabel:"THAY DOI"},
       s6:{kind:"end",closingTitle:"BAO HIEM BAO VE TUONG LAI",closingSubtitle:"Luat 41/2024 mo rong quyen loi, tang tinh cong bang.",stats:[{label:"Toi thieu",value:"15 NAM"},{label:"Ty le dong",value:"25.5%"},{label:"Che do",value:"6"}],reference:"Luat 41/2024/QH15 - Hieu luc: 01.07.2025"},
+    },
+  },
+  {
+    id: "luatBHXH", name: "Luật BHXH", template: "blueprint", format: "16:9",
+    theme: { bg:"#0a1830",bg2:"#0f2145",card:"rgba(224,238,255,0.04)",line:"rgba(224,238,255,0.22)",a1:"#eaf4ff",a1s:"rgba(234,244,255,0.55)",a2:"#e8a33d",a2s:"#f2c27a",a3:"#5b84b8",ink:"#f2f6fb",muted:"#7d93b3",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    scenes: [
+      { id:"s1",dur:17.204,kind:"title" },{ id:"s2",dur:11.132,kind:"pillars" },{ id:"s3",dur:10.292,kind:"measure" },
+      { id:"s4",dur:14.036,kind:"detail" },{ id:"s5",dur:13.7,kind:"process" },{ id:"s6",dur:8.612,kind:"seal" },
+    ],
+    content: {
+      s1:{kind:"title",code:"LUAT 41/2024/QH15",title:"Luật Bảo hiểm xã hội 2024",subtitle:"Thay thế Luật BHXH năm 2014",effectiveDate:"01/07/2025"},
+      s2:{kind:"pillars",heading:"4 nhóm chính sách chính",pillars:[{title:"Mở rộng đối tượng",body:"Lao động linh hoạt"},{title:"Giảm điều kiện",body:"15 năm hưởng lương hưu"},{title:"Tăng quyền lợi",body:"BHXH một lần hạn chế"},{title:"Cải cách quản lý",body:"Số hóa, rút gọn"}]},
+      s3:{kind:"measure",heading:"Thay đổi quan trọng",fromLabel:"Cũ",fromValue:"20 năm",toLabel:"Mới",toValue:"15 năm",unit:"đóng BHXH",note:"Điều kiện hưởng lương hưu"},
+      s4:{kind:"detail",heading:"Chi tiết các nhóm chính sách",items:[{title:"Đối tượng tham gia",body:"Lao động hợp đồng,_square菲佣"},{title:"Thuế suất đóng",body:"25.5% lương cơ sở"},{title:"Hưởng chế độ",body:"6 chế độ BHXH bắt buộc"}]},
+      s5:{kind:"process",heading:"Lộ trình triển khai",steps:[{date:"01/07/2025",label:"Luật có hiệu lực"},{date:"2025-2026",label:"Triển khai逐步"},{date:"2027",label:"Đánh giá, sửa đổi"}]},
+      s6:{kind:"seal",heading:"Luật Bảo hiểm xã hội 2024",lines:["Luật số 41/2024/QH15","Ủy ban Thường vụ Quốc hội ban hành"],closingCode:"41/2024/QH15"},
     },
   },
   {
@@ -57,6 +185,26 @@ const PRODUCTIONS = [
       s5:{kind:"milestone",title:"HEAD TO HEAD",items:[{label:"Ronaldo Goals",value:"900+"},{label:"Messi Goals",value:"800+"},{label:"Ronaldo Ballon d'Or",value:"5"},{label:"Messi Ballon d'Or",value:"8"}]},
       s6:{kind:"stat",label:"INTERNATIONAL",bigNumber:"136",sub:"Ronaldo - all-time men's international top scorer",detail:"Ronaldo: 136 for Portugal. Messi: 108 for Argentina. Both won major tournaments.",color:"a1"},
       s7:{kind:"closing",title:"LEGACY",subtitle:"There is no winner. Only two legends\nwho pushed each other to greatness.",reference:"Ronaldo vs Messi - The numbers speak"},
+    },
+  },
+  {
+    id: "solarSystem", name: "Solar System", template: "cosmos", format: "16:9",
+    theme: { bg:"#050510",bg2:"#0a0a2e",card:"#111133",line:"rgba(255,255,255,0.06)",a1:"#3b82f6",a1s:"#2563eb",a2:"#a855f7",a2s:"#9333ea",a3:"#f8fafc",ink:"#f8fafc",muted:"#94a3b8",fd:'"Inter","Segoe UI",system-ui,sans-serif',fm:'"JetBrains Mono","Fira Code",monospace' },
+    scenes: [
+      { id:"s1",dur:6.672,kind:"title" },{ id:"s2",dur:9.72,kind:"fact" },{ id:"s3",dur:8.856,kind:"compare" },
+      { id:"s4",dur:7.536,kind:"fact" },{ id:"s5",dur:6.648,kind:"diagram" },{ id:"s6",dur:8.784,kind:"timeline" },
+      { id:"s7",dur:7.464,kind:"fact" },{ id:"s8",dur:6.0,kind:"compare" },{ id:"s9",dur:7.368,kind:"closing" },
+    ],
+    content: {
+      s1:{kind:"title",title:"HỆ MẶT TRỜI",subtitle:"8 hành tinh, hàng trăm vệ tinh, và vô số bí ẩn",tagline:"KHÁM PHÁ VŨ TRỤ"},
+      s2:{kind:"fact",label:"SAO THỦY",bigValue:"88",unit:"ngày Trái Đất",description:"Thời gian quay quanh mặt trời",detail:"Hành tinh nhỏ nhất và gần mặt trời nhất. Bề mặt có nhiệt độ cực đoan: -180°C ban đêm, 430°C ban ngày."},
+      s3:{kind:"compare",title:"SAO KIM vs TRÁI ĐẤT",left:{label:"SAO KIM",value:"462°C",color:"#ef4444"},right:{label:"TRÁI ĐẤT",value:"15°C",color:"#3b82f6"},insight:"Sao Kim nóng hơn Trái Đất 347°C do hiệu ứng nhà kính cực mạnh"},
+      s4:{kind:"fact",label:"TRÁI ĐẤT",bigValue:"365.25",unit:"ngày",description:"Thời gian quay quanh mặt trời",detail:"Hành tinh duy nhất được biết có sự sống. Bao phủ 71% bởi nước lỏng."},
+      s5:{kind:"diagram",title:"HỆ THỐNG SAO HỎA",nodes:[{label:"SAO HỎA",sublabel:"Hành tinh đỏ",orbit:100},{label:"PHOBOS",sublabel:"Vệ tinh lớn",orbit:200},{label:"DEIMOS",sublabel:"Vệ tinh nhỏ",orbit:280}],edges:[{from:0,to:1,label:"9,376 km"},{from:0,to:2,label:"23,460 km"}]},
+      s6:{kind:"timeline",title:"CÁC VỆ TINH CỦA SAO MỘC",items:[{label:"Io",value:"Núi lửa",year:"1610"},{label:"Europa",value:"Băng giá",year:"1610"},{label:"Ganymede",value:"Lớn nhất",year:"1610"},{label:"Callisto",value:"Cũ nhất",year:"1610"}]},
+      s7:{kind:"fact",label:"SAO THỔ",bigValue:"29.5",unit:"năm Trái Đất",description:"Thời gian quay quanh mặt trời",detail:"Hành tinh có vành đai đẹp nhất. Bao gồm chủ yếu là băng và đá."},
+      s8:{kind:"compare",title:"SAO THIÊN VƯƠNG vs SAO HẢI VƯƠNG",left:{label:"SAO THIÊN VƯƠNG",value:"-224°C",color:"#06b6d4"},right:{label:"SAO HẢI VƯƠNG",value:"-214°C",color:"#3b82f6"},insight:"Cả hai đều là hành tinh băng giá xa nhất trong hệ mặt trời"},
+      s9:{kind:"closing",title:"HỆ MẶT TRỜI TUYỆT ĐẸP",subtitle:"Từ Sao Thủy nhỏ bé đến Sao Mộc khổng lồ,\nmỗi hành tinh đều có câu chuyện riêng.",stats:[{label:"Hành tinh",value:"8"},{label:"Vệ tinh",value:"200+"},{label:"Tuổi",value:"4.6 tỷ năm"}],reference:"Hệ Mặt Trời — Khám phá vũ trụ"},
     },
   },
 ];
@@ -228,6 +376,190 @@ function CR7_Closing({ frame, fps, W, H, content: d, th }) {
 }
 const CR7_SCENES = { hero: CR7_Hero, stat: CR7_Stat, milestone: CR7_Milestone, closing: CR7_Closing };
 
+// ─── Cosmos Scene Renderers ──────────────────────────────────────────────────
+
+function Cosmos_Title({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,50), sa = textIn(frame,15,fps,40), na = textIn(frame,30,fps,30);
+  const pulse = 0.02 * Math.sin((frame/fps)*1.5);
+  const stars = Array.from({length:50},(_,i)=>({x:(i*137.508)%100,y:(i*73.137)%100,size:1+(i%3),twinkle:0.4+0.6*Math.abs(Math.sin((frame/fps)*(0.5+(i%3)*0.3)*2))}));
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    {stars.map((s,i)=><div key={i} style={{position:"absolute",left:s.x+"%",top:s.y+"%",width:s.size,height:s.size,borderRadius:"50%",background:"#fff",opacity:s.twinkle}}/>)}
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(50% 50% at 50% 45%,"+th.a1+"15,transparent 70%)"}}/>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      <div style={{...na,fontFamily:th.fm,fontSize:14,letterSpacing:8,textTransform:"uppercase",color:th.a1,marginBottom:24}}>{d.tagline}</div>
+      <div style={{...ta,fontFamily:th.fd,fontWeight:900,fontSize:100,lineHeight:1.0,textAlign:"center",letterSpacing:-3,color:th.ink,transform:"scale("+(1+pulse)+")"}}>{d.title}</div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,"+th.a1+",transparent)",margin:"32px 0",opacity:0.6}}/>
+      <div style={{...sa,fontFamily:th.fd,fontSize:26,color:th.muted,textAlign:"center",maxWidth:600,lineHeight:1.5}}>{d.subtitle}</div>
+    </div>
+  </div>;
+}
+function Cosmos_Fact({ frame, fps, W, H, content: d, th }) {
+  const la = textIn(frame,0,fps,20), va = textIn(frame,8,fps,60), ua = textIn(frame,15,fps,30), da = textIn(frame,25,fps,25), ra = textIn(frame,35,fps,20);
+  const pulse = 0.015 * Math.sin((frame/fps)*2);
+  const o1x = Math.cos(((frame/fps)/8)*Math.PI*2)*180, o1y = Math.sin(((frame/fps)/8)*Math.PI*2)*180;
+  const o2x = Math.cos(((frame/fps)/12)*Math.PI*2+Math.PI/3)*220, o2y = Math.sin(((frame/fps)/12)*Math.PI*2+Math.PI/3)*220;
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0,pointerEvents:"none"}}>
+      <circle cx={W/2} cy={H/2} r={180} fill="none" stroke={th.a1} strokeWidth="0.5" strokeOpacity="0.3"/>
+      <circle cx={W/2} cy={H/2} r={220} fill="none" stroke={th.a2} strokeWidth="0.5" strokeOpacity="0.2"/>
+      <circle cx={W/2+o1x} cy={H/2+o1y} r="4" fill={th.a1} opacity="0.8"/>
+      <circle cx={W/2+o2x} cy={H/2+o2y} r="3" fill={th.a2} opacity="0.6"/>
+    </svg>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{...la,fontFamily:th.fm,fontSize:14,letterSpacing:6,textTransform:"uppercase",color:th.a1,marginBottom:16}}>{d.label}</div>
+      <div style={{...va,fontFamily:th.fd,fontWeight:900,fontSize:180,lineHeight:1.0,color:th.ink,textAlign:"center",transform:"scale("+(1+pulse)+")",textShadow:"0 0 80px "+th.a1+"30"}}>{d.bigValue}</div>
+      <div style={{...ua,fontFamily:th.fm,fontSize:24,color:th.a1,marginBottom:24}}>{d.unit}</div>
+      <div style={{width:80,height:2,background:th.a1,margin:"0 0 24px 0",opacity:0.5}}/>
+      <div style={{...da,fontFamily:th.fd,fontSize:28,color:th.muted,textAlign:"center",maxWidth:700,lineHeight:1.4}}>{d.description}</div>
+      <div style={{...ra,fontFamily:th.fd,fontSize:20,color:th.muted+"99",textAlign:"center",maxWidth:600,lineHeight:1.5,marginTop:16}}>{d.detail}</div>
+    </div>
+  </div>;
+}
+function Cosmos_Compare({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,30), la = textIn(frame,15,fps,40), ra = textIn(frame,25,fps,40), ia = textIn(frame,45,fps,25);
+  const lp = rev(frame,20,30);
+  const lc = d.left.color||th.a1, rc = d.right.color||th.a2;
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0,pointerEvents:"none"}}>
+      <line x1="480" y1={H/2} x2={480+(W-960)*lp} y2={H/2} stroke={th.line} strokeWidth="1" strokeDasharray="4 8" opacity="0.4"/>
+      <circle cx={W/2} cy={H/2} r={6*lp} fill={th.a3} opacity={lp*0.8}/>
+    </svg>
+    <div style={{position:"absolute",top:80,left:100,right:100,...ta}}>
+      <div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>So sánh</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,color:th.ink,lineHeight:1.1}}>{d.title}</div>
+    </div>
+    <div style={{position:"absolute",left:100,top:300,width:700,...la}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:4,textTransform:"uppercase",color:lc,marginBottom:12}}>{d.left.label}</div>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:72,color:th.ink,lineHeight:1.0}}>{d.left.value}</div>
+    </div>
+    <div style={{position:"absolute",right:100,top:300,width:700,textAlign:"right",...ra}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:4,textTransform:"uppercase",color:rc,marginBottom:12}}>{d.right.label}</div>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:72,color:th.ink,lineHeight:1.0}}>{d.right.value}</div>
+    </div>
+    <div style={{position:"absolute",bottom:120,left:100,right:100,textAlign:"center",...ia}}>
+      <div style={{fontFamily:th.fd,fontSize:24,color:th.muted,lineHeight:1.5}}>{d.insight}</div>
+    </div>
+  </div>;
+}
+function Cosmos_Timeline({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,30);
+  const tw=1400,tx=260,ty=H/2,ns=tw/(d.items.length+1);
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <div style={{position:"absolute",top:80,left:100,right:100,...ta}}>
+      <div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Dòng thời gian</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,color:th.ink,lineHeight:1.1}}>{d.title}</div>
+    </div>
+    <svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0,pointerEvents:"none"}}>
+      <line x1={tx} y1={ty} x2={tx+tw} y2={ty} stroke={th.line} strokeWidth="2" opacity="0.4"/>
+      <line x1={tx} y1={ty} x2={tx+tw*rev(frame,10,60)} y2={ty} stroke={th.a1} strokeWidth="2" opacity="0.8"/>
+      {d.items.map((it,i)=>{const nx=tx+ns*(i+1),nd=15+i*12,np=rev(frame,nd,15),ac=frame>=nd;return <g key={i} opacity={np}>
+        <circle cx={nx} cy={ty} r={ac?12:8} fill={ac?th.a1:th.card} stroke={th.a1} strokeWidth="2"/>
+        <text x={nx} y={ty-40} textAnchor="middle" fill={th.ink} fontSize="16" fontWeight="700" fontFamily={th.fd}>{it.label}</text>
+        <text x={nx} y={ty+50} textAnchor="middle" fill={th.a1} fontSize="20" fontWeight="700" fontFamily={th.fm}>{it.value}</text>
+        {it.year&&<text x={nx} y={ty+80} textAnchor="middle" fill={th.muted} fontSize="14" fontFamily={th.fm}>{it.year}</text>}
+      </g>})}
+    </svg>
+  </div>;
+}
+function Cosmos_Diagram({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,30);
+  const cx=W/2,cy=H/2;
+  const np=d.nodes.map((n,i)=>{const o=n.orbit||200,a=(i/d.nodes.length)*Math.PI*2-Math.PI/2;return{x:cx+Math.cos(a)*o,y:cy+Math.sin(a)*o,o}});
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <div style={{position:"absolute",top:80,left:100,right:100,...ta}}>
+      <div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Sơ đồ hệ thống</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,color:th.ink,lineHeight:1.1}}>{d.title}</div>
+    </div>
+    <svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0,pointerEvents:"none"}}>
+      {d.edges.map((e,i)=>{const f=np[e.from],t=np[e.to];if(!f||!t)return null;const p=rev(frame,20+i*10,20);return <g key={i}>
+        <line x1={f.x} y1={f.y} x2={f.x+(t.x-f.x)*p} y2={f.y+(t.y-f.y)*p} stroke={th.a1} strokeWidth="1.5" strokeOpacity="0.6"/>
+        {p>0.5&&<text x={(f.x+t.x)/2} y={(f.y+t.y)/2-10} textAnchor="middle" fill={th.muted} fontSize="12" fontFamily={th.fm}>{e.label}</text>}
+      </g>})}
+      {d.nodes.map((n,i)=>{const p=np[i],pr=rev(frame,10+i*8,15),ac=frame>=10+i*8;return <g key={i} opacity={pr}>
+        <circle cx={cx} cy={cy} r={p.o} fill="none" stroke={th.line} strokeWidth="0.5" strokeDasharray="4 8" opacity="0.2"/>
+        <circle cx={p.x} cy={p.y} r={ac?40:30} fill={ac?th.a1+"20":th.card} stroke={th.a1} strokeWidth="1.5" strokeOpacity={ac?0.8:0.3}/>
+        <text x={p.x} y={p.y-6} textAnchor="middle" fill={ac?th.ink:th.muted} fontSize="14" fontWeight="700" fontFamily={th.fd}>{n.label}</text>
+        {n.sublabel&&<text x={p.x} y={p.y+12} textAnchor="middle" fill={th.a1} fontSize="11" fontWeight="600" fontFamily={th.fm}>{n.sublabel}</text>}
+      </g>})}
+      <circle cx={cx} cy={cy} r="8" fill={th.a1} opacity="0.8"/>
+    </svg>
+  </div>;
+}
+function Cosmos_Closing({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,5,fps,40), sa = textIn(frame,20,fps,30), ra = textIn(frame,40,fps,20);
+  const pulse = 0.015 * Math.sin((frame/fps)*1.5);
+  const cp = rev(frame,10,40);
+  const stars = Array.from({length:30},(_,i)=>({x:(i*137.508)%100,y:(i*73.137)%100,size:1+(i%2),twinkle:0.4+0.6*Math.abs(Math.sin((frame/fps)*(0.5+(i%3)*0.3)*2))}));
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    {stars.map((s,i)=><div key={i} style={{position:"absolute",left:s.x+"%",top:s.y+"%",width:s.size,height:s.size,borderRadius:"50%",background:"#fff",opacity:s.twinkle}}/>)}
+    <svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0,pointerEvents:"none"}}>
+      <line x1="200" y1="200" x2={200+300*cp} y2={200+100*cp} stroke={th.a1} strokeWidth="0.5" strokeOpacity="0.3"/>
+      <line x1={W-200} y1="200" x2={W-200-300*cp} y2={200+100*cp} stroke={th.a2} strokeWidth="0.5" strokeOpacity="0.3"/>
+      <line x1="200" y1={H-200} x2={200+300*cp} y2={H-200-100*cp} stroke={th.a3} strokeWidth="0.5" strokeOpacity="0.3"/>
+      <line x1={W-200} y1={H-200} x2={W-200-300*cp} y2={H-200-100*cp} stroke={th.a1} strokeWidth="0.5" strokeOpacity="0.3"/>
+    </svg>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      {d.stats.length>0&&<div style={{display:"flex",gap:48,marginBottom:48}}>
+        {d.stats.map((s,i)=>{const sa2=textIn(frame,15+i*10,fps,30);return <div key={i} style={{...sa2,display:"flex",flexDirection:"column",alignItems:"center",padding:"24px 32px",background:th.card+"80",borderRadius:12,border:"1px solid "+th.line}}>
+          <div style={{fontFamily:th.fd,fontWeight:900,fontSize:48,color:th.a1,lineHeight:1}}>{s.value}</div>
+          <div style={{fontFamily:th.fd,fontSize:16,color:th.muted,marginTop:8}}>{s.label}</div>
+        </div>})}
+      </div>}
+      <div style={{...ta,fontFamily:th.fd,fontWeight:900,fontSize:80,lineHeight:1.1,textAlign:"center",letterSpacing:-2,background:"linear-gradient(135deg,"+th.a1+","+th.a2+")",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",transform:"scale("+(1+pulse)+")"}}>{d.title}</div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,"+th.a1+",transparent)",margin:"32px 0",opacity:0.6}}/>
+      <div style={{...sa,fontFamily:th.fd,fontSize:28,color:th.muted,textAlign:"center",maxWidth:700,lineHeight:1.6,whiteSpace:"pre-line"}}>{d.subtitle}</div>
+      <div style={{...ra,fontFamily:th.fm,fontSize:16,letterSpacing:3,color:th.muted+"88",marginTop:24}}>{d.reference}</div>
+    </div>
+  </div>;
+}
+const COSMOS_SCENES = { title: Cosmos_Title, fact: Cosmos_Fact, compare: Cosmos_Compare, timeline: Cosmos_Timeline, diagram: Cosmos_Diagram, closing: Cosmos_Closing };
+
+// ─── Fallback renderer for unsupported templates ─────────────────────────────
+function Fallback_Scene({ frame, fps, W, H, content: d, th, kind }) {
+  const ta = textIn(frame,0,fps,30), ca = textIn(frame,15,fps,25);
+  const pulse = 0.01 * Math.sin((frame/fps)*1.5);
+  const title = d?.title || d?.name || d?.heading || d?.mainQuestion || d?.badge || d?.lawCode || kind.toUpperCase();
+  const subtitle = d?.subtitle || d?.subText || d?.tagline || "";
+  const body = d?.description || d?.bodyLines?.join(" ") || d?.text || d?.caption || "";
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,"+(th.bg2||"#111")+" 0%,"+(th.bg||"#0a0a0a")+" 60%,#050505 100%)"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(40% 40% at 50% 45%,"+(th.a1||"#666")+"08,transparent 70%)"}}/>
+    <div style={{position:"absolute",top:24,left:24,right:24,bottom:24,border:"1px dashed "+(th.line||"rgba(255,255,255,0.1)"),borderRadius:12,pointerEvents:"none"}}/>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{...ta,fontFamily:th.fm||th.fd,fontSize:12,letterSpacing:6,textTransform:"uppercase",color:th.muted||"#888",marginBottom:24}}>
+        {kind} · preview fallback
+      </div>
+      <div style={{...ta,fontFamily:th.fd,fontWeight:900,fontSize:72,lineHeight:1.1,textAlign:"center",color:th.ink||"#fff",transform:"scale("+(1+pulse)+")",maxWidth:900}}>
+        {title}
+      </div>
+      {subtitle && <>
+        <div style={{width:80,height:2,background:th.a1||"#666",margin:"24px 0",opacity:0.5}}/>
+        <div style={{...ca,fontFamily:th.fd,fontSize:28,color:th.muted||"#999",textAlign:"center",maxWidth:700,lineHeight:1.5}}>
+          {subtitle}
+        </div>
+      </>}
+      {body && <div style={{...ca,fontFamily:th.fd,fontSize:20,color:(th.muted||"#999")+"99",textAlign:"center",maxWidth:600,lineHeight:1.5,marginTop:16}}>{body}</div>}
+    </div>
+  </div>;
+}
+
+// ─── Error boundary for scene rendering ──────────────────────────────────────
+class SceneErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  componentDidCatch(error, info) { console.error("[Preview Studio] Scene render error:", error, info?.componentStack); }
+  render() {
+    if (this.state.error) {
+      const th = this.props.th || {};
+      return <div style={{position:"absolute",inset:0,background:"#1a0a0a",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:40}}>
+        <div style={{fontSize:14,letterSpacing:4,textTransform:"uppercase",color:"#ef4444",marginBottom:16}}>Scene Error</div>
+        <div style={{fontSize:24,fontWeight:700,color:"#fafaf9",textAlign:"center",marginBottom:12}}>{this.props.sceneId || "Unknown"}</div>
+        <div style={{fontSize:16,color:"#9aa0b5",textAlign:"center",maxWidth:600,fontFamily:"monospace"}}>{this.state.error.message}</div>
+      </div>;
+    }
+    return this.props.children;
+  }
+}
+
 const prodSelect = document.getElementById("prod-select");
 const fmtBtns = document.getElementById("format-btns");
 const resChip = document.getElementById("res-chip");
@@ -280,10 +612,11 @@ function AppInner({fmt,pi,showSafe}){
   const maxW=960;
   const scale=fmt==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
-  const renderers=prod.template==="cr7"?CR7_SCENES:NF_SCENES;
+  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES };
+  const renderers = renderersMap[prod.template] || NF_SCENES;
   const sceneData=si>=0?scenes[si]:null;
   const content=sceneData?prod.content[sceneData.id]:null;
-  const SceneComp=content?renderers[content.kind]:null;
+  const SceneComp=content?(renderers[content.kind]||null):null;
   const th=prod.theme;
   return <React.Fragment>
     <div className="main">
@@ -301,7 +634,12 @@ function AppInner({fmt,pi,showSafe}){
         <div className="canvas-info"><span className="chip">{canvas.w} x {canvas.h}</span><span className="fps-badge">30 FPS</span></div>
         <div className="canvas-frame" style={{width:cw,height:ch}}>
           <div className="scene-root" style={{width:canvas.w,height:canvas.h,transform:"scale("+scale+")",transformOrigin:"top left"}}>
-            {SceneComp && <SceneComp frame={frame} fps={FPS} W={canvas.w} H={canvas.h} content={content} th={th}/>}
+            <SceneErrorBoundary sceneId={sceneData?.id} th={th}>
+              {SceneComp
+                ? <SceneComp frame={frame} fps={FPS} W={canvas.w} H={canvas.h} content={content} th={th}/>
+                : content && <Fallback_Scene frame={frame} fps={FPS} W={canvas.w} H={canvas.h} content={content} th={th} kind={content.kind}/>
+              }
+            </SceneErrorBoundary>
           </div>
           {showSafe && <div className="safe-area" style={{left:0,right:0,top:0,bottom:0}}><div className="safe-area-inner"/></div>}
         </div>
