@@ -453,3 +453,91 @@ Proven workflow for creating a new production:
 | blueprint | title, pillars, measure, detail, process, seal | 16:9 | ADOPTED | 1 (BHXH V2) |
 | cr7 | hero, stat, milestone, closing | 16:9, 9:16 | ADOPTED | 2 (CR7 Records, CR7 vs Messi) |
 | cosmos | title, fact, compare, timeline, diagram, closing | 16:9, 9:16 | ADOPTED | 1 (Solar System) |
+
+---
+
+## 35. Preview Studio as Visual QA Tool
+
+**Status: ADOPTED**
+
+- Preview Studio is a **design QA tool**, not an MP4 preview
+- Purpose: inspect visual design, scene composition, motion, typography, layout without rendering
+- Standalone HTML (React 18 CDN + Babel) — no build step, no Remotion dependency
+- Preview and Remotion are **separate implementations** sharing the same frame model
+- Duplication of scene renderers is intentional: keeps Preview standalone
+- `npm run studio` → browser → visual QA → no MP4 render, no audio
+
+---
+
+## 36. Preview/Remotion Duplication Boundary
+
+**Status: ADOPTED**
+
+- Preview scene renderers (in `preview/studio.jsx`) are **independent** of Remotion scene components (in `src/templates/*/scenes/`)
+- Both implement the same visual grammar for each scene kind, but share zero code
+- This is intentional: Preview must work without npm dependencies or build steps
+- Motion approximations in Preview (simplified spring) are acceptable for design QA
+- Frame model is identical: both use `Math.ceil((dur + 0.5) * 30)` via `sceneFrames()`
+- Format metadata is consistent: `TEMPLATE_FORMATS` in Preview matches `TEMPLATE_SCHEMAS` in contract.ts
+
+---
+
+## 37. Renderer Boundary Violations — Legacy Templates
+
+**Status: DOCUMENTED (not fixed)**
+
+- **New templates** (nodeflow, cr7, cosmos): clean architecture
+  - Data components receive `frame`/`fps` as props
+  - Remotion hooks ONLY in `RemotionScenes.tsx`
+  - Types re-exported from `contract.ts`
+- **Legacy templates** (nq57, stoicLove, blueprint): architectural violations
+  - Scene components directly call `useCurrentFrame()`/`useVideoConfig()`
+  - Helpers (`Backdrop`) call hooks
+  - Blueprint SVG components call hooks (7 additional violations)
+  - Types defined in production data files (not neutral contract)
+  - No `RemotionScenes.tsx` boundary file
+- **Decision:** Do not refactor legacy templates during this workstream
+  - Legacy templates work correctly in Remotion
+  - Refactoring would be a large-scale rewrite with no user-facing benefit
+  - Violations are documented here as technical debt
+
+---
+
+## 38. Typography Hooks Boundary
+
+**Status: ADOPTED**
+
+- `src/design/typography/` components (`WordReveal`, `KaraokeReveal`, `Counter`) call `useCurrentFrame()`/`useVideoConfig()`
+- These are **Remotion-specific** components — they cannot be used in Preview's standalone context
+- `src/design/motion/` primitives are pure functions — they CAN be shared
+- `src/design/svg/` components receive `progress` as prop — they CAN be shared
+- The hook boundary is: typography = Remotion-specific; motion/svg/layout = renderer-agnostic
+
+---
+
+## 39. Fallback Renderer Policy
+
+**Status: ADOPTED**
+
+- `Fallback_Scene` in Preview Studio is a safety mechanism, not a design QA tool
+- Three production/template families use fallback:
+  - **nq57** (5 productions): quote, roles, pillars, stats, vision scenes → fallback
+  - **stoicLove** (1 production): all 6 scene kinds → fallback
+  - **blueprint** (1 production): pillars, measure, detail, process, seal scenes → fallback
+- These are legacy templates; fallback is acceptable because:
+  - nq57 and stoicLove are single-production templates with limited reuse potential
+  - Blueprint is architecturally coupled to its production data
+  - Dedicated renderers would not provide sufficient design QA value to justify the effort
+- `SceneErrorBoundary` wraps all scene renders — catches runtime errors gracefully
+
+---
+
+## 40. Frame Model Consistency
+
+**Status: ADOPTED**
+
+- Canonical: `sceneFrames(dur) = Math.ceil((dur + 0.5) * 30)` (in `contract.ts`)
+- Preview uses identical formula: `stf(s.dur + 0.5)` where `stf = s => Math.ceil(s * 30)`
+- Both map `frame → progress` linearly: `progress = frame / (totalFrames - 1)`
+- Spring motion is approximate in Preview (simplified damping) but structurally correct
+- No second timing model introduced — frame is the canonical time unit everywhere

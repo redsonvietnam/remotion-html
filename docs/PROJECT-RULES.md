@@ -106,3 +106,31 @@ Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
 - Templates must NOT import from production data files (e.g., `nq57.ts`, `cr7Records.ts`)
 - This ensures templates remain production-agnostic
 - Violation: `import { sceneFrames } from "../../data/nq57"` in a template file
+
+---
+
+## 9. Preview/Remotion Duplication Boundary
+
+**Rule:** Preview Studio scene renderers are intentionally separate from Remotion scene components.
+
+- Preview (`preview/studio.jsx`) and Remotion (`src/templates/*/scenes/`) are independent implementations
+- Both share the same frame model (`sceneFrames`) but share zero rendering code
+- This duplication is intentional: Preview must work standalone (no npm, no build)
+- Do NOT attempt to unify Preview and Remotion rendering code
+- Do NOT import from `src/` in Preview files
+- Frame model must remain consistent: `Math.ceil((dur + 0.5) * FPS)` everywhere
+- Format metadata in Preview (`TEMPLATE_FORMATS`) must stay consistent with `TEMPLATE_SCHEMAS` in contract.ts
+
+---
+
+## 10. Legacy Template Technical Debt
+
+**Rule:** Legacy templates (nq57, stoicLove, blueprint) have known architectural violations.
+
+- Scene components directly call `useCurrentFrame()`/`useVideoConfig()` (Rule #6 violation)
+- Helpers (`Backdrop`) call hooks
+- Types defined in production data files (Rule #1 violation)
+- No `RemotionScenes.tsx` boundary file
+- **Decision:** Do not refactor legacy templates unless a production requires it
+- These violations are documented in PROJECT-KNOWLEDGE.md (Entry #37)
+- New templates MUST follow the clean architecture (nodeflow/cr7/cosmos pattern)
