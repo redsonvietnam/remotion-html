@@ -395,8 +395,51 @@ Proven workflow for creating a new production:
 - `nq57`: 16:9 only
 - `stoiclove`: 9:16 only
 - `blueprint`: 16:9 only
+- `cosmos`: 16:9, 9:16
 - Unsupported formats are visually disabled in the Studio with explanation (tooltip)
 - Switching production auto-selects a supported format if current is unsupported
+
+---
+
+## 32. Cosmos Third-Template Experiment
+
+**Status: ADOPTED**
+
+- Cosmos validates that Design Model supports space/astronomy visual language
+- Visual language materially different from both NodeFlow and CR7:
+  - Deep space backgrounds (#050510) — not blueprint grid, not warm dark
+  - Orbital paths + constellation lines — not node-edge, not typography-only
+  - Star fields + nebula accents — not signal flow, not gold/amber
+  - Blue/purple palette (#3b82f6, #a855f7) — not electric cyan, not red/gold
+- Scene kinds: `title`, `fact`, `compare`, `timeline`, `diagram`, `closing` — different from both NodeFlow (6) and CR7 (4)
+- Template-specific helpers: `orbitalRotation`, `starTwinkle`, `constellationDraw` — unique motion vocabulary
+- Format support: 16:9 + 9:16 (layout adapts to canvas)
+- Same Design Model supports all 3 templates without modification
+
+---
+
+## 33. Template Reuse Evidence
+
+**Status: ADOPTED**
+
+- 3 templates now validated across 11 productions
+- NodeFlow: 1 production (BaoHiem2024)
+- CR7: 2 productions (CR7 Records, CR7 vs Messi) — cross-production reuse proven
+- Cosmos: 1 production (Solar System)
+- nq57: 5 productions (shared legacy template)
+- All templates follow same architecture: data/contract.ts types, scene components, RemotionScenes adapter
+- Template choice determines visual grammar — this is a hard coupling
+
+---
+
+## 34. NodeFlow sceneFrames Import Fix
+
+**Status: IMPLEMENTED**
+
+- NodeFlow `index.tsx` was importing `sceneFrames` from `nq57` production data
+- Fixed to import from `contract.ts` (canonical source)
+- Ensures templates never depend on production data files
+- All 3 templates now consistently import `sceneFrames` from `contract.ts`
 
 ---
 
@@ -409,3 +452,4 @@ Proven workflow for creating a new production:
 | nodeflow | title, flow, contribution, benefit, compare, end | 16:9 | ADOPTED | 1 |
 | blueprint | title, pillars, measure, detail, process, seal | 16:9 | ADOPTED | 1 (BHXH V2) |
 | cr7 | hero, stat, milestone, closing | 16:9, 9:16 | ADOPTED | 2 (CR7 Records, CR7 vs Messi) |
+| cosmos | title, fact, compare, timeline, diagram, closing | 16:9, 9:16 | ADOPTED | 1 (Solar System) |

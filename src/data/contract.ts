@@ -75,6 +75,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["hero", "stat", "milestone", "closing"],
     requiredTextFields: { hero: ["name"], stat: ["bigNumber"], milestone: ["title"], closing: ["title"] },
   },
+  cosmos: {
+    allowedKinds: ["title", "fact", "compare", "timeline", "diagram", "closing"],
+    requiredTextFields: { title: ["title"], fact: ["bigValue"], compare: ["title"], timeline: ["title"], diagram: ["title"], closing: ["title"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {
@@ -371,6 +375,67 @@ export type CR7SceneContent =
   | CR7StatContent
   | CR7MilestoneContent
   | CR7ClosingContent;
+
+// ---------------------------------------------------------------------------
+// Cosmos Template Content Contract
+//
+// Canonical content types for the Cosmos template (space/astronomy,
+// orbital paths, constellation lines, deep space backgrounds).
+// Pure content types — no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface CosmosTitleContent {
+  kind: "title";
+  title: string;
+  subtitle: string;
+  tagline: string;
+}
+
+export interface CosmosFactContent {
+  kind: "fact";
+  label: string;
+  bigValue: string;
+  unit: string;
+  description: string;
+  detail: string;
+}
+
+export interface CosmosCompareContent {
+  kind: "compare";
+  title: string;
+  left: { label: string; value: string; color?: string };
+  right: { label: string; value: string; color?: string };
+  insight: string;
+}
+
+export interface CosmosTimelineContent {
+  kind: "timeline";
+  title: string;
+  items: { label: string; value: string; year?: string }[];
+}
+
+export interface CosmosDiagramContent {
+  kind: "diagram";
+  title: string;
+  nodes: { label: string; sublabel?: string; orbit?: number }[];
+  edges: { from: number; to: number; label: string }[];
+}
+
+export interface CosmosClosingContent {
+  kind: "closing";
+  title: string;
+  subtitle: string;
+  stats: { label: string; value: string }[];
+  reference: string;
+}
+
+export type CosmosSceneContent =
+  | CosmosTitleContent
+  | CosmosFactContent
+  | CosmosCompareContent
+  | CosmosTimelineContent
+  | CosmosDiagramContent
+  | CosmosClosingContent;
 
 // ---------------------------------------------------------------------------
 // Storyboard Contract - the higher-level artifact C1 produces from research +

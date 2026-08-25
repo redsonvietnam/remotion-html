@@ -29,6 +29,9 @@ import { CR7Template } from "./templates/cr7";
 import { CR7_SCENES, CR7_CONTENT, sceneFrames as cr7SceneFrames } from "./data/cr7Records";
 import { cr7 } from "./theme/cr7";
 import { CR7_VS_MESSI_SCENES, CR7_VS_MESSI_CONTENT, sceneFrames as cr7VsMessiSceneFrames } from "./data/cr7VsMessi";
+import { CosmosTemplate } from "./templates/cosmos";
+import { SOLAR_SYSTEM_SCENES, SOLAR_SYSTEM_CONTENT, sceneFrames as solarSystemSceneFrames } from "./data/solarSystem";
+import { cosmos } from "./theme/cosmos";
 
 const FPS = 30;
 
@@ -70,6 +73,10 @@ const CR7_FRAMES =
 const CR7_VS_MESSI_FRAMES =
   CR7_VS_MESSI_SCENES.reduce((acc, s) => acc + cr7VsMessiSceneFrames(s.dur), 0) +
   (CR7_VS_MESSI_SCENES.length - 1) * 16;
+
+const SOLAR_SYSTEM_FRAMES =
+  SOLAR_SYSTEM_SCENES.reduce((acc, s) => acc + solarSystemSceneFrames(s.dur), 0) +
+  (SOLAR_SYSTEM_SCENES.length - 1) * 16;
 
 export const Root: React.FC = () => {
   return (
@@ -198,6 +205,19 @@ export const Root: React.FC = () => {
           scenes: CR7_VS_MESSI_SCENES,
           content: CR7_VS_MESSI_CONTENT,
           theme: cr7,
+        }}
+      />
+      <Composition
+        id="SolarSystem"
+        component={CosmosTemplate}
+        durationInFrames={SOLAR_SYSTEM_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: SOLAR_SYSTEM_SCENES,
+          content: SOLAR_SYSTEM_CONTENT,
+          theme: cosmos,
         }}
       />
     </>

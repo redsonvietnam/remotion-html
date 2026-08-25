@@ -1,9 +1,9 @@
 // ---------------------------------------------------------------------------
-// NodeFlow Template Root — Template entry point
+// Cosmos Template Root — Template entry point
 //
-// Visual grammar: network/system diagram, blueprint grid, node-edge language,
-// amber data labels, electric cyan signal flow.
-// Resolution: 1920x1080 (YouTube/Facebook horizontal)
+// Visual grammar: orbital paths, constellation lines, deep space backgrounds,
+// star fields, cosmic color palette.
+// Resolution: 1920x1080 / 1080x1920
 //
 // Accepts scenes/content/theme props for topic reuse.
 // ---------------------------------------------------------------------------
@@ -15,20 +15,19 @@ import { fade } from "@remotion/transitions/fade";
 import { ThemeProvider } from "../../design/theme";
 import { renderScene } from "./scenes";
 import { sceneFrames } from "../../data/contract";
-import type { SceneDef, NodeFlowSceneContent } from "./types";
+import type { SceneDef } from "../../data/contract";
+import type { CosmosSceneContent } from "./types";
 import type { Theme } from "../../design/theme";
 
-// Custom slide transition duration for NodeFlow
-// Slightly longer (20f) than NQ57's 16f to let grid breathe during change
-const TRANSITION_FRAMES = 20;
+const TRANSITION_FRAMES = 16;
 
 type TemplateProps = {
   scenes: SceneDef[];
-  content: Record<string, NodeFlowSceneContent>;
+  content: Record<string, CosmosSceneContent>;
   theme: Theme;
 };
 
-export const NodeFlowTemplate: React.FC<TemplateProps> = ({
+export const CosmosTemplate: React.FC<TemplateProps> = ({
   scenes,
   content,
   theme,

@@ -119,6 +119,18 @@
       "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "CR7 vs Messi" },
       "aliases": ["cr7 vs messi", "ronaldo vs messi", "messi vs ronaldo"],
       "keywords": ["ronaldo vs messi", "messi vs ronaldo", "cr7 vs messi"]
+    },
+    "solarSystem": {
+      "id": "solarSystem",
+      "template": "cosmos",
+      "composition": "SolarSystem",
+      "dataFile": "src/data/solarSystem.ts",
+      "tts": "gen_tts_solarSystem.py",
+      "output": "out/solarSystem.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "Solar System" },
+      "aliases": ["solar system", "he mat troi", "hệ mặt trời", "8 hành tinh"],
+      "keywords": ["solar system", "hệ mặt trời", "hành tinh", "mặt trời", "thiên văn"]
     }
   }
 }

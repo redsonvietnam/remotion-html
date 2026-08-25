@@ -95,3 +95,14 @@ Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
 - Must NOT depend on Remotion
 - Accept timing information through explicit arguments/context
 - `FrameContext`: `{ frame, fps, progress }` — canonical time unit
+
+---
+
+## 8. Template sceneFrames Import
+
+**Rule:** Templates must import `sceneFrames` from `contract.ts`, not from production data.
+
+- `contract.ts` exports `sceneFrames` as canonical conversion function
+- Templates must NOT import from production data files (e.g., `nq57.ts`, `cr7Records.ts`)
+- This ensures templates remain production-agnostic
+- Violation: `import { sceneFrames } from "../../data/nq57"` in a template file
