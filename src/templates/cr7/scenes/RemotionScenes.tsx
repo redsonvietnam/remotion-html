@@ -16,14 +16,14 @@ import type { CR7SceneContent } from "../types";
 
 type BaseProps = { audio: string; caption: string; dur: number };
 
-/** Wrap a data component with Remotion frame/fps injection. */
-function withRemotion<P extends { frame: number; fps: number }>(
+/** Wrap a data component with Remotion frame/fps/viewport injection. */
+function withRemotion<P extends { frame: number; fps: number; width?: number; height?: number }>(
   DataComponent: React.FC<P>
-): React.FC<Omit<P, "frame" | "fps">> {
+): React.FC<Omit<P, "frame" | "fps" | "width" | "height">> {
   return (props) => {
     const frame = useCurrentFrame();
-    const { fps } = useVideoConfig();
-    return <DataComponent {...(props as P)} frame={frame} fps={fps} />;
+    const { fps, width, height } = useVideoConfig();
+    return <DataComponent {...(props as P)} frame={frame} fps={fps} width={width} height={height} />;
   };
 }
 

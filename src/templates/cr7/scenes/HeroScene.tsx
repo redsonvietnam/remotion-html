@@ -10,27 +10,38 @@ import { useTheme } from "../../../design/theme";
 import { textIn, reveal } from "../helpers";
 import type { CR7HeroContent } from "../types";
 
+/** Design viewport width — typography scales relative to this. */
+const DESIGN_WIDTH = 1920;
+
 export type HeroSceneProps = {
   audio: string;
   caption: string;
   dur: number;
   frame: number;
   fps: number;
+  width?: number;
+  height?: number;
 } & CR7HeroContent;
 
 export const HeroSceneData: React.FC<HeroSceneProps> = ({
   frame,
   fps,
+  width = DESIGN_WIDTH,
   name,
   tagline,
   subtitle,
 }) => {
   const theme = useTheme();
+  const scale = Math.min(1, width / DESIGN_WIDTH);
 
   const nameAnim = textIn(frame, 0, fps, 50);
   const tagAnim = textIn(frame, 15, fps, 40);
   const subAnim = textIn(frame, 30, fps, 30);
   const pulse = 0.03 * Math.sin((frame / fps) * 1.8);
+
+  const nameFontSize = Math.round(120 * scale);
+  const subtitleFontSize = Math.round(26 * scale);
+  const subtitleMaxWidth = Math.round(600 * scale);
 
   return (
     <AbsoluteFill
@@ -69,7 +80,7 @@ export const HeroSceneData: React.FC<HeroSceneProps> = ({
             ...nameAnim,
             fontFamily: theme.fonts.display,
             fontWeight: 900,
-            fontSize: 120,
+            fontSize: nameFontSize,
             lineHeight: 1.0,
             textAlign: "center",
             letterSpacing: -4,
@@ -92,10 +103,10 @@ export const HeroSceneData: React.FC<HeroSceneProps> = ({
           style={{
             ...subAnim,
             fontFamily: theme.fonts.display,
-            fontSize: 26,
+            fontSize: subtitleFontSize,
             color: theme.colors.muted,
             textAlign: "center",
-            maxWidth: 600,
+            maxWidth: subtitleMaxWidth,
             lineHeight: 1.5,
           }}
         >

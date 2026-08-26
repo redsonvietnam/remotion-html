@@ -10,17 +10,23 @@ import { useTheme } from "../../../design/theme";
 import { textIn } from "../helpers";
 import type { CR7StatContent } from "../types";
 
+/** Design viewport width — typography scales relative to this. */
+const DESIGN_WIDTH = 1920;
+
 export type StatSceneProps = {
   audio: string;
   caption: string;
   dur: number;
   frame: number;
   fps: number;
+  width?: number;
+  height?: number;
 } & CR7StatContent;
 
 export const StatSceneData: React.FC<StatSceneProps> = ({
   frame,
   fps,
+  width = DESIGN_WIDTH,
   label,
   bigNumber,
   sub,
@@ -28,13 +34,21 @@ export const StatSceneData: React.FC<StatSceneProps> = ({
   color,
 }) => {
   const theme = useTheme();
+  const scale = Math.min(1, width / DESIGN_WIDTH);
 
   const labelAnim = textIn(frame, 0, fps, 20);
   const numAnim = textIn(frame, 8, fps, 60);
   const subAnim = textIn(frame, 20, fps, 25);
   const detailAnim = textIn(frame, 35, fps, 20);
   const c = theme.colors[color] || theme.colors.accent1;
-  const scale = 1 + 0.02 * Math.sin((frame / fps) * 2);
+  const animScale = 1 + 0.02 * Math.sin((frame / fps) * 2);
+
+  const bigFontSize = Math.round(200 * scale);
+  const subFontSize = Math.round(28 * scale);
+  const subMaxWidth = Math.round(700 * scale);
+  const detailFontSize = Math.round(20 * scale);
+  const detailMaxWidth = Math.round(600 * scale);
+  const outerPadding = Math.round(80 * scale);
 
   return (
     <AbsoluteFill
@@ -53,7 +67,7 @@ export const StatSceneData: React.FC<StatSceneProps> = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: 80,
+          padding: outerPadding,
         }}
       >
         <div
@@ -74,11 +88,11 @@ export const StatSceneData: React.FC<StatSceneProps> = ({
             ...numAnim,
             fontFamily: theme.fonts.display,
             fontWeight: 900,
-            fontSize: 200,
+            fontSize: bigFontSize,
             lineHeight: 1.0,
             color: theme.colors.ink,
             textAlign: "center",
-            transform: `scale(${scale})`,
+            transform: `scale(${animScale})`,
             textShadow: `0 0 80px ${c}30`,
           }}
         >
@@ -97,10 +111,10 @@ export const StatSceneData: React.FC<StatSceneProps> = ({
           style={{
             ...subAnim,
             fontFamily: theme.fonts.display,
-            fontSize: 28,
+            fontSize: subFontSize,
             color: theme.colors.muted,
             textAlign: "center",
-            maxWidth: 700,
+            maxWidth: subMaxWidth,
             lineHeight: 1.4,
           }}
         >
@@ -110,10 +124,10 @@ export const StatSceneData: React.FC<StatSceneProps> = ({
           style={{
             ...detailAnim,
             fontFamily: theme.fonts.display,
-            fontSize: 20,
+            fontSize: detailFontSize,
             color: `${theme.colors.muted}99`,
             textAlign: "center",
-            maxWidth: 600,
+            maxWidth: detailMaxWidth,
             lineHeight: 1.5,
             marginTop: 16,
           }}
