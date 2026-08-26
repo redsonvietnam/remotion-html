@@ -756,12 +756,16 @@ let safeOn=false;
 safeToggle.onclick=()=>{safeOn=!safeOn;safeToggle.classList.toggle("active",safeOn);onSafeToggle&&onSafeToggle(safeOn);};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+function getInitialPi(){
+  try{const params=new URLSearchParams(window.location.search);const pid=params.get("production");if(pid){const idx=PRODUCTIONS.findIndex(p=>p.id===pid);if(idx>=0)return idx;}}catch(e){}
+  return 0;
+}
 function AppWrapper(){
   const [fmt,setFmt]=useState("16:9");
-  const [pi,setPi]=useState(0);
+  const [pi,setPi]=useState(getInitialPi);
   const [showSafe,setShowSafe]=useState(false);
   onFormatChange=setFmt;onSafeToggle=setShowSafe;
-  useEffect(()=>{prodSelect.onchange=(e)=>{const newPi=parseInt(e.target.value);setPi(newPi);currentPi=newPi;const tpl=PRODUCTIONS[newPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();};},[]);
+  useEffect(()=>{const initPi=getInitialPi();if(initPi!==0){currentPi=initPi;prodSelect.value=initPi;const tpl=PRODUCTIONS[initPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();}prodSelect.onchange=(e)=>{const newPi=parseInt(e.target.value);setPi(newPi);currentPi=newPi;const tpl=PRODUCTIONS[newPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();};},[]);
   return <AppInner fmt={fmt} pi={pi} showSafe={showSafe}/>;
 }
 function AppInner({fmt,pi,showSafe}){

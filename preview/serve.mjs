@@ -37,7 +37,8 @@ function send(res, status, body, type) {
 const server = http.createServer((req, res) => {
   try {
     let urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
-    if (urlPath === "/") urlPath = STUDIO_MODE ? "/preview/studio.html" : "/preview/index.html";
+    // Default route: library (or studio in studio mode). MP4 preview at /index.html.
+    if (urlPath === "/") urlPath = STUDIO_MODE ? "/preview/studio.html" : "/preview/library.html";
 
     const resolved = path.normalize(path.join(ROOT, urlPath));
     // Prevent path traversal outside ROOT.

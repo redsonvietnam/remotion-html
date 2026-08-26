@@ -134,3 +134,16 @@ Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
 - **Decision:** Do not refactor legacy templates unless a production requires it
 - These violations are documented in PROJECT-KNOWLEDGE.md (Entry #37)
 - New templates MUST follow the clean architecture (nodeflow/cr7/cosmos pattern)
+
+---
+
+## 11. Template Library Data Consistency
+
+**Rule:** Library page data must stay consistent with canonical sources.
+
+- `preview/library.html` contains duplicated `TEMPLATES` and `PRODUCTIONS` arrays
+- Canonical sources: `TEMPLATE_SCHEMAS` in `contract.ts`, `TEMPLATE_FORMATS` in `studio.jsx`
+- When adding a new template or production, update BOTH `library.html` AND `studio.jsx`
+- Data consistency is validated by `src/__tests__/templateLibrary.vitest.ts`
+- Library page is standalone HTML (no build) — data is inline, not imported
+- Template statuses (`ready`/`legacy`) are library-only metadata, not in contract.ts
