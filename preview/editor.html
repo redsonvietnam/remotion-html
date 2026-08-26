@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Video Editor</title>
+  <title>Composer</title>
   <style>
-:root{--bg:#0a0e1a;--panel:#0f1423;--surface:#141a2e;--line:rgba(255,255,255,0.08);--accent1:#00d4ff;--accent2:#d4a843;--accent3:#34d399;--ink:#e8e6e1;--muted:#6b7280;--radius:8px;--danger:#ef4444}
+:root{--bg:#0a0e1a;--panel:#0f1423;--surface:#141a2e;--line:rgba(255,255,255,0.08);--accent1:#00d4ff;--accent2:#d4a843;--accent3:#34d399;--ink:#e8e6e1;--muted:#6b7280;--radius:8px;--danger:#ef4444;--left-w:240px;--right-w:300px}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--ink);font-family:"Inter","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -14,57 +14,56 @@ header{height:48px;padding:0 16px;display:flex;align-items:center;gap:12px;borde
 .brand span{color:var(--muted);font-weight:400;margin-left:6px;font-size:12px}
 .hsep{width:1px;height:24px;background:var(--line);flex-shrink:0}
 .spacer{flex:1}
-.name-input{background:transparent;border:1px solid transparent;color:var(--ink);font-size:14px;font-weight:600;padding:4px 8px;border-radius:4px;outline:none;width:220px}
+.name-input{background:transparent;border:1px solid transparent;color:var(--ink);font-size:14px;font-weight:600;padding:4px 8px;border-radius:4px;outline:none;width:200px}
 .name-input:hover{border-color:var(--line)}
 .name-input:focus{border-color:var(--accent1);background:var(--surface)}
 .badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;letter-spacing:0.3px}
 .tpl-badge{color:var(--accent2);background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.2)}
 .fmt-badge{color:var(--accent1);background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2)}
-.save-btn{background:var(--accent1);color:#0a0e1a;border:none;padding:6px 16px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s}
-.save-btn:hover{background:#00bfe6}
-.link-btn{color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;padding:5px 10px;border:1px solid var(--line);border-radius:6px;transition:all 0.15s}
-.link-btn:hover{color:var(--accent1);border-color:var(--accent1)}
+.save-status{font-size:11px;color:var(--muted);font-style:italic}
+.btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s}
+.btn-primary{background:var(--accent1);color:#0a0e1a}
+.btn-primary:hover{background:#00bfe6}
+.btn-secondary{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.btn-secondary:hover{color:var(--ink);border-color:var(--accent1)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-danger{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2)}
+.btn-danger:hover{background:rgba(239,68,68,0.2)}
 .main{flex:1;display:flex;overflow:hidden}
-.preview-area{flex:1;display:flex;align-items:center;justify-content:center;background:#050508;position:relative;min-width:0}
+.left-panel{width:var(--left-w);border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.panel-header{padding:10px 14px;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+.scene-list{flex:1;overflow-y:auto;padding:8px}
+.scene-item{padding:8px 10px;border-radius:6px;border:1px solid transparent;cursor:pointer;transition:all 0.12s;margin-bottom:4px;position:relative}
+.scene-item:hover{border-color:rgba(255,255,255,0.1);background:var(--surface)}
+.scene-item.active{border-color:var(--accent1);background:rgba(0,212,255,0.06)}
+.scene-num{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:2px}
+.scene-kind{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.scene-title{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scene-dur{font-size:10px;color:var(--accent1);font-variant-numeric:tabular-nums;margin-top:2px}
+.scene-actions{position:absolute;top:6px;right:6px;display:none;gap:2px}
+.scene-item.active .scene-actions{display:flex}
+.scene-act{width:18px;height:18px;border-radius:3px;border:none;background:rgba(255,255,255,0.08);color:var(--muted);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.12s}
+.scene-act:hover{background:rgba(255,255,255,0.15);color:var(--ink)}
+.scene-act.danger:hover{background:rgba(239,68,68,0.2);color:var(--danger)}
+.center-area{flex:1;display:flex;align-items:center;justify-content:center;background:#050508;position:relative;min-width:0}
 .preview-frame{position:relative;background:#000;border-radius:8px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.6)}
 .preview-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);gap:12px;text-align:center;padding:20px}
 .preview-placeholder .kind{font-size:14px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:2px}
-.preview-placeholder .sub{font-size:12px;max-width:260px;line-height:1.5}
-.preview-placeholder .hint{font-size:11px;color:var(--accent1);margin-top:8px}
-.sidebar{width:320px;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
-.sidebar-header{padding:12px 16px;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
-.sidebar-scroll{flex:1;overflow-y:auto;padding:16px}
-.field-group{margin-bottom:20px}
-.field-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
-.field-input{width:100%;padding:8px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:500;outline:none;transition:border-color 0.15s;font-family:inherit}
+.right-panel{width:var(--right-w);border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.inspector-scroll{flex:1;overflow-y:auto;padding:14px}
+.field-group{margin-bottom:16px}
+.field-label{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.field-input{width:100%;padding:7px 10px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:12px;font-weight:500;outline:none;transition:border-color 0.15s;font-family:inherit}
 .field-input:focus{border-color:var(--accent1)}
-.field-input-num{width:100%;padding:8px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:500;outline:none;transition:border-color 0.15s}
+.field-input-num{width:100%;padding:7px 10px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:12px;font-weight:500;outline:none;transition:border-color 0.15s}
 .field-input-num:focus{border-color:var(--accent1)}
-.field-hint{font-size:10px;color:var(--muted);margin-top:4px}
-.timeline{height:100px;border-top:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;flex-shrink:0}
-.timeline-header{display:flex;align-items:center;padding:8px 16px;gap:8px;border-bottom:1px solid var(--line)}
-.timeline-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
-.timeline-add{background:var(--surface);color:var(--accent1);border:1px dashed rgba(0,212,255,0.3);padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s}
-.timeline-add:hover{background:rgba(0,212,255,0.05);border-color:var(--accent1)}
-.timeline-scroll{flex:1;display:flex;gap:8px;padding:8px 16px;overflow-x:auto;align-items:flex-start}
-.scene-card{min-width:100px;max-width:140px;padding:8px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:all 0.12s;flex-shrink:0;position:relative}
-.scene-card:hover{border-color:rgba(255,255,255,0.15)}
-.scene-card.active{border-color:var(--accent1);background:rgba(0,212,255,0.06)}
-.scene-card-id{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.scene-card-kind{font-size:11px;font-weight:600;color:var(--ink);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.scene-card-dur{font-size:10px;color:var(--accent1);font-variant-numeric:tabular-nums}
-.scene-card-actions{position:absolute;top:4px;right:4px;display:none;gap:2px}
-.scene-card.active .scene-card-actions{display:flex}
-.scene-action{width:18px;height:18px;border-radius:3px;border:none;background:rgba(255,255,255,0.08);color:var(--muted);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.12s}
-.scene-action:hover{background:rgba(255,255,255,0.15);color:var(--ink)}
-.scene-action.danger:hover{background:rgba(239,68,68,0.2);color:var(--danger)}
+.field-hint{font-size:9px;color:var(--muted);margin-top:3px}
+.audio-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--accent3);background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);padding:2px 6px;border-radius:3px}
 .no-scenes{padding:20px;color:var(--muted);font-size:12px;text-align:center}
 .error-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:100}
 .error-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:40px;max-width:400px;text-align:center}
 .error-box h2{font-size:18px;margin-bottom:8px}
 .error-box p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5}
-.error-box .btn{padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-block}
-.error-box .btn-primary{background:var(--accent1);color:#0a0e1a}
 .toast{position:fixed;bottom:20px;right:20px;background:var(--accent3);color:#0a0e1a;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:200;animation:fadeInOut 2s ease forwards}
 @keyframes fadeInOut{0%{opacity:0;transform:translateY(10px)}10%{opacity:1;transform:translateY(0)}80%{opacity:1}100%{opacity:0}}
   </style>
@@ -120,25 +119,268 @@ const TEMPLATES = [
     }},
 ];
 
-// ─── Template Themes ────────────────────────────────────────────────────────
-
 const EDITABLE_IDS = TEMPLATES.map(t => t.id);
 const LEGACY_IDS = ["nq57","stoiclove","blueprint"];
 const STORAGE_KEY = "nf_editor_projects";
 const CURRENT_KEY = "nf_editor_current";
+const STUDIO_PROJECT_KEY = "nf_studio_project";
+
+// ─── Template Themes ────────────────────────────────────────────────────────
+const THEMES = {
+  scrapbook: { bg:"#f5f0e8", bg2:"#e8e0d0", card:"#ffffff", line:"#d0c8b8", a1:"#c0392b", a2:"#d4a017", a3:"#1a1a1a", ink:"#1a1a1a", muted:"#666666", fd:'"Georgia","Times New Roman",serif', fm:'"Courier New","Fira Code",monospace' },
+  cr7: { bg:"#0c0a09", bg2:"#1c1917", card:"#292524", line:"rgba(255,255,255,0.06)", a1:"#f59e0b", a2:"#ef4444", a3:"#10b981", ink:"#fafaf9", muted:"#a8a29e", fd:'"Inter","Segoe UI",system-ui,sans-serif', fm:'"JetBrains Mono","Fira Code",monospace' },
+  cosmos: { bg:"#050510", bg2:"#0a0a2e", card:"#111133", line:"rgba(255,255,255,0.06)", a1:"#3b82f6", a2:"#a855f7", a3:"#f8fafc", ink:"#f8fafc", muted:"#94a3b8", fd:'"Inter","Segoe UI",system-ui,sans-serif', fm:'"JetBrains Mono","Fira Code",monospace' },
+  nodeflow: { bg:"#0a0e1a", bg2:"#0f1423", card:"#141a2e", line:"rgba(255,255,255,0.08)", a1:"#00d4ff", a2:"#d4a843", a3:"#34d399", ink:"#e8e6e1", muted:"#6b7280", fd:'"Inter","Segoe UI",system-ui,sans-serif', fm:'"JetBrains Mono","Fira Code",monospace' },
+};
+
+// ─── Preview Renderers (static, no animation) ───────────────────────────────
+function NF_Grid_Small({ W, H, th }) {
+  const cs = 60; const cols = Math.ceil(W / cs) + 1, rows = Math.ceil(H / cs) + 1; const ls = [];
+  for (let i = 0; i < cols; i++) { const x = i * cs; const m = i % 5 === 0; ls.push(<line key={"v"+i} x1={x} y1={0} x2={x} y2={H} stroke={m?th.a1:th.line} strokeWidth={m?0.5:0.25} opacity={m?0.2:0.12}/>); }
+  for (let i = 0; i < rows; i++) { const y = i * cs; const m = i % 5 === 0; ls.push(<line key={"h"+i} x1={0} y1={y} x2={W} y2={y} stroke={m?th.a1:th.line} strokeWidth={m?0.5:0.25} opacity={m?0.2:0.12}/>); }
+  return <svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0,pointerEvents:"none"}}>{ls}</svg>;
+}
+
+function NF_Title_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(120% 120% at 50% -5%,"+th.bg2+" 0%,"+th.bg+" 55%,#020408 100%)"}}>
+    <NF_Grid_Small W={W} H={H} th={th}/>
+    <svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0}}>
+      <rect x={100} y={80} width={(d.lawCode||"").length*12+30} height={32} rx={4} fill={th.a1} fillOpacity={0.08} stroke={th.a1} strokeWidth={1} strokeOpacity={0.4}/>
+      <text x={115} y={100} fill={th.a1} fontSize={14} fontWeight={600} fontFamily={th.fm} letterSpacing={2}>{d.lawCode||""}</text>
+      <text x={100} y={250} fill={th.ink} fontSize={110} fontWeight={900} fontFamily={th.fd} letterSpacing={-3}>{d.title||""}</text>
+      <text x={100} y={310} fill={th.ink} fontSize={36} fontWeight={500} fontFamily={th.fd}>{d.subtitle||""}</text>
+      <text x={100} y={360} fill={th.muted} fontSize={18} fontWeight={600} fontFamily={th.fm} letterSpacing={4}>{d.tagline||""}</text>
+      {(d.nodes||[]).map((n,i)=>{const x=240+i*(W-480)/2;return <g key={i}><rect x={x} y={820} width={260} height={70} rx={8} fill={[th.a3,th.a1,th.a2][i]+"0a"} stroke={[th.a3,th.a1,th.a2][i]} strokeWidth={1} strokeOpacity={0.5}/><text x={x+130} y={852} textAnchor="middle" fill={th.ink} fontSize={16} fontWeight={700} fontFamily={th.fd}>{n.label}</text><text x={x+130} y={876} textAnchor="middle" fill={[th.a3,th.a1,th.a2][i]} fontSize={12} fontWeight={600} fontFamily={th.fm}>{n.role||""}</text></g>})}
+    </svg></div>;
+}
+function NF_Flow_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(120% 120% at 50% -5%,"+th.bg2+" 0%,"+th.bg+" 55%,#020408 100%)"}}>
+    <NF_Grid_Small W={W} H={H} th={th}/>
+    <div style={{position:"absolute",top:0,left:0,bottom:0,width:820,display:"flex",flexDirection:"column",justifyContent:"center",paddingLeft:100,paddingRight:60}}>
+      <div style={{fontFamily:th.fm,fontWeight:600,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Flow</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,lineHeight:1.15,color:th.ink,marginBottom:24}}>{d.title||""}</div>
+      <div style={{width:"100%",height:1,background:"linear-gradient(90deg,transparent,"+th.a1+"80,transparent)",opacity:0.3,margin:"16px 0"}}/>
+      {(d.description||[]).map((l,i)=><div key={i} style={{fontFamily:th.fd,fontSize:26,lineHeight:1.6,color:i===0?th.ink:th.muted,marginBottom:8}}>{l}</div>)}
+      <div style={{marginTop:32,display:"flex",flexDirection:"column",gap:10}}>{(d.flowNodes||[]).map((n,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:12,fontFamily:th.fd,fontSize:20,color:[th.a1,th.a2,th.a3][i],fontWeight:600}}><span style={{width:10,height:10,borderRadius:"50%",background:[th.a1,th.a2,th.a3][i],display:"inline-block"}}/>{n.label}{n.rate&&<span style={{fontFamily:th.fm,fontSize:15,color:th.muted}}> - {n.rate}</span>}</div>)}</div>
+    </div></div>;
+}
+function NF_Contribution_Preview({ W, H, d, th }) {
+  const rc = [th.a2,th.a1,th.a3]; const BW=840, BX=100, BH=48, RG=72, CY=160;
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(120% 120% at 50% -5%,"+th.bg2+" 0%,"+th.bg+" 55%,#020408 100%)"}}>
+    <NF_Grid_Small W={W} H={H} th={th}/>
+    <div style={{position:"absolute",top:80,left:100,right:100}}>
+      <div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Contribution</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:60,lineHeight:1.1,color:th.ink}}>{d.title||""}</div>
+    </div>
+    <svg width={1720} height={900} viewBox="0 0 1720 900" style={{position:"absolute",left:100,top:200}}>
+      {(d.rows||[]).map((row,i)=>{const y=CY-60+i*RG,c=rc[i%rc.length];return <g key={i}><text x={0} y={y-8} fill={c} fontSize={15} fontWeight={700} fontFamily={th.fm} letterSpacing={2}>{(row.party||"").toUpperCase()}</text><rect x={BX} y={y} width={BW} height={BH} rx={4} fill={c} fillOpacity={0.06} stroke={c} strokeWidth={0.8} strokeOpacity={0.25}/><rect x={BX+1} y={y+1} width={Math.max(0,BW*row.pct-2)} height={BH-2} rx={3} fill={c} fillOpacity={0.7}/><text x={BX+8} y={y+BH/2} dominantBaseline="central" fill={th.ink} fontSize={12} fontWeight={600} fontFamily={th.fd}>{row.type||""}</text><text x={BX+BW+8} y={y+BH/2} dominantBaseline="central" fill={c} fontSize={12} fontWeight={700} fontFamily={th.fm}>{row.rateLabel||""}</text></g>})}
+    </svg></div>;
+}
+function NF_Benefit_Preview({ W, H, d, th }) {
+  const cc = [th.a3,th.a1,th.a2];
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(120% 120% at 50% -5%,"+th.bg2+" 0%,"+th.bg+" 55%,#020408 100%)"}}>
+    <NF_Grid_Small W={W} H={H} th={th}/>
+    <div style={{position:"absolute",top:0,left:0,bottom:0,width:700,display:"flex",flexDirection:"column",justifyContent:"center",paddingLeft:100,paddingRight:60}}>
+      <div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Benefits</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:52,lineHeight:1.15,color:th.ink,marginBottom:20}}>{d.title||""}</div>
+      <div style={{width:"100%",height:1,background:"linear-gradient(90deg,transparent,"+th.a1+"80,transparent)",opacity:0.3,margin:"16px 0"}}/>
+      <div style={{fontFamily:th.fd,fontSize:24,lineHeight:1.6,color:th.muted}}>{d.description||""}</div>
+    </div></div>;
+}
+function NF_Compare_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(120% 120% at 50% -5%,"+th.bg2+" 0%,"+th.bg+" 55%,#020408 100%)"}}>
+    <NF_Grid_Small W={W} H={H} th={th}/>
+    <div style={{position:"absolute",top:60,left:100,right:100}}>
+      <div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Compare</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,color:th.ink,lineHeight:1.1}}>{d.title||""}</div>
+    </div></div>;
+}
+function NF_End_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(120% 120% at 50% -5%,"+th.bg2+" 0%,"+th.bg+" 55%,#020408 100%)"}}>
+    <NF_Grid_Small W={W} H={H} th={th}/>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",paddingTop:60}}>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:80,lineHeight:1.1,textAlign:"center",letterSpacing:-2,background:"linear-gradient(135deg,"+th.a1+","+th.a1s+" 40%,"+th.a2+")",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>{d.closingTitle||""}</div>
+      <div style={{fontFamily:th.fd,fontWeight:500,fontSize:32,color:th.muted,textAlign:"center",marginTop:16,maxWidth:900,lineHeight:1.4}}>{d.closingSubtitle||""}</div>
+      <div style={{fontFamily:th.fm,fontWeight:600,fontSize:16,letterSpacing:3,color:th.muted,marginTop:32}}>{d.reference||""}</div>
+    </div></div>;
+}
+const NF_PREVIEW = { title:NF_Title_Preview, flow:NF_Flow_Preview, contribution:NF_Contribution_Preview, benefit:NF_Benefit_Preview, compare:NF_Compare_Preview, end:NF_End_Preview };
+
+function CR7_Hero_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,"+th.bg2+" 0%,"+th.bg+" 60%,#050403 100%)"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(50% 50% at 50% 45%,"+th.a1+"10,transparent 70%)"}}/>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:8,textTransform:"uppercase",color:th.a1,marginBottom:24}}>{d.tagline||""}</div>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:120,lineHeight:1.0,textAlign:"center",letterSpacing:-4,color:th.ink}}>{d.name||""}</div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,"+th.a1+",transparent)",margin:"32px 0",opacity:0.6}}/>
+      <div style={{fontFamily:th.fd,fontSize:26,color:th.muted,textAlign:"center",maxWidth:600,lineHeight:1.5}}>{d.subtitle||""}</div>
+    </div></div>;
+}
+function CR7_Stat_Preview({ W, H, d, th }) {
+  const c = th[d.color] || th.a1;
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,"+th.bg2+" 0%,"+th.bg+" 60%,#050403 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:6,textTransform:"uppercase",color:c,marginBottom:16}}>{d.label||""}</div>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:200,lineHeight:1.0,color:th.ink,textAlign:"center",textShadow:"0 0 80px "+c+"30"}}>{d.bigNumber||""}</div>
+      <div style={{width:80,height:2,background:c,margin:"24px 0",opacity:0.5}}/>
+      <div style={{fontFamily:th.fd,fontSize:28,color:th.muted,textAlign:"center",maxWidth:700,lineHeight:1.4}}>{d.sub||""}</div>
+    </div></div>;
+}
+function CR7_Milestone_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,"+th.bg2+" 0%,"+th.bg+" 60%,#050403 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:6,textTransform:"uppercase",color:th.a1,marginBottom:48}}>{d.title||""}</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:32,maxWidth:800}}>
+        {(d.items||[]).map((it,i)=><div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",padding:32,background:th.card+"80",borderRadius:12,border:"1px solid "+th.line}}>
+          <div style={{fontFamily:th.fd,fontWeight:900,fontSize:72,color:th.a1,lineHeight:1}}>{it.value}</div>
+          <div style={{fontFamily:th.fd,fontSize:18,color:th.muted,marginTop:12,textAlign:"center"}}>{it.label}</div>
+        </div>)}
+      </div>
+    </div></div>;
+}
+function CR7_Closing_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,"+th.bg2+" 0%,"+th.bg+" 60%,#050403 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:100,lineHeight:1.1,textAlign:"center",letterSpacing:-3,background:"linear-gradient(135deg,"+th.a1+","+th.a2+")",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>{d.title||""}</div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,"+th.a1+",transparent)",margin:"32px 0",opacity:0.6}}/>
+      <div style={{fontFamily:th.fd,fontSize:28,color:th.muted,textAlign:"center",maxWidth:700,lineHeight:1.6,whiteSpace:"pre-line"}}>{d.subtitle||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:16,letterSpacing:3,color:th.muted+"88",marginTop:24}}>{d.reference||""}</div>
+    </div></div>;
+}
+const CR7_PREVIEW = { hero:CR7_Hero_Preview, stat:CR7_Stat_Preview, milestone:CR7_Milestone_Preview, closing:CR7_Closing_Preview };
+
+function Cosmos_Stars({ count = 40 }) {
+  const stars = Array.from({length:count},(_,i)=>({x:(i*137.508)%100,y:(i*73.137)%100,size:1+(i%3)}));
+  return <>{stars.map((s,i)=><div key={i} style={{position:"absolute",left:s.x+"%",top:s.y+"%",width:s.size,height:s.size,borderRadius:"50%",background:"#fff",opacity:0.5+(i%3)*0.15}}/>)}</>;
+}
+function Cosmos_Title_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <Cosmos_Stars/>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(50% 50% at 50% 45%,"+th.a1+"15,transparent 70%)"}}/>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:8,textTransform:"uppercase",color:th.a1,marginBottom:24}}>{d.tagline||""}</div>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:100,lineHeight:1.0,textAlign:"center",letterSpacing:-3,color:th.ink}}>{d.title||""}</div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,"+th.a1+",transparent)",margin:"32px 0",opacity:0.6}}/>
+      <div style={{fontFamily:th.fd,fontSize:26,color:th.muted,textAlign:"center",maxWidth:600,lineHeight:1.5}}>{d.subtitle||""}</div>
+    </div></div>;
+}
+function Cosmos_Fact_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <Cosmos_Stars/>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:6,textTransform:"uppercase",color:th.a1,marginBottom:16}}>{d.label||""}</div>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:180,lineHeight:1.0,color:th.ink,textAlign:"center",textShadow:"0 0 80px "+th.a1+"30"}}>{d.bigValue||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:24,color:th.a1,marginBottom:24}}>{d.unit||""}</div>
+      <div style={{width:80,height:2,background:th.a1,margin:"0 0 24px 0",opacity:0.5}}/>
+      <div style={{fontFamily:th.fd,fontSize:28,color:th.muted,textAlign:"center",maxWidth:700,lineHeight:1.4}}>{d.description||""}</div>
+    </div></div>;
+}
+function Cosmos_Compare_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <Cosmos_Stars/>
+    <div style={{position:"absolute",top:80,left:100,right:100}}>
+      <div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Compare</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,color:th.ink,lineHeight:1.1}}>{d.title||""}</div>
+    </div>
+    <div style={{position:"absolute",left:100,top:280,width:W/2-160}}>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:140,lineHeight:1,color:d.left?.color||th.a1,textAlign:"center"}}>{d.left?.value||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:3,textTransform:"uppercase",color:d.left?.color||th.a1,textAlign:"center",marginBottom:16}}>{d.left?.label||""}</div>
+    </div>
+    <div style={{position:"absolute",right:100,top:280,width:W/2-160}}>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:140,lineHeight:1,color:d.right?.color||th.a2,textAlign:"center"}}>{d.right?.value||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:3,textTransform:"uppercase",color:d.right?.color||th.a2,textAlign:"center",marginBottom:16}}>{d.right?.label||""}</div>
+    </div>
+    <div style={{position:"absolute",bottom:80,left:100,right:100,textAlign:"center"}}>
+      <div style={{fontFamily:th.fd,fontSize:22,color:th.muted,maxWidth:800,margin:"0 auto",lineHeight:1.5}}>{d.insight||""}</div>
+    </div></div>;
+}
+function Cosmos_Closing_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,#0a0a2e 0%,#050510 60%,#000005 100%)"}}>
+    <Cosmos_Stars/>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:80,lineHeight:1.1,textAlign:"center",letterSpacing:-2,background:"linear-gradient(135deg,"+th.a1+","+th.a2+")",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>{d.title||""}</div>
+      <div style={{fontFamily:th.fd,fontSize:28,color:th.muted,textAlign:"center",marginTop:16,maxWidth:700,lineHeight:1.5,whiteSpace:"pre-line"}}>{d.subtitle||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:16,letterSpacing:3,color:th.muted+"88",marginTop:24}}>{d.reference||""}</div>
+    </div></div>;
+}
+const COSMOS_PREVIEW = { title:Cosmos_Title_Preview, fact:Cosmos_Fact_Preview, compare:Cosmos_Compare_Preview, closing:Cosmos_Closing_Preview };
+
+function Scrap_Hero_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,"+th.bg+" 0%,"+th.bg2+" 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:6,textTransform:"uppercase",color:th.muted,marginBottom:24}}>{d.tagline||""}</div>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:110,lineHeight:1.0,textAlign:"center",letterSpacing:-3,color:th.ink}}>{d.title||""}</div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,"+th.a1+",transparent)",margin:"32px 0",opacity:0.6}}/>
+      <div style={{fontFamily:th.fd,fontSize:26,color:th.muted,textAlign:"center",maxWidth:600,lineHeight:1.5}}>{d.subtitle||""}</div>
+    </div></div>;
+}
+function Scrap_Match_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,"+th.bg+" 0%,"+th.bg2+" 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:60}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:4,color:th.muted,marginBottom:24}}>{d.competition||""}</div>
+      <div style={{display:"flex",alignItems:"center",gap:48}}>
+        <div style={{textAlign:"right",minWidth:200}}><div style={{fontFamily:th.fd,fontWeight:800,fontSize:36,color:th.ink}}>{d.homeTeam||""}</div></div>
+        <div style={{fontFamily:th.fd,fontWeight:900,fontSize:64,color:th.a1,textShadow:"0 0 20px "+th.a1+"30"}}>{d.score||""}</div>
+        <div style={{textAlign:"left",minWidth:200}}><div style={{fontFamily:th.fd,fontWeight:800,fontSize:36,color:th.ink}}>{d.awayTeam||""}</div></div>
+      </div>
+      <div style={{width:80,height:2,background:th.a2,margin:"24px 0",opacity:0.5}}/>
+      <div style={{fontFamily:th.fd,fontSize:22,color:th.muted,textAlign:"center",maxWidth:600,lineHeight:1.5}}>{d.highlight||""}</div>
+    </div></div>;
+}
+function Scrap_History_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,"+th.bg+" 0%,"+th.bg2+" 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",justifyContent:"center",padding:100}}>
+      <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:6,textTransform:"uppercase",color:th.a2,marginBottom:16}}>{d.year||""}</div>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:48,color:th.ink,lineHeight:1.2,marginBottom:20}}>{d.fact||""}</div>
+      <div style={{fontFamily:th.fd,fontSize:22,color:th.muted,lineHeight:1.6,maxWidth:800}}>{d.detail||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:14,color:th.muted,marginTop:20,letterSpacing:2}}>{d.annotation||""}</div>
+    </div></div>;
+}
+function Scrap_Photo_Preview({ W, H, d, th }) {
+  const polaroids = d.Polaroid || [];
+  return <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,"+th.bg+" 0%,"+th.bg2+" 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:60}}>
+      <div style={{fontFamily:th.fd,fontWeight:800,fontSize:48,color:th.ink,marginBottom:12}}>{d.caption||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:14,color:th.muted,marginBottom:40,letterSpacing:2}}>{d.annotation||""}</div>
+      <div style={{display:"flex",gap:32}}>
+        {polaroids.map((p,i)=><div key={i} style={{background:th.card,padding:12,boxShadow:"0 4px 20px rgba(0,0,0,0.15)",transform:"rotate("+((i-1)*3)+"deg)"}}>
+          <div style={{width:160,height:120,background:th.bg2,borderRadius:4,marginBottom:8}}/>
+          <div style={{fontFamily:th.fd,fontSize:14,fontWeight:700,color:th.ink}}>{p.label||""}</div>
+          <div style={{fontFamily:th.fm,fontSize:12,color:th.muted}}>{p.sublabel||""}</div>
+        </div>)}
+      </div>
+    </div></div>;
+}
+function Scrap_Closing_Preview({ W, H, d, th }) {
+  return <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,"+th.bg+" 0%,"+th.bg2+" 100%)"}}>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+      <div style={{fontFamily:th.fd,fontWeight:900,fontSize:80,lineHeight:1.1,textAlign:"center",color:th.ink}}>{d.title||""}</div>
+      <div style={{fontFamily:th.fd,fontSize:28,color:th.muted,textAlign:"center",marginTop:16,maxWidth:700,lineHeight:1.5}}>{d.subtitle||""}</div>
+      <div style={{fontFamily:th.fm,fontSize:16,letterSpacing:3,color:th.muted,marginTop:32}}>{d.reference||""}</div>
+    </div></div>;
+}
+const SCRAPBOOK_PREVIEW = { hero:Scrap_Hero_Preview, match:Scrap_Match_Preview, history:Scrap_History_Preview, photo:Scrap_Photo_Preview, closing:Scrap_Closing_Preview };
+
+function Fallback_Preview({ W, H, d, th, kind }) {
+  return <div style={{position:"absolute",inset:0,background:th.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+    <div style={{fontFamily:th.fm,fontSize:14,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>{kind}</div>
+    <div style={{fontFamily:th.fd,fontWeight:700,fontSize:36,color:th.ink,textAlign:"center"}}>{d.title||d.name||d.label||""}</div>
+    <div style={{fontFamily:th.fd,fontSize:18,color:th.muted,textAlign:"center",marginTop:12,maxWidth:400}}>{d.subtitle||d.description||d.detail||""}</div>
+    <div style={{fontFamily:th.fm,fontSize:12,color:th.muted,marginTop:24}}>Preview not available for this scene kind</div>
+  </div>;
+}
+
+const RENDERERS = { nodeflow:NF_PREVIEW, cr7:CR7_PREVIEW, cosmos:COSMOS_PREVIEW, scrapbook:SCRAPBOOK_PREVIEW };
 
 // ─── Default scenes per template ────────────────────────────────────────────
 function defaultScenes(templateId) {
   const t = TEMPLATES.find(x => x.id === templateId);
   if (!t) return [];
-  const kinds = t.sceneKinds;
-  return kinds.map((kind, i) => {
+  return t.sceneKinds.map((kind, i) => {
     const content = {};
     const f = t.fields[kind] || {};
-    for (const [k, label] of Object.entries(f)) {
-      content[k] = "";
-    }
-    return { id: "s" + (i + 1), kind, dur: 5, content };
+    for (const [k] of Object.entries(f)) content[k] = "";
+    return { id: "s" + (i + 1), kind, dur: 5, content, audio: "" };
   });
 }
 
@@ -147,74 +389,61 @@ function loadProjects() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
 }
 function saveProjects(projects) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); } catch {}
 }
 function loadCurrentId() {
   try { return localStorage.getItem(CURRENT_KEY) || null; } catch { return null; }
 }
 function saveCurrentId(id) {
-  if (id) localStorage.setItem(CURRENT_KEY, id);
-  else localStorage.removeItem(CURRENT_KEY);
+  try { if (id) localStorage.setItem(CURRENT_KEY, id); else localStorage.removeItem(CURRENT_KEY); } catch {}
 }
 
-// ─── URL params ─────────────────────────────────────────────────────────────
 function getUrlParam(name) {
   try { return new URLSearchParams(window.location.search).get(name); } catch { return null; }
 }
-
 function uid() { return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
-// ─── Editor App ─────────────────────────────────────────────────────────────
+// ─── Composer App ───────────────────────────────────────────────────────────
 function App() {
   const projectIdFromUrl = getUrlParam("project");
   const templateIdFromUrl = getUrlParam("template");
   const formatFromUrl = getUrlParam("format") || "16:9";
   const nameFromUrl = getUrlParam("name") || "";
 
-  // Try to load existing project or create new one
   const [project, setProject] = useState(() => {
-    // If we have a project ID, try to load it
     if (projectIdFromUrl) {
       const projects = loadProjects();
-      if (projects[projectIdFromUrl]) {
-        saveCurrentId(projectIdFromUrl);
-        return projects[projectIdFromUrl];
-      }
+      if (projects[projectIdFromUrl]) { saveCurrentId(projectIdFromUrl); return projects[projectIdFromUrl]; }
     }
-    // If we have template info, create a new project
     if (templateIdFromUrl) {
       const tpl = TEMPLATES.find(t => t.id === templateIdFromUrl);
       if (tpl && tpl.status === "ready") {
-        const newProject = {
-          id: uid(),
-          name: nameFromUrl || ("Untitled " + tpl.name + " Video"),
+        const p = {
+          id: uid(), name: nameFromUrl || ("Untitled " + tpl.name + " Video"),
           templateId: templateIdFromUrl,
           format: tpl.formats.includes(formatFromUrl) ? formatFromUrl : tpl.formats[0],
           scenes: defaultScenes(templateIdFromUrl),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
         };
-        saveCurrentId(newProject.id);
-        return newProject;
+        saveCurrentId(p.id); return p;
       }
     }
-    // No valid params — error state
     return null;
   });
 
-  const [selectedSceneIdx, setSelectedSceneIdx] = useState(0);
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const [toast, setToast] = useState(null);
+  const [saveStatus, setSaveStatus] = useState("saved");
 
-  // Save project to localStorage whenever it changes
   useEffect(() => {
     if (!project) return;
     const projects = loadProjects();
     projects[project.id] = project;
     saveProjects(projects);
     saveCurrentId(project.id);
+    setSaveStatus("saved");
   }, [project]);
 
-  // Update URL to reflect project
   useEffect(() => {
     if (!project) return;
     const url = new URL(window.location.href);
@@ -222,265 +451,220 @@ function App() {
     window.history.replaceState({}, "", url.toString());
   }, [project?.id]);
 
-  const showToast = useCallback((msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2000);
-  }, []);
+  const showToast = useCallback((msg) => { setToast(msg); setTimeout(() => setToast(null), 2000); }, []);
+
+  const markDirty = useCallback(() => setSaveStatus("unsaved"), []);
 
   const updateScene = useCallback((idx, updater) => {
+    markDirty();
     setProject(p => {
       if (!p) return p;
       const scenes = [...p.scenes];
       scenes[idx] = { ...scenes[idx], ...updater(scenes[idx]) };
       return { ...p, scenes, updatedAt: new Date().toISOString() };
     });
-  }, []);
+  }, [markDirty]);
 
   const addScene = useCallback(() => {
+    markDirty();
     setProject(p => {
       if (!p) return p;
       const tpl = TEMPLATES.find(t => t.id === p.templateId);
       if (!tpl) return p;
-      // Add a scene of the first kind
       const kind = tpl.sceneKinds[0];
       const f = tpl.fields[kind] || {};
       const content = {};
       for (const k of Object.keys(f)) content[k] = "";
-      const newScene = { id: "s" + (p.scenes.length + 1) + "_" + Date.now().toString(36), kind, dur: 5, content };
-      const scenes = [...p.scenes, newScene];
-      return { ...p, scenes, updatedAt: new Date().toISOString() };
+      const newScene = { id: "s" + (p.scenes.length + 1) + "_" + Date.now().toString(36), kind, dur: 5, content, audio: "" };
+      return { ...p, scenes: [...p.scenes, newScene], updatedAt: new Date().toISOString() };
     });
     showToast("Scene added");
-  }, [showToast]);
+  }, [showToast, markDirty]);
 
   const duplicateScene = useCallback((idx) => {
+    markDirty();
     setProject(p => {
       if (!p) return p;
       const src = p.scenes[idx];
       const dup = { ...src, id: src.id + "_copy_" + Date.now().toString(36), content: { ...src.content } };
-      const scenes = [...p.scenes];
-      scenes.splice(idx + 1, 0, dup);
+      const scenes = [...p.scenes]; scenes.splice(idx + 1, 0, dup);
       return { ...p, scenes, updatedAt: new Date().toISOString() };
     });
     showToast("Scene duplicated");
-  }, [showToast]);
+  }, [showToast, markDirty]);
 
   const deleteScene = useCallback((idx) => {
+    markDirty();
     setProject(p => {
       if (!p || p.scenes.length <= 1) return p;
-      const scenes = p.scenes.filter((_, i) => i !== idx);
-      return { ...p, scenes, updatedAt: new Date().toISOString() };
+      return { ...p, scenes: p.scenes.filter((_, i) => i !== idx), updatedAt: new Date().toISOString() };
     });
-    setSelectedSceneIdx(i => Math.max(0, i - 1));
+    setSelectedIdx(i => Math.max(0, i - 1));
     showToast("Scene deleted");
-  }, [showToast]);
+  }, [showToast, markDirty]);
 
   const moveScene = useCallback((idx, dir) => {
+    markDirty();
     setProject(p => {
       if (!p) return p;
       const ni = idx + dir;
       if (ni < 0 || ni >= p.scenes.length) return p;
-      const scenes = [...p.scenes];
-      [scenes[idx], scenes[ni]] = [scenes[ni], scenes[idx]];
+      const scenes = [...p.scenes]; [scenes[idx], scenes[ni]] = [scenes[ni], scenes[idx]];
       return { ...p, scenes, updatedAt: new Date().toISOString() };
     });
-    setSelectedSceneIdx(i => i + dir);
-  }, []);
+    setSelectedIdx(i => i + dir);
+  }, [markDirty]);
 
   const updateContent = useCallback((field, value) => {
-    updateScene(selectedSceneIdx, (s) => ({
-      content: { ...s.content, [field]: value }
-    }));
-  }, [selectedSceneIdx, updateScene]);
+    updateScene(selectedIdx, (s) => ({ content: { ...s.content, [field]: value } }));
+  }, [selectedIdx, updateScene]);
 
   const updateDuration = useCallback((val) => {
     const dur = parseFloat(val);
     if (isNaN(dur) || dur < 0.5) return;
-    updateScene(selectedSceneIdx, () => ({ dur }));
-  }, [selectedSceneIdx, updateScene]);
+    updateScene(selectedIdx, () => ({ dur }));
+  }, [selectedIdx, updateScene]);
 
   const updateKind = useCallback((kind) => {
-    updateScene(selectedSceneIdx, (s) => {
+    updateScene(selectedIdx, (s) => {
       const tpl = TEMPLATES.find(t => t.id === project?.templateId);
-      if (!tpl || !tpl.sceneKinds.includes(kind)) return s; // reject invalid kind
+      if (!tpl || !tpl.sceneKinds.includes(kind)) return s;
       const f = tpl.fields[kind] || {};
       const content = {};
-      for (const k of Object.keys(f)) {
-        content[k] = s.content[k] || "";
-      }
+      for (const k of Object.keys(f)) content[k] = s.content[k] || "";
       return { kind, content };
     });
-  }, [selectedSceneIdx, updateScene, project?.templateId]);
+  }, [selectedIdx, updateScene, project?.templateId]);
+
+  const updateAudio = useCallback((value) => {
+    updateScene(selectedIdx, () => ({ audio: value }));
+  }, [selectedIdx, updateScene]);
 
   const handleNameChange = useCallback((e) => {
+    markDirty();
     setProject(p => p ? { ...p, name: e.target.value, updatedAt: new Date().toISOString() } : p);
-  }, []);
+  }, [markDirty]);
 
   const handleSave = useCallback(() => {
     if (!project) return;
     const projects = loadProjects();
     projects[project.id] = project;
     saveProjects(projects);
+    setSaveStatus("saved");
     showToast("Project saved");
   }, [project, showToast]);
 
-  // Error state
+  const handlePreviewInStudio = useCallback(() => {
+    if (!project) return;
+    const tpl = TEMPLATES.find(t => t.id === project.templateId);
+    const th = THEMES[project.templateId] || THEMES.nodeflow;
+    const studioProject = {
+      id: project.id, name: project.name, template: project.templateId, format: project.format,
+      theme: th,
+      scenes: project.scenes.map(s => ({ id: s.id, dur: s.dur, kind: s.kind })),
+      content: {},
+    };
+    for (const s of project.scenes) {
+      studioProject.content[s.id] = { kind: s.kind, ...s.content };
+    }
+    try { localStorage.setItem(STUDIO_PROJECT_KEY, JSON.stringify(studioProject)); } catch {}
+    window.open("/preview/studio.html?project=" + encodeURIComponent(project.id), "_blank");
+  }, [project]);
+
   if (!project) {
-    const msg = projectIdFromUrl
-      ? `No project found with id "${projectIdFromUrl}".`
-      : templateIdFromUrl
-        ? `Template "${templateIdFromUrl}" is not available for editing.`
-        : "No project or template specified.";
-    return (
-      <div className="error-overlay">
-        <div className="error-box">
-          <h2>Cannot Open Editor</h2>
-          <p>{msg}</p>
-          <a href="/preview/library.html" className="btn btn-primary">Back to Library</a>
-        </div>
-      </div>
-    );
+    const msg = projectIdFromUrl ? `No project found with id "${projectIdFromUrl}".`
+      : templateIdFromUrl ? `Template "${templateIdFromUrl}" is not available for editing.`
+      : "No project or template specified.";
+    return <div className="error-overlay"><div className="error-box"><h2>Cannot Open Composer</h2><p>{msg}</p><a href="/preview/library.html" className="btn btn-primary">Back to Library</a></div></div>;
   }
 
   const tpl = TEMPLATES.find(t => t.id === project.templateId);
-  const scene = project.scenes[selectedSceneIdx];
+  const scene = project.scenes[selectedIdx];
   const sceneFields = tpl?.fields?.[scene?.kind] || {};
   const canvasW = project.format === "9:16" ? 270 : 480;
   const canvasH = project.format === "9:16" ? 480 : 270;
 
   return (
     <React.Fragment>
-      <Header project={project} onNameChange={handleNameChange} onSave={handleSave} />
+      <header>
+        <div className="brand" onClick={() => window.location.href = "/preview/library.html"}>Composer</div>
+        <div className="hsep"></div>
+        <input className="name-input" value={project.name} onChange={handleNameChange} placeholder="Project name..." />
+        <div className="hsep"></div>
+        <span className="badge tpl-badge">{tpl?.name || project.templateId}</span>
+        <span className="badge fmt-badge">{project.format}</span>
+        <span className="save-status">{saveStatus === "saved" ? "Saved" : "Unsaved changes"}</span>
+        <div className="spacer"></div>
+        <button className="btn btn-secondary btn-sm" onClick={handlePreviewInStudio}>Preview in Studio</button>
+        <button className="btn btn-primary btn-sm" onClick={handleSave}>Save</button>
+        <a href="/preview/library.html" className="btn btn-secondary btn-sm">Library</a>
+      </header>
       <div className="main">
-        <PreviewArea project={project} scene={scene} tpl={tpl} canvasW={canvasW} canvasH={canvasH} />
-        <Sidebar scene={scene} sceneFields={sceneFields} tpl={tpl} project={project}
-          onContentChange={updateContent} onDurationChange={updateDuration} onKindChange={updateKind} />
+        <div className="left-panel">
+          <div className="panel-header"><span>Scenes ({project.scenes.length})</span><button className="btn btn-primary btn-sm" onClick={addScene}>+ Add</button></div>
+          <div className="scene-list">
+            {project.scenes.map((s, i) => (
+              <div key={s.id} className={"scene-item" + (i === selectedIdx ? " active" : "")} onClick={() => setSelectedIdx(i)}>
+                <div className="scene-num">#{i + 1}</div>
+                <div className="scene-kind">{s.kind}</div>
+                <div className="scene-title">{s.content.title || s.content.name || s.content.fact || s.content.label || s.kind}</div>
+                <div className="scene-dur">{s.dur.toFixed(1)}s{s.audio ? " \u266B" : ""}</div>
+                <div className="scene-actions">
+                  <button className="scene-act" disabled={i===0} onClick={e=>{e.stopPropagation();moveScene(i,-1);}}>&#9650;</button>
+                  <button className="scene-act" disabled={i===project.scenes.length-1} onClick={e=>{e.stopPropagation();moveScene(i,1);}}>&#9660;</button>
+                  <button className="scene-act" onClick={e=>{e.stopPropagation();duplicateScene(i);}}>&#10697;</button>
+                  <button className="scene-act danger" disabled={project.scenes.length<=1} onClick={e=>{e.stopPropagation();deleteScene(i);}}>&#10005;</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="center-area">
+          <div className="preview-frame" style={{width:canvasW,height:canvasH,overflow:"hidden"}}>
+            {scene ? (() => {
+              const th = THEMES[project.templateId] || THEMES.nodeflow;
+              const Renderer = RENDERERS[project.templateId]?.[scene.kind];
+              const W = project.format==="9:16"?1080:1920, H = project.format==="9:16"?1920:1080;
+              const scale = Math.min(canvasW/W, canvasH/H);
+              return <div style={{width:W,height:H,transform:"scale("+scale+")",transformOrigin:"top left"}}>
+                {Renderer ? <Renderer W={W} H={H} d={scene.content} th={th}/> : <Fallback_Preview W={W} H={H} d={scene.content} th={th} kind={scene.kind}/>}
+              </div>;
+            })() : <div className="preview-placeholder"><div className="kind">NO SCENE</div></div>}
+          </div>
+        </div>
+        <div className="right-panel">
+          <div className="panel-header">Inspector</div>
+          <div className="inspector-scroll">
+            {scene ? (<React.Fragment>
+              <div className="field-group">
+                <div className="field-label">Scene Kind</div>
+                <select className="field-input" value={scene.kind} onChange={e=>updateKind(e.target.value)}>
+                  {(tpl?.sceneKinds||[]).map(k=><option key={k} value={k}>{k}</option>)}
+                </select>
+              </div>
+              <div className="field-group">
+                <div className="field-label">Duration (seconds)</div>
+                <input className="field-input-num" type="number" min="0.5" step="0.5" value={scene.dur} onChange={e=>updateDuration(e.target.value)}/>
+                <div className="field-hint">Minimum 0.5s</div>
+              </div>
+              <div className="field-group">
+                <div className="field-label">Audio Reference</div>
+                <input className="field-input" type="text" value={scene.audio||""} onChange={e=>updateAudio(e.target.value)} placeholder="e.g. s1.mp3"/>
+                <div className="field-hint">{scene.audio ? <span className="audio-badge">&#9835; Has audio</span> : "Optional audio path"}</div>
+              </div>
+              {Object.entries(sceneFields).map(([key,label])=>(
+                <div className="field-group" key={key}>
+                  <div className="field-label">{label}</div>
+                  <input className="field-input" type="text" value={scene.content[key]||""} onChange={e=>updateContent(key,e.target.value)} placeholder={"Enter "+label.toLowerCase()+"..."}/>
+                </div>
+              ))}
+              {Object.keys(sceneFields).length===0 && <div className="field-group"><div className="field-label">Content</div><div className="field-hint">No editable text fields for this scene kind.</div></div>}
+            </React.Fragment>) : <div className="no-scenes">Select a scene to inspect</div>}
+          </div>
+        </div>
       </div>
-      <Timeline scenes={project.scenes} selectedIdx={selectedSceneIdx} onSelect={setSelectedSceneIdx}
-        onAdd={addScene} onDuplicate={duplicateScene} onDelete={deleteScene} onMove={moveScene} />
       {toast && <div className="toast">{toast}</div>}
     </React.Fragment>
-  );
-}
-
-function Header({ project, onNameChange, onSave }) {
-  const tpl = TEMPLATES.find(t => t.id === project.templateId);
-  return (
-    <header>
-      <div className="brand" onClick={() => window.location.href = "/preview/library.html"}>
-        Editor<span>MVP</span>
-      </div>
-      <div className="hsep"></div>
-      <input className="name-input" value={project.name} onChange={onNameChange} placeholder="Project name..." />
-      <div className="hsep"></div>
-      <span className="badge tpl-badge">{tpl?.name || project.templateId}</span>
-      <span className="badge fmt-badge">{project.format}</span>
-      <div className="spacer"></div>
-      <button className="save-btn" onClick={onSave}>Save</button>
-      <a href="/preview/library.html" className="link-btn">Library</a>
-    </header>
-  );
-}
-
-function PreviewArea({ project, scene, tpl, canvasW, canvasH }) {
-  if (!scene || !tpl) {
-    return <div className="preview-area"><div className="preview-frame" style={{width:canvasW,height:canvasH}}><div className="preview-placeholder"><div className="kind">NO SCENE</div></div></div></div>;
-  }
-  const th = THEMES[project.templateId] || THEMES.nodeflow;
-  const rendererMap = RENDERERS[project.templateId];
-  const Renderer = rendererMap?.[scene.kind];
-  const W = project.format === "9:16" ? 1080 : 1920;
-  const H = project.format === "9:16" ? 1920 : 1080;
-  const scale = Math.min(canvasW / W, canvasH / H);
-
-  return (
-    <div className="preview-area">
-      <div className="preview-frame" style={{ width: canvasW, height: canvasH, overflow: "hidden" }}>
-        <div style={{ width: W, height: H, transform: "scale(" + scale + ")", transformOrigin: "top left" }}>
-          {Renderer
-            ? <Renderer W={W} H={H} d={scene.content} th={th} />
-            : <Fallback_Preview W={W} H={H} d={scene.content} th={th} kind={scene.kind} />
-          }
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Sidebar({ scene, sceneFields, tpl, project, onContentChange, onDurationChange, onKindChange }) {
-  if (!scene) {
-    return <div className="sidebar"><div className="sidebar-header">Scene Inspector</div><div className="sidebar-scroll"><div className="no-scenes">No scene selected</div></div></div>;
-  }
-  return (
-    <div className="sidebar">
-      <div className="sidebar-header">Scene Inspector</div>
-      <div className="sidebar-scroll">
-        <div className="field-group">
-          <div className="field-label">Scene Kind</div>
-          <select className="field-input" value={scene.kind} onChange={e => onKindChange(e.target.value)}>
-            {(tpl?.sceneKinds || []).map(k => <option key={k} value={k}>{k}</option>)}
-          </select>
-        </div>
-        <div className="field-group">
-          <div className="field-label">Duration (seconds)</div>
-          <input className="field-input-num" type="number" min="0.5" step="0.5" value={scene.dur}
-            onChange={e => onDurationChange(e.target.value)} />
-          <div className="field-hint">Minimum 0.5s</div>
-        </div>
-        {Object.entries(sceneFields).map(([key, label]) => (
-          <div className="field-group" key={key}>
-            <div className="field-label">{label}</div>
-            <input className="field-input" type="text" value={scene.content[key] || ""}
-              onChange={e => onContentChange(key, e.target.value)}
-              placeholder={"Enter " + label.toLowerCase() + "..."} />
-          </div>
-        ))}
-        {Object.keys(sceneFields).length === 0 && (
-          <div className="field-group">
-            <div className="field-label">Content</div>
-            <div className="field-hint">This scene kind has no editable text fields in the MVP.</div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Timeline({ scenes, selectedIdx, onSelect, onAdd, onDuplicate, onDelete, onMove }) {
-  const scrollRef = useRef(null);
-  useEffect(() => {
-    if (scrollRef.current) {
-      const card = scrollRef.current.children[selectedIdx];
-      if (card) card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-    }
-  }, [selectedIdx]);
-  return (
-    <div className="timeline">
-      <div className="timeline-header">
-        <span className="timeline-label">Scenes ({scenes.length})</span>
-        <button className="timeline-add" onClick={onAdd}>+ Add</button>
-      </div>
-      <div className="timeline-scroll" ref={scrollRef}>
-        {scenes.length === 0 && <div className="no-scenes">No scenes. Click + Add to begin.</div>}
-        {scenes.map((s, i) => (
-          <div key={s.id} className={"scene-card" + (i === selectedIdx ? " active" : "")} onClick={() => onSelect(i)}>
-            <div className="scene-card-id">{s.id}</div>
-            <div className="scene-card-kind">{s.kind}</div>
-            <div className="scene-card-dur">{s.dur.toFixed(1)}s</div>
-            <div className="scene-card-actions">
-              <button className="scene-action" title="Move left" disabled={i === 0}
-                onClick={e => { e.stopPropagation(); onMove(i, -1); }}>&#9664;</button>
-              <button className="scene-action" title="Move right" disabled={i === scenes.length - 1}
-                onClick={e => { e.stopPropagation(); onMove(i, 1); }}>&#9654;</button>
-              <button className="scene-action" title="Duplicate"
-                onClick={e => { e.stopPropagation(); onDuplicate(i); }}>&#10697;</button>
-              <button className="scene-action danger" title="Delete" disabled={scenes.length <= 1}
-                onClick={e => { e.stopPropagation(); onDelete(i); }}>&#10005;</button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 

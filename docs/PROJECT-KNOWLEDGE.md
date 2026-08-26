@@ -631,3 +631,25 @@ Proven workflow for creating a new production:
 - Editor data (TEMPLATES) duplicated from library — same standalone HTML pattern
 - Kind switching rejects invalid kinds (not in template's sceneKinds)
 - Content immutability: all mutations create new objects, never mutate originals
+
+---
+
+## 45. Composer UI
+
+**Status: IMPLEMENTED**
+
+- Entry point: `preview/editor.html` — renamed to "Composer" in UI
+- 3-panel layout: Left (scene list/storyboard), Center (large template preview), Right (inspector)
+- Left panel: scene list with kind, title preview, duration, audio indicator, reorder/duplicate/delete actions
+- Center panel: real template preview rendered at 1920×1080 → scaled via CSS transform (480×270 or 270×480)
+- Right panel: inspector with kind selector, duration, audio reference, and content fields per scene kind
+- Audio foundation: `audio` field per scene (path reference, presence indicator ♫)
+- Preview in Studio: serializes project to localStorage (`nf_studio_project`), opens `studio.html?project=<id>`
+- Studio support: `studio.jsx` updated to load Composer projects from `?project=<id>` URL param
+- THEMES: per-template color themes (scrapbook, cr7, cosmos, nodeflow)
+- RENDERERS: per-template per-kind static preview renderers (all 4 templates × all scene kinds)
+- Preview renderers: NF_*, CR7_*, Cosmos_*, Scrapbook_* static renderers + Fallback_Preview
+- Fallback renderer: shows scene kind + title + "Preview not available" for unsupported kinds
+- 86 data model tests: `src/__tests__/creatorEditor.vitest.ts` (all pass)
+- Studio handoff: Composer project → localStorage → Studio loads via `?project=<id>`
+- DEFERRED: AI generation, drag/drop media timeline, complex NLE timeline, MP4 rendering, TTS, audio upload

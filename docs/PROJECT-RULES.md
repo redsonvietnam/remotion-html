@@ -183,3 +183,21 @@ Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
 - Content immutability — all mutations create new objects
 - Kind switching rejects invalid kinds (not in template's sceneKinds)
 - No Composer UI (drag/drop, audio upload, TTS, AI generation) — DEFERRED
+
+---
+
+## 14. Composer Boundary
+
+**Rule:** Composer is the state editor for new projects; Preview Studio is the animation renderer.
+
+- Composer creates/modifies project objects (template + scenes + content + audio reference)
+- Composer uses real static preview renderers (THEMES + RENDERERS registries)
+- Composer serializes project to localStorage for Studio handoff
+- Studio loads Composer projects via `?project=<id>` URL param + `nf_studio_project` localStorage
+- Composer does NOT render animations — only static previews
+- Composer does NOT handle audio playback — only stores audio path references
+- Composer does NOT export MP4 — rendering delegated to Preview Studio
+- No universal scene schema — each template defines its own scene kinds and fields
+- Content immutability — all mutations create new objects
+- Audio is reference-only (path string) — no upload, no playback in Composer
+- Kind switching rejects invalid kinds (not in template's sceneKinds)

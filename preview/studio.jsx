@@ -757,7 +757,11 @@ safeToggle.onclick=()=>{safeOn=!safeOn;safeToggle.classList.toggle("active",safe
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 function getInitialPi(){
-  try{const params=new URLSearchParams(window.location.search);const pid=params.get("production");if(pid){const idx=PRODUCTIONS.findIndex(p=>p.id===pid);if(idx>=0)return idx;}}catch(e){}
+  try{const params=new URLSearchParams(window.location.search);
+    const projectId=params.get("project");
+    if(projectId){try{const raw=localStorage.getItem("nf_studio_project");if(raw){const cp=JSON.parse(raw);if(cp.id===projectId){const existing=PRODUCTIONS.findIndex(p=>p.id===projectId);if(existing>=0)return existing;PRODUCTIONS.push(cp);return PRODUCTIONS.length-1;}}}catch(e){}}
+    const pid=params.get("production");if(pid){const idx=PRODUCTIONS.findIndex(p=>p.id===pid);if(idx>=0)return idx;}
+  }catch(e){}
   return 0;
 }
 function AppWrapper(){
