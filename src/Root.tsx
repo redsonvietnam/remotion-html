@@ -81,7 +81,7 @@ const SOLAR_SYSTEM_FRAMES =
   (SOLAR_SYSTEM_SCENES.length - 1) * 16;
 
 const CHAMPIONS_LEAGUE_FRAMES =
-  CHAMPIONS_LEAGUE_SCENES.reduce((acc, s) => acc + sceneFramesCl(s.dur), 0) +
+  CHAMPIONS_LEAGUE_SCENES.reduce((acc, s) => acc + sceneFramesCl(s.dur), 0) -
   (CHAMPIONS_LEAGUE_SCENES.length - 1) * 16;
 
 export const Root: React.FC = () => {
