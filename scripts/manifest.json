@@ -131,6 +131,18 @@
       "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "Solar System" },
       "aliases": ["solar system", "he mat troi", "hệ mặt trời", "8 hành tinh"],
       "keywords": ["solar system", "hệ mặt trời", "hành tinh", "mặt trời", "thiên văn"]
+    },
+    "championsLeague": {
+      "id": "championsLeague",
+      "template": "scrapbook",
+      "composition": "ChampionsLeague",
+      "dataFile": "src/data/championsLeague.ts",
+      "tts": "gen_tts_championsLeague.py",
+      "output": "out/championsLeague.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "Champions League" },
+      "aliases": ["champions league", "ucl", "c1", "cúp c1", "bóng đá châu âu"],
+      "keywords": ["champions league", "ucl", "c1", "cúp c1", "bóng đá", "football"]
     }
   }
 }

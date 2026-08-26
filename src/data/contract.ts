@@ -79,6 +79,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["title", "fact", "compare", "timeline", "diagram", "closing"],
     requiredTextFields: { title: ["title"], fact: ["bigValue"], compare: ["title"], timeline: ["title"], diagram: ["title"], closing: ["title"] },
   },
+  scrapbook: {
+    allowedKinds: ["hero", "match", "history", "photo", "timeline", "closing"],
+    requiredTextFields: { hero: ["title"], match: ["homeTeam"], history: ["fact"], photo: ["caption"], timeline: ["title"], closing: ["title"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {
@@ -436,6 +440,67 @@ export type CosmosSceneContent =
   | CosmosTimelineContent
   | CosmosDiagramContent
   | CosmosClosingContent;
+
+// ---------------------------------------------------------------------------
+// Scrapbook Template Content Contract
+//
+// Canonical content types for the Scrapbook template (editorial collage,
+// aged paper, handwritten annotations, Polaroid cards, VOX overlays).
+// Pure content types — no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface ScrapbookHeroContent {
+  kind: "hero";
+  title: string;
+  subtitle: string;
+  tagline: string;
+}
+
+export interface ScrapbookMatchContent {
+  kind: "match";
+  homeTeam: string;
+  awayTeam: string;
+  score: string;
+  competition: string;
+  highlight: string;
+}
+
+export interface ScrapbookHistoryContent {
+  kind: "history";
+  year: string;
+  fact: string;
+  detail: string;
+  annotation: string;
+}
+
+export interface ScrapbookPhotoContent {
+  kind: "photo";
+  caption: string;
+  annotation: string;
+  Polaroid: { label: string; sublabel?: string }[];
+}
+
+export interface ScrapbookTimelineContent {
+  kind: "timeline";
+  title: string;
+  items: { label: string; value: string; year?: string }[];
+}
+
+export interface ScrapbookClosingContent {
+  kind: "closing";
+  title: string;
+  subtitle: string;
+  stats: { label: string; value: string }[];
+  reference: string;
+}
+
+export type ScrapbookSceneContent =
+  | ScrapbookHeroContent
+  | ScrapbookMatchContent
+  | ScrapbookHistoryContent
+  | ScrapbookPhotoContent
+  | ScrapbookTimelineContent
+  | ScrapbookClosingContent;
 
 // ---------------------------------------------------------------------------
 // Storyboard Contract - the higher-level artifact C1 produces from research +

@@ -207,6 +207,22 @@ const PRODUCTIONS = [
       s9:{kind:"closing",title:"HỆ MẶT TRỜI TUYỆT ĐẸP",subtitle:"Từ Sao Thủy nhỏ bé đến Sao Mộc khổng lồ,\nmỗi hành tinh đều có câu chuyện riêng.",stats:[{label:"Hành tinh",value:"8"},{label:"Vệ tinh",value:"200+"},{label:"Tuổi",value:"4.6 tỷ năm"}],reference:"Hệ Mặt Trời — Khám phá vũ trụ"},
     },
   },
+  {
+    id: "championsLeague", name: "Champions League", template: "scrapbook", format: "16:9",
+    theme: { bg:"#f5f0e8",bg2:"#e8e0d0",card:"#ffffff",line:"#d0c8b8",a1:"#c0392b",a1s:"#e74c3c",a2:"#d4a017",a2s:"#f7dc6f",a3:"#1a1a1a",ink:"#1a1a1a",muted:"#666666",fd:'"Georgia","Times New Roman",serif',fm:'"Courier New","Fira Code",monospace' },
+    scenes: [
+      { id:"hero",dur:5,kind:"hero" },{ id:"match-1999",dur:6,kind:"match" },{ id:"history-2002",dur:6,kind:"history" },
+      { id:"photos",dur:5,kind:"photo" },{ id:"timeline",dur:7,kind:"timeline" },{ id:"closing",dur:5,kind:"closing" },
+    ],
+    content: {
+      hero:{kind:"hero",title:"Champions League",subtitle:"The greatest club competition in world football",tagline:"1997 — 2005"},
+      "match-1999":{kind:"match",homeTeam:"Manchester United",awayTeam:"Bayern Munich",score:"2 — 1",competition:"UEFA Champions League Final 1999",highlight:"Two goals in injury time — the greatest final ever"},
+      "history-2002":{kind:"history",year:"2002",fact:"Zidane's volley",detail:"One of the greatest goals in Champions League history. A left-footed volley from the edge of the box into the top corner.",annotation:"Hampden Park, Glasgow — 22 May 2002"},
+      photos:{kind:"photo",caption:"Iconic Moments",annotation:"The moments that defined an era",Polaroid:[{label:"United '99",sublabel:"Treble winners"},{label:"Real Madrid",sublabel:"La Decima era"},{label:"Milan '03",sublabel:"All-Italian final"}]},
+      timeline:{kind:"timeline",title:"Champions League Timeline",items:[{label:"1997",value:"Dortmund wins first title",year:"1997"},{label:"1999",value:"United's dramatic comeback",year:"1999"},{label:"2002",value:"Zidane's legendary volley",year:"2002"},{label:"2005",value:"Istanbul — the miracle final",year:"2005"}]},
+      closing:{kind:"closing",title:"The Beautiful Game",subtitle:"Moments that live forever in football history",stats:[{label:"Years",value:"1997–2005"},{label:"Goals",value:"847"},{label:"Matches",value:"326"}],reference:"UEFA Champions League Archives"},
+    },
+  },
 ];
 
 function springV(f, fps, cfg = {}) {
@@ -514,6 +530,166 @@ function Cosmos_Closing({ frame, fps, W, H, content: d, th }) {
 }
 const COSMOS_SCENES = { title: Cosmos_Title, fact: Cosmos_Fact, compare: Cosmos_Compare, timeline: Cosmos_Timeline, diagram: Cosmos_Diagram, closing: Cosmos_Closing };
 
+// ─── Scrapbook Scene Renderers ───────────────────────────────────────────────
+
+function Scrapbook_Hero({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,40), sa = textIn(frame,15,fps,30), tag = textIn(frame,30,fps,20);
+  const hw = highlightSwipe(frame,10,30);
+  const hr = handwrittenReveal(frame,20,40);
+  return <div style={{position:"absolute",inset:0,background:"#f5f0e8"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 20%,rgba(200,180,150,0.15) 0%,transparent 50%)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,height:6,background:"rgba(0,0,0,0.05)",display:"flex"}}>
+      {Array.from({length:6},(_,i)=><div key={i} style={{flex:1,height:"100%",background:i<=0?"#c0392b":"transparent"}}/>)}
+    </div>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{...tag,fontFamily:"Courier New, monospace",fontSize:14,letterSpacing:6,textTransform:"uppercase",color:"#c0392b",marginBottom:24}}>{d.tagline}</div>
+      <div style={{...ta,fontFamily:"Georgia, serif",fontWeight:900,fontSize:96,lineHeight:1.0,textAlign:"center",letterSpacing:-2,color:"#1a1a1a",position:"relative"}}>
+        {d.title}
+        <div style={{position:"absolute",bottom:-8,left:0,width:hw+"%",height:12,background:"#f7dc6f",opacity:0.7}}/>
+      </div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,#1a1a1a,transparent)",margin:"32px 0",opacity:0.3}}/>
+      <div style={{...sa,fontFamily:"Georgia, serif",fontSize:24,color:"#666666",textAlign:"center",maxWidth:600,lineHeight:1.5}}>{d.subtitle}</div>
+      <div style={{...hr,fontFamily:"Segoe Script, cursive",fontSize:18,color:"#c0392b",marginTop:24,transform:"rotate(-2deg)"}}>{d.tagline}</div>
+    </div>
+  </div>;
+}
+function Scrapbook_Match({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,30), sa = textIn(frame,15,fps,20);
+  const hw = highlightSwipe(frame,20,25);
+  const hr = handwrittenReveal(frame,25,35);
+  return <div style={{position:"absolute",inset:0,background:"#f5f0e8"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 80% 80%,rgba(180,160,130,0.1) 0%,transparent 50%)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,height:6,background:"rgba(0,0,0,0.05)",display:"flex"}}>
+      {Array.from({length:6},(_,i)=><div key={i} style={{flex:1,height:"100%",background:i<=1?"#c0392b":"transparent"}}/>)}
+    </div>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{...ta,fontFamily:"Courier New, monospace",fontSize:14,letterSpacing:6,textTransform:"uppercase",color:"#c0392b",marginBottom:32}}>{d.competition}</div>
+      <div style={{display:"flex",alignItems:"center",gap:60,...sa}}>
+        <div style={{textAlign:"center"}}><div style={{fontFamily:"Georgia, serif",fontWeight:900,fontSize:48,color:"#1a1a1a"}}>{d.homeTeam}</div></div>
+        <div style={{fontFamily:"Georgia, serif",fontWeight:900,fontSize:72,color:"#c0392b",position:"relative"}}>
+          {d.score}
+          <div style={{position:"absolute",bottom:-4,left:0,width:hw+"%",height:8,background:"#f7dc6f",opacity:0.7}}/>
+        </div>
+        <div style={{textAlign:"center"}}><div style={{fontFamily:"Georgia, serif",fontWeight:900,fontSize:48,color:"#1a1a1a"}}>{d.awayTeam}</div></div>
+      </div>
+      <div style={{...hr,fontFamily:"Segoe Script, cursive",fontSize:20,color:"#c0392b",marginTop:48,transform:"rotate(-1deg)"}}>{d.highlight}</div>
+    </div>
+  </div>;
+}
+function Scrapbook_History({ frame, fps, W, H, content: d, th }) {
+  const ya = textIn(frame,0,fps,40), fa = textIn(frame,15,fps,30), da = textIn(frame,30,fps,20);
+  const hw = highlightSwipe(frame,10,35);
+  const hr = handwrittenReveal(frame,25,40);
+  return <div style={{position:"absolute",inset:0,background:"#f5f0e8"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 20%,rgba(200,180,150,0.15) 0%,transparent 50%)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,height:6,background:"rgba(0,0,0,0.05)",display:"flex"}}>
+      {Array.from({length:6},(_,i)=><div key={i} style={{flex:1,height:"100%",background:i<=2?"#c0392b":"transparent"}}/>)}
+    </div>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{...ya,fontFamily:"Courier New, monospace",fontSize:120,fontWeight:900,color:"#1a1a1a",opacity:0.15,position:"absolute",top:80,right:100}}>{d.year}</div>
+      <div style={{...fa,fontFamily:"Georgia, serif",fontWeight:900,fontSize:64,color:"#1a1a1a",textAlign:"center",maxWidth:800,lineHeight:1.2,position:"relative"}}>
+        {d.fact}
+        <div style={{position:"absolute",bottom:-4,left:0,width:hw+"%",height:10,background:"#f7dc6f",opacity:0.7}}/>
+      </div>
+      <div style={{...da,fontFamily:"Georgia, serif",fontSize:24,color:"#666666",textAlign:"center",maxWidth:600,lineHeight:1.5,marginTop:32}}>{d.detail}</div>
+      <div style={{...hr,fontFamily:"Segoe Script, cursive",fontSize:18,color:"#c0392b",marginTop:32,transform:"rotate(-2deg)"}}>{d.annotation}</div>
+    </div>
+  </div>;
+}
+function Scrapbook_Photo({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,30);
+  return <div style={{position:"absolute",inset:0,background:"#f5f0e8"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 80% 80%,rgba(180,160,130,0.1) 0%,transparent 50%)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,height:6,background:"rgba(0,0,0,0.05)",display:"flex"}}>
+      {Array.from({length:6},(_,i)=><div key={i} style={{flex:1,height:"100%",background:i<=3?"#c0392b":"transparent"}}/>)}
+    </div>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{...ta,fontFamily:"Georgia, serif",fontWeight:900,fontSize:48,color:"#1a1a1a",textAlign:"center",marginBottom:48}}>{d.caption}</div>
+      <div style={{display:"flex",gap:40,justifyContent:"center",flexWrap:"wrap"}}>
+        {(d.Polaroid||d.polaroid||[]).map((p,i)=>{
+          const pa = polaroidIn(frame,10+i*12,fps,i%2===0?-3:3);
+          const tapeA = tapeIn(frame,15+i*12,fps);
+          return <div key={i} style={{...pa,width:220,background:"#ffffff",padding:"12px 12px 40px 12px",boxShadow:"0 4px 20px rgba(0,0,0,0.15)",position:"relative"}}>
+            <div style={{...tapeA,position:"absolute",top:-10,left:"50%",transform:"translateX(-50%) rotate(-2deg)",width:60,height:20,background:"rgba(200,184,150,0.7)",borderRadius:2}}/>
+            <div style={{width:"100%",height:160,background:"linear-gradient(135deg,#d0c8b8,#e8e0d0)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <div style={{fontFamily:"Courier New, monospace",fontSize:12,color:"#666666",textTransform:"uppercase",letterSpacing:2}}>{p.label}</div>
+            </div>
+            <div style={{fontFamily:"Segoe Script, cursive",fontSize:14,color:"#1a1a1a",textAlign:"center",marginTop:12}}>{p.label}</div>
+            {p.sublabel && <div style={{fontFamily:"Courier New, monospace",fontSize:10,color:"#666666",textAlign:"center",marginTop:4}}>{p.sublabel}</div>}
+          </div>;
+        })}
+      </div>
+      <div style={{fontFamily:"Segoe Script, cursive",fontSize:18,color:"#c0392b",marginTop:32,transform:"rotate(-1deg)"}}>{d.annotation}</div>
+    </div>
+  </div>;
+}
+function Scrapbook_Timeline({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,30);
+  return <div style={{position:"absolute",inset:0,background:"#f5f0e8"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 20%,rgba(200,180,150,0.15) 0%,transparent 50%)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,height:6,background:"rgba(0,0,0,0.05)",display:"flex"}}>
+      {Array.from({length:6},(_,i)=><div key={i} style={{flex:1,height:"100%",background:i<=4?"#c0392b":"transparent"}}/>)}
+    </div>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-start",padding:80,paddingTop:120}}>
+      <div style={{...ta,fontFamily:"Georgia, serif",fontWeight:900,fontSize:48,color:"#1a1a1a",textAlign:"center",marginBottom:48}}>{d.title}</div>
+      <div style={{position:"relative",width:"100%",maxWidth:800}}>
+        <div style={{position:"absolute",left:40,top:0,bottom:0,width:3,background:"linear-gradient(180deg,#c0392b,#d4a017)"}}/>
+        {(d.items||[]).map((it,i)=>{
+          const ia = textIn(frame,15+i*10,fps,20);
+          const hw = highlightSwipe(frame,20+i*10,20);
+          return <div key={i} style={{...ia,display:"flex",alignItems:"flex-start",marginBottom:32,position:"relative"}}>
+            <div style={{width:20,height:20,borderRadius:"50%",background:"#c0392b",border:"3px solid #f5f0e8",flexShrink:0,marginTop:4,marginLeft:30,zIndex:1}}/>
+            <div style={{marginLeft:24,flex:1}}>
+              <div style={{fontFamily:"Courier New, monospace",fontSize:14,color:"#c0392b",marginBottom:4}}>{it.year||it.label}</div>
+              <div style={{fontFamily:"Georgia, serif",fontWeight:700,fontSize:24,color:"#1a1a1a",position:"relative"}}>
+                {it.value}
+                <div style={{position:"absolute",bottom:-2,left:0,width:hw+"%",height:6,background:"#f7dc6f",opacity:0.6}}/>
+              </div>
+            </div>
+          </div>;
+        })}
+      </div>
+    </div>
+  </div>;
+}
+function Scrapbook_Closing({ frame, fps, W, H, content: d, th }) {
+  const ta = textIn(frame,0,fps,30), sa = textIn(frame,15,fps,20);
+  const tr = trophyBounce(frame,10,fps);
+  const hr = handwrittenReveal(frame,30,35);
+  return <div style={{position:"absolute",inset:0,background:"#f5f0e8"}}>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 20%,rgba(200,180,150,0.15) 0%,transparent 50%)"}}/>
+    <div style={{position:"absolute",top:0,left:0,right:0,height:6,background:"rgba(0,0,0,0.05)",display:"flex"}}>
+      {Array.from({length:6},(_,i)=><div key={i} style={{flex:1,height:"100%",background:i<=5?"#c0392b":"transparent"}}/>)}
+    </div>
+    <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:80}}>
+      <div style={{...tr,marginBottom:32}}>
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+          <path d="M20 15 h40 v5 c0 15 -8 25 -20 30 c-12-5-20-15-20-30 z" fill="#d4a017" stroke="#1a1a1a" strokeWidth="2"/>
+          <path d="M20 20 h-8 c-4 0-6 4-6 8 s2 8 6 8 h8" fill="none" stroke="#1a1a1a" strokeWidth="2"/>
+          <path d="M60 20 h8 c4 0 6 4 6 8 s-2 8-6 8 h-8" fill="none" stroke="#1a1a1a" strokeWidth="2"/>
+          <rect x="32" y="50" width="16" height="8" fill="#d4a017" stroke="#1a1a1a" strokeWidth="2"/>
+          <rect x="26" y="58" width="28" height="6" rx="2" fill="#d4a017" stroke="#1a1a1a" strokeWidth="2"/>
+          <polygon points="40,22 43,30 52,30 45,35 48,44 40,39 32,44 35,35 28,30 37,30" fill="#f5f0e8" stroke="#1a1a1a" strokeWidth="1"/>
+        </svg>
+      </div>
+      <div style={{...ta,fontFamily:"Georgia, serif",fontWeight:900,fontSize:64,color:"#1a1a1a",textAlign:"center",maxWidth:800,lineHeight:1.2}}>{d.title}</div>
+      <div style={{width:120,height:2,background:"linear-gradient(90deg,transparent,#1a1a1a,transparent)",margin:"32px 0",opacity:0.3}}/>
+      <div style={{...sa,fontFamily:"Georgia, serif",fontSize:24,color:"#666666",textAlign:"center",maxWidth:600,lineHeight:1.5}}>{d.subtitle}</div>
+      {(d.stats||[]).length>0 && <div style={{display:"flex",gap:48,marginTop:40}}>
+        {d.stats.map((st,i)=>{
+          const sta = textIn(frame,25+i*8,fps,15);
+          return <div key={i} style={{...sta,textAlign:"center"}}>
+            <div style={{fontFamily:"Georgia, serif",fontWeight:900,fontSize:36,color:"#c0392b"}}>{st.value}</div>
+            <div style={{fontFamily:"Courier New, monospace",fontSize:12,color:"#666666",textTransform:"uppercase",letterSpacing:2,marginTop:4}}>{st.label}</div>
+          </div>;
+        })}
+      </div>}
+      <div style={{...hr,fontFamily:"Segoe Script, cursive",fontSize:16,color:"#c0392b",marginTop:32,transform:"rotate(-1deg)"}}>{d.reference}</div>
+    </div>
+  </div>;
+}
+const SCRAPBOOK_SCENES = { hero: Scrapbook_Hero, match: Scrapbook_Match, history: Scrapbook_History, photo: Scrapbook_Photo, timeline: Scrapbook_Timeline, closing: Scrapbook_Closing };
+
 // ─── Fallback renderer for unsupported templates ─────────────────────────────
 function Fallback_Scene({ frame, fps, W, H, content: d, th, kind }) {
   const ta = textIn(frame,0,fps,30), ca = textIn(frame,15,fps,25);
@@ -612,7 +788,7 @@ function AppInner({fmt,pi,showSafe}){
   const maxW=960;
   const scale=fmt==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
-  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES };
+  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES };
   const renderers = renderersMap[prod.template] || NF_SCENES;
   const sceneData=si>=0?scenes[si]:null;
   const content=sceneData?prod.content[sceneData.id]:null;

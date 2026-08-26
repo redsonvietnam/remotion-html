@@ -541,3 +541,19 @@ Proven workflow for creating a new production:
 - Both map `frame → progress` linearly: `progress = frame / (totalFrames - 1)`
 - Spring motion is approximate in Preview (simplified damping) but structurally correct
 - No second timing model introduced — frame is the canonical time unit everywhere
+
+---
+
+## 41. Scrapbook Template
+
+**Status: IMPLEMENTED**
+
+- Visual grammar: aged paper, handwritten annotations, Polaroid cards, tape effects, VOX editorial overlays, chapter bar, page-turn transitions
+- Scene kinds: `hero | match | history | photo | timeline | closing` (6)
+- Production: Champions League (1997-2005 era) — rendered, validated, preview-wired
+- Architecture: `contract.ts` → types; `templates/scrapbook/` → clean template; zero production coupling
+- Components: `PaperBg` (paper texture), `ChapterBar` (progress), `Polaroid` (photo cards), `Trophy` (sticker)
+- Motion: `highlightSwipe`, `handwrittenReveal`, `polaroidIn`, `tapeIn`, `trophyBounce`, `pageIn`
+- 16:9 primary format; 9:16 adaptation via responsive layout (not just scale)
+- 22 regression tests in `scrapbookArchitecture.vitest.ts`
+- Preview Studio: all 6 scene renderers with editorial styling

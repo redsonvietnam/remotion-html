@@ -32,6 +32,8 @@ import { CR7_VS_MESSI_SCENES, CR7_VS_MESSI_CONTENT, sceneFrames as cr7VsMessiSce
 import { CosmosTemplate } from "./templates/cosmos";
 import { SOLAR_SYSTEM_SCENES, SOLAR_SYSTEM_CONTENT, sceneFrames as solarSystemSceneFrames } from "./data/solarSystem";
 import { cosmos } from "./theme/cosmos";
+import { ScrapbookTemplate } from "./templates/scrapbook";
+import { CHAMPIONS_LEAGUE_SCENES, CHAMPIONS_LEAGUE_CONTENT, sceneFramesCl } from "./data/championsLeague";
 
 const FPS = 30;
 
@@ -77,6 +79,10 @@ const CR7_VS_MESSI_FRAMES =
 const SOLAR_SYSTEM_FRAMES =
   SOLAR_SYSTEM_SCENES.reduce((acc, s) => acc + solarSystemSceneFrames(s.dur), 0) +
   (SOLAR_SYSTEM_SCENES.length - 1) * 16;
+
+const CHAMPIONS_LEAGUE_FRAMES =
+  CHAMPIONS_LEAGUE_SCENES.reduce((acc, s) => acc + sceneFramesCl(s.dur), 0) +
+  (CHAMPIONS_LEAGUE_SCENES.length - 1) * 16;
 
 export const Root: React.FC = () => {
   return (
@@ -218,6 +224,18 @@ export const Root: React.FC = () => {
           scenes: SOLAR_SYSTEM_SCENES,
           content: SOLAR_SYSTEM_CONTENT,
           theme: cosmos,
+        }}
+      />
+      <Composition
+        id="ChampionsLeague"
+        component={ScrapbookTemplate}
+        durationInFrames={CHAMPIONS_LEAGUE_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          scenes: CHAMPIONS_LEAGUE_SCENES,
+          content: CHAMPIONS_LEAGUE_CONTENT,
         }}
       />
     </>
