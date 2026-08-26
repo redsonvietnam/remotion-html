@@ -156,8 +156,30 @@ Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
 
 - Creator reads `?template=<id>` from URL, validates against known templates
 - "Use Template" creates creator context (template, format, name) — NOT a production
-- "Continue" shows confirmation state — no editor exists yet
+- "Continue" routes to Editor (`preview/editor.html?template=<id>&format=<fmt>&name=<name>`)
 - Demo productions remain independent — never become the "selected video"
 - Legacy templates (nq57, stoiclove, blueprint) are preview-only in creator
 - Creator data (TEMPLATES) duplicated from library — same standalone HTML pattern
 - Composer/editor integration is DEFERRED — creator is a shell only
+
+---
+
+## 13. Creator Editor Boundary
+
+**Rule:** Editor manages project state with real preview — no MP4 export, no audio editing, no production mutation.
+
+- Editor creates/modifies editable project objects (template + scenes + content)
+- Content editing is text-only in MVP — structured data (nodes, edges, lists) is read-only
+- Scene management is CRUD + reorder — no scene composition or sub-scene nesting
+- Preview renders real template visuals (static, no animation) via THEMES + RENDERERS registries
+- Preview scale: CSS transform from 1920×1080 to editor canvas size
+- Fallback renderer for unsupported scene kinds (documented, shows "Preview not available")
+- Persistence is localStorage only — no server, no file system, no database
+- Legacy templates are rejected — editor only works with editable templates (scrapbook, cr7, cosmos, nodeflow)
+- Editor data (TEMPLATES) duplicated from library — same standalone HTML pattern
+- No universal scene schema — each template defines its own scene kinds and fields
+- No MP4 export — editor is state-only; rendering delegated to Preview Studio
+- No production mutation — editor projects are independent copies, canonical data untouched
+- Content immutability — all mutations create new objects
+- Kind switching rejects invalid kinds (not in template's sceneKinds)
+- No Composer UI (drag/drop, audio upload, TTS, AI generation) — DEFERRED

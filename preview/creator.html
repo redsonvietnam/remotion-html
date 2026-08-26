@@ -195,11 +195,11 @@ function App() {
             </div>
           </div>
           <div className="success-msg" style={{marginTop:16,fontSize:13}}>
-            The editor will be the next step.<br/>This feature is coming soon.
+            Your video is ready to edit.<br/>You can now customize scenes, content, and timing.
           </div>
           <div className="actions" style={{justifyContent:"center",marginTop:24}}>
             <button className="btn btn-secondary" onClick={() => setCreated(false)}>Edit Settings</button>
-            <a href="/preview/library.html" className="btn btn-primary" style={{textDecoration:"none"}}>Back to Library</a>
+            <a href={"/preview/editor.html?template=" + encodeURIComponent(template.id) + "&format=" + encodeURIComponent(selectedFormat) + "&name=" + encodeURIComponent(videoName)} className="btn btn-primary" style={{textDecoration:"none"}}>Open Editor</a>
           </div>
         </div>
       </div>

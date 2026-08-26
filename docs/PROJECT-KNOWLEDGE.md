@@ -595,9 +595,39 @@ Proven workflow for creating a new production:
 - Reads `?template=<id>` from URL, validates template exists and status
 - Ready templates: format selector, video name input, Continue button
 - Legacy templates: "Preview only" message, demo production links only
-- "Continue" creates a confirmation state showing template/format/name — no actual editing
+- "Continue" routes to Editor (`preview/editor.html?template=<id>&format=<fmt>&name=<name>`)
 - Creator context is independent of demo productions (Champions League is never the "selected production")
 - Demo productions linked separately via "Preview Demo" section → Studio
 - Default video name: "Untitled <Template Name> Video"
 - Default format: first supported format of the template
 - No persistence (URL state only), no Composer, no editor
+
+---
+
+## 44. Creator Editor MVP
+
+**Status: IMPLEMENTED**
+
+- Entry point: `preview/editor.html` — standalone HTML (React 18 CDN + Babel, no build step)
+- Purpose: editable project state for new videos created via Creator Shell
+- Flow: Library → USE THIS TEMPLATE → Creator → Continue → Editor → Preview
+- Reads `?project=<id>` or `?template=<id>&format=<fmt>&name=<name>` from URL
+- New project: creates from template params, initializes default scenes with empty content
+- Existing project: loads from localStorage by project ID
+- Project schema: `{ id, name, templateId, format, scenes[], createdAt, updatedAt }`
+- Scene schema: `{ id, kind, dur, content{} }` — content fields are template-specific
+- Editable templates: scrapbook, cr7, cosmos, nodeflow — full scene kind + field definitions
+- Legacy templates: nq57, stoiclove, blueprint — rejected (not editable)
+- Scene management: select, reorder (move left/right), duplicate, delete, add new
+- Content editing: text fields per scene kind, duration, kind switching
+- Kind switching: preserves matching fields, clears fields not in new kind
+- Duration: minimum 0.5s enforced
+- Persistence: localStorage (`nf_editor_projects`, `nf_editor_current`)
+- Preview: real template renderers (static, no animation) scaled to editor canvas via CSS transform
+- Preview renderers: THEMES (per-template colors), RENDERERS (per-template per-kind static renderers)
+- Preview scale: 1920×1080 → 480×270 (16:9) or 1080×1920 → 270×480 (9:16) via CSS transform
+- Fallback renderer for unsupported scene kinds shows scene kind + title + "Preview not available"
+- 86 data model tests: `src/__tests__/creatorEditor.vitest.ts`
+- Editor data (TEMPLATES) duplicated from library — same standalone HTML pattern
+- Kind switching rejects invalid kinds (not in template's sceneKinds)
+- Content immutability: all mutations create new objects, never mutate originals
