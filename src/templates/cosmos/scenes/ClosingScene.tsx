@@ -70,10 +70,8 @@ export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
 
       {/* Constellation lines */}
       <svg
-        width="1920"
-        height="1080"
         viewBox="0 0 1920 1080"
-        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
       >
         {/* Decorative constellation */}
         <line

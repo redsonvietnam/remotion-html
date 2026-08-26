@@ -10,6 +10,9 @@ import { useTheme } from "../../../design/theme";
 import { textIn, orbitalRotation } from "../helpers";
 import type { CosmosFactContent } from "../types";
 
+const DESIGN_W = 1920;
+const DESIGN_H = 1080;
+
 export type FactSceneProps = {
   audio: string;
   caption: string;
@@ -49,10 +52,8 @@ export const FactSceneData: React.FC<FactSceneProps> = ({
     >
       {/* Orbital rings */}
       <svg
-        width="1920"
-        height="1080"
-        viewBox="0 0 1920 1080"
-        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+        viewBox={`0 0 ${DESIGN_W} ${DESIGN_H}`}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
       >
         <circle
           cx="960"
