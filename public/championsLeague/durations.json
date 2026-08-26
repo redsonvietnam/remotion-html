@@ -1,0 +1,34 @@
+{
+  "hero": {
+    "dur": 8.28,
+    "caption": "Champions League 1997-2005"
+  },
+  "match-1999": {
+    "dur": 10.368,
+    "caption": "Final 1999"
+  },
+  "history-2002": {
+    "dur": 7.944,
+    "caption": "Zidane 2002"
+  },
+  "photos": {
+    "dur": 5.184,
+    "caption": "Iconic Moments"
+  },
+  "match-2003": {
+    "dur": 9.144,
+    "caption": "Milan Derby 2003"
+  },
+  "history-2005": {
+    "dur": 8.568,
+    "caption": "Istanbul 2005"
+  },
+  "timeline": {
+    "dur": 12.12,
+    "caption": "Timeline"
+  },
+  "closing": {
+    "dur": 5.064,
+    "caption": "The Beautiful Game"
+  }
+}

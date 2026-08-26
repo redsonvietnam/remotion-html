@@ -211,9 +211,9 @@ const PRODUCTIONS = [
     id: "championsLeague", name: "Champions League", template: "scrapbook", format: "16:9",
     theme: { bg:"#f5f0e8",bg2:"#e8e0d0",card:"#ffffff",line:"#d0c8b8",a1:"#c0392b",a1s:"#e74c3c",a2:"#d4a017",a2s:"#f7dc6f",a3:"#1a1a1a",ink:"#1a1a1a",muted:"#666666",fd:'"Georgia","Times New Roman",serif',fm:'"Courier New","Fira Code",monospace' },
     scenes: [
-      { id:"hero",dur:5,kind:"hero" },{ id:"match-1999",dur:6,kind:"match" },{ id:"history-2002",dur:6,kind:"history" },
-      { id:"photos",dur:5,kind:"photo" },{ id:"match-2003",dur:6,kind:"match" },{ id:"history-2005",dur:7,kind:"history" },
-      { id:"timeline",dur:7,kind:"timeline" },{ id:"closing",dur:5,kind:"closing" },
+      { id:"hero",dur:8.28,kind:"hero" },{ id:"match-1999",dur:10.368,kind:"match" },{ id:"history-2002",dur:7.944,kind:"history" },
+      { id:"photos",dur:5.184,kind:"photo" },{ id:"match-2003",dur:9.144,kind:"match" },{ id:"history-2005",dur:8.568,kind:"history" },
+      { id:"timeline",dur:12.12,kind:"timeline" },{ id:"closing",dur:5.064,kind:"closing" },
     ],
     content: {
       hero:{kind:"hero",title:"Champions League",subtitle:"The greatest club competition in world football",tagline:"1997 — 2005"},

@@ -8,14 +8,14 @@ import { sceneFrames } from "./contract";
 import type { SceneDef, ScrapbookSceneContent } from "./contract";
 
 export const CHAMPIONS_LEAGUE_SCENES: SceneDef[] = [
-  { id: "hero", audio: "championsLeague/s1.mp3", caption: "Champions League 1997-2005", dur: 5 },
-  { id: "match-1999", audio: "championsLeague/s2.mp3", caption: "Final 1999", dur: 6 },
-  { id: "history-2002", audio: "championsLeague/s3.mp3", caption: "Zidane 2002", dur: 6 },
-  { id: "photos", audio: "championsLeague/s4.mp3", caption: "Iconic Moments", dur: 5 },
-  { id: "match-2003", audio: "championsLeague/s7.mp3", caption: "Milan Derby 2003", dur: 6 },
-  { id: "history-2005", audio: "championsLeague/s8.mp3", caption: "Istanbul 2005", dur: 7 },
-  { id: "timeline", audio: "championsLeague/s5.mp3", caption: "Timeline", dur: 7 },
-  { id: "closing", audio: "championsLeague/s6.mp3", caption: "The Beautiful Game", dur: 5 },
+  { id: "hero", audio: "championsLeague/s1.mp3", caption: "Champions League 1997-2005", dur: 8.28 },
+  { id: "match-1999", audio: "championsLeague/s2.mp3", caption: "Final 1999", dur: 10.368 },
+  { id: "history-2002", audio: "championsLeague/s3.mp3", caption: "Zidane 2002", dur: 7.944 },
+  { id: "photos", audio: "championsLeague/s4.mp3", caption: "Iconic Moments", dur: 5.184 },
+  { id: "match-2003", audio: "championsLeague/s5.mp3", caption: "Milan Derby 2003", dur: 9.144 },
+  { id: "history-2005", audio: "championsLeague/s6.mp3", caption: "Istanbul 2005", dur: 8.568 },
+  { id: "timeline", audio: "championsLeague/s7.mp3", caption: "Timeline", dur: 12.12 },
+  { id: "closing", audio: "championsLeague/s8.mp3", caption: "The Beautiful Game", dur: 5.064 },
 ];
 
 export const CHAMPIONS_LEAGUE_CONTENT: Record<string, ScrapbookSceneContent> = {
