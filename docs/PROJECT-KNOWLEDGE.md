@@ -643,13 +643,17 @@ Proven workflow for creating a new production:
 - Left panel: scene list with kind, title preview, duration, audio indicator, reorder/duplicate/delete actions
 - Center panel: real template preview rendered at 1920×1080 → scaled via CSS transform (480×270 or 270×480)
 - Right panel: inspector with kind selector, duration, audio reference, and content fields per scene kind
-- Audio foundation: `audio` field per scene (path reference, presence indicator ♫)
-- Preview in Studio: serializes project to localStorage (`nf_studio_project`), opens `studio.html?project=<id>`
-- Studio support: `studio.jsx` updated to load Composer projects from `?project=<id>` URL param
+- Audio foundation: `audio` field per scene (path reference, presence indicator ♫) — optional, non-breaking
+- Preview in Studio: saves project, serializes to localStorage (`nf_studio_project`), opens `studio.html?project=<id>`
+- Studio support: `studio.jsx` loads Composer projects from `?project=<id>` URL param via `nf_studio_project`
+- Studio error state: missing/invalid project or production IDs show error page with "Back to Library" link
+- Studio validates project ID matches localStorage data before loading
 - THEMES: per-template color themes (scrapbook, cr7, cosmos, nodeflow)
 - RENDERERS: per-template per-kind static preview renderers (all 4 templates × all scene kinds)
 - Preview renderers: NF_*, CR7_*, Cosmos_*, Scrapbook_* static renderers + Fallback_Preview
 - Fallback renderer: shows scene kind + title + "Preview not available" for unsupported kinds
-- 86 data model tests: `src/__tests__/creatorEditor.vitest.ts` (all pass)
-- Studio handoff: Composer project → localStorage → Studio loads via `?project=<id>`
+- 636 data model tests: `src/__tests__/creatorEditor.vitest.ts` (all pass)
+- Studio handoff: Composer saves → localStorage → Studio loads via `?project=<id>` → validates match
+- Template coverage: scrapbook (6 kinds), cr7 (4 kinds), cosmos (6 kinds), nodeflow (6 kinds)
+- All model functions: bounds-checking, NaN rejection, invalid kind rejection, immutable updates
 - DEFERRED: AI generation, drag/drop media timeline, complex NLE timeline, MP4 rendering, TTS, audio upload

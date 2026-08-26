@@ -764,12 +764,31 @@ function getInitialPi(){
   }catch(e){}
   return 0;
 }
+function hasUrlParam(name){try{return new URLSearchParams(window.location.search).has(name);}catch{return false;}}
+function getUrlParamValue(name){try{return new URLSearchParams(window.location.search).get(name);}catch{return null;}}
 function AppWrapper(){
   const [fmt,setFmt]=useState("16:9");
   const [pi,setPi]=useState(getInitialPi);
   const [showSafe,setShowSafe]=useState(false);
   onFormatChange=setFmt;onSafeToggle=setShowSafe;
+  const requestedProjectId=getUrlParamValue("project");
+  const requestedProductionId=getUrlParamValue("production");
+  const hasExplicitRequest=hasUrlParam("project")||hasUrlParam("production");
+  const loadFailed=hasExplicitRequest&&pi===0&&(requestedProjectId||requestedProductionId)&&PRODUCTIONS[0].id!==(requestedProjectId||requestedProductionId);
   useEffect(()=>{const initPi=getInitialPi();if(initPi!==0){currentPi=initPi;prodSelect.value=initPi;const tpl=PRODUCTIONS[initPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();}prodSelect.onchange=(e)=>{const newPi=parseInt(e.target.value);setPi(newPi);currentPi=newPi;const tpl=PRODUCTIONS[newPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();};},[]);
+  if(loadFailed){
+    const isProject=hasUrlParam("project");
+    const label=isProject?"project":"production";
+    const id=isProject?requestedProjectId:requestedProductionId;
+    return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"#0a0e1a",color:"#e8e6e1",fontFamily:"Inter,system-ui,sans-serif"}}>
+      <div style={{textAlign:"center",maxWidth:420}}>
+        <div style={{fontSize:48,marginBottom:16}}>&#9888;</div>
+        <h2 style={{fontSize:18,fontWeight:700,marginBottom:8}}>Not Found</h2>
+        <p style={{fontSize:13,color:"#6b7280",lineHeight:1.5,marginBottom:20}}>{label.charAt(0).toUpperCase()+label.slice(1)} "{id}" was not found. It may have been removed or the link is invalid.</p>
+        <a href="/preview/library.html" style={{display:"inline-block",padding:"8px 16px",background:"#00d4ff",color:"#0a0e1a",borderRadius:6,fontSize:12,fontWeight:600,textDecoration:"none"}}>Back to Library</a>
+      </div>
+    </div>;
+  }
   return <AppInner fmt={fmt} pi={pi} showSafe={showSafe}/>;
 }
 function AppInner({fmt,pi,showSafe}){

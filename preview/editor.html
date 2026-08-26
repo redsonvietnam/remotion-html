@@ -556,7 +556,11 @@ function App() {
 
   const handlePreviewInStudio = useCallback(() => {
     if (!project) return;
-    const tpl = TEMPLATES.find(t => t.id === project.templateId);
+    const projects = loadProjects();
+    projects[project.id] = project;
+    saveProjects(projects);
+    saveCurrentId(project.id);
+    setSaveStatus("saved");
     const th = THEMES[project.templateId] || THEMES.nodeflow;
     const studioProject = {
       id: project.id, name: project.name, template: project.templateId, format: project.format,

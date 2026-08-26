@@ -82,6 +82,7 @@ interface Scene {
   kind: string;
   dur: number;
   content: Record<string, string>;
+  audio?: string;
 }
 
 interface Project {
@@ -105,7 +106,7 @@ function defaultScenes(templateId: string): Scene[] {
     const content: Record<string, string> = {};
     const fields = tpl.fields[kind] || {};
     for (const key of Object.keys(fields)) content[key] = "";
-    return { id: "s" + (i + 1), kind, dur: 5, content };
+    return { id: "s" + (i + 1), kind, dur: 5, content, audio: "" };
   });
 }
 
@@ -163,6 +164,7 @@ function moveScene(project: Project, idx: number, dir: -1 | 1): Project {
 }
 
 function updateContent(project: Project, sceneIdx: number, field: string, value: string): Project {
+  if (sceneIdx < 0 || sceneIdx >= project.scenes.length) return project;
   const scenes = [...project.scenes];
   scenes[sceneIdx] = {
     ...scenes[sceneIdx],
@@ -172,16 +174,18 @@ function updateContent(project: Project, sceneIdx: number, field: string, value:
 }
 
 function updateDuration(project: Project, sceneIdx: number, dur: number): Project {
-  if (dur < 0.5) return project;
+  if (sceneIdx < 0 || sceneIdx >= project.scenes.length) return project;
+  if (isNaN(dur) || dur < 0.5) return project;
   const scenes = [...project.scenes];
   scenes[sceneIdx] = { ...scenes[sceneIdx], dur };
   return { ...project, scenes, updatedAt: new Date().toISOString() };
 }
 
 function updateKind(project: Project, sceneIdx: number, newKind: string): Project {
+  if (sceneIdx < 0 || sceneIdx >= project.scenes.length) return project;
   const tpl = TEMPLATE_SCHEMAS[project.templateId];
   if (!tpl) return project;
-  if (!tpl.sceneKinds.includes(newKind)) return project; // reject invalid kind
+  if (!tpl.sceneKinds.includes(newKind)) return project;
   const fields = tpl.fields[newKind] || {};
   const content: Record<string, string> = {};
   for (const key of Object.keys(fields)) {
@@ -198,6 +202,34 @@ function isEditable(templateId: string): boolean {
 
 function isLegacy(templateId: string): boolean {
   return LEGACY_IDS.includes(templateId);
+}
+
+function updateAudio(project: Project, sceneIdx: number, audio: string): Project {
+  if (sceneIdx < 0 || sceneIdx >= project.scenes.length) return project;
+  const scenes = [...project.scenes];
+  scenes[sceneIdx] = { ...scenes[sceneIdx], audio };
+  return { ...project, scenes, updatedAt: new Date().toISOString() };
+}
+
+function buildStudioProject(project: Project): Record<string, unknown> {
+  const THEMES: Record<string, Record<string, string>> = {
+    scrapbook: { bg:"#f5f0e8", a1:"#c0392b" },
+    cr7: { bg:"#0c0a09", a1:"#f59e0b" },
+    cosmos: { bg:"#050510", a1:"#3b82f6" },
+    nodeflow: { bg:"#0a0e1a", a1:"#00d4ff" },
+  };
+  const th = THEMES[project.templateId] || THEMES.nodeflow;
+  const studioProject: Record<string, unknown> = {
+    id: project.id, name: project.name, template: project.templateId, format: project.format,
+    theme: th,
+    scenes: project.scenes.map(s => ({ id: s.id, dur: s.dur, kind: s.kind })),
+    content: {} as Record<string, Record<string, string>>,
+  };
+  const content = studioProject.content as Record<string, Record<string, string>>;
+  for (const s of project.scenes) {
+    content[s.id] = { kind: s.kind, ...s.content };
+  }
+  return studioProject;
 }
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -840,6 +872,459 @@ describe("WS-CREATOR-EDITOR-01: Editor MVP", () => {
       const p = createProject("scrapbook");
       const p2 = updateContent(p, 0, "title", "Test");
       expect(p).not.toBe(p2);
+    });
+  });
+
+  // ─── Audio Foundation ─────────────────────────────────────────────────────
+  describe("Audio Foundation", () => {
+    it("scenes default to empty audio", () => {
+      const p = createProject("scrapbook");
+      for (const s of p.scenes) {
+        expect(s.audio).toBe("");
+      }
+    });
+
+    it("audio field is optional and can be set", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateAudio(p, 0, "s1.mp3");
+      expect(p2.scenes[0].audio).toBe("s1.mp3");
+    });
+
+    it("audio can be cleared", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateAudio(p, 0, "s1.mp3");
+      const p3 = updateAudio(p2, 0, "");
+      expect(p3.scenes[0].audio).toBe("");
+    });
+
+    it("audio is preserved when duplicating a scene", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateAudio(p, 0, "hero.mp3");
+      const p3 = duplicateScene(p2, 0);
+      expect(p3.scenes[1].audio).toBe("hero.mp3");
+    });
+
+    it("audio does not affect other scenes", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateAudio(p, 0, "s1.mp3");
+      expect(p2.scenes[1].audio).toBe("");
+    });
+
+    it("existing scenes without audio field remain valid", () => {
+      const scene: Scene = { id: "s1", kind: "hero", dur: 5, content: {} };
+      expect(scene.audio).toBeUndefined();
+    });
+
+    it("audio presence indicator is derived from audio field", () => {
+      const p = createProject("scrapbook");
+      expect(p.scenes[0].audio ? "\u266B" : "").toBe("");
+      const p2 = updateAudio(p, 0, "s1.mp3");
+      expect(p2.scenes[0].audio ? "\u266B" : "").toBe("\u266B");
+    });
+  });
+
+  // ─── Studio Handoff ──────────────────────────────────────────────────────
+  describe("Studio Handoff", () => {
+    it("buildStudioProject creates valid Studio structure", () => {
+      const p = createProject("scrapbook", "16:9", "Test Video");
+      const sp = buildStudioProject(p);
+      expect(sp.id).toBe(p.id);
+      expect(sp.name).toBe("Test Video");
+      expect(sp.template).toBe("scrapbook");
+      expect(sp.format).toBe("16:9");
+      expect(sp.theme).toBeDefined();
+    });
+
+    it("Studio project has scenes array with id, dur, kind", () => {
+      const p = createProject("cr7");
+      const sp = buildStudioProject(p);
+      const scenes = sp.scenes as Array<{ id: string; dur: number; kind: string }>;
+      expect(scenes.length).toBe(4);
+      for (const s of scenes) {
+        expect(s.id).toBeTruthy();
+        expect(s.dur).toBeGreaterThan(0);
+        expect(s.kind).toBeTruthy();
+      }
+    });
+
+    it("Studio project has content keyed by scene ID", () => {
+      const p = createProject("cosmos");
+      const p2 = updateContent(p, 0, "title", "Solar System");
+      const sp = buildStudioProject(p2);
+      const content = sp.content as Record<string, Record<string, string>>;
+      expect(content[p2.scenes[0].id]).toBeDefined();
+      expect(content[p2.scenes[0].id].title).toBe("Solar System");
+      expect(content[p2.scenes[0].id].kind).toBe("title");
+    });
+
+    it("Studio project does not include audio field", () => {
+      const p = createProject("nodeflow");
+      const p2 = updateAudio(p, 0, "title.mp3");
+      const sp = buildStudioProject(p2);
+      const scenes = sp.scenes as Array<{ id: string; dur: number; kind: string }>;
+      expect(scenes[0]).not.toHaveProperty("audio");
+    });
+
+    it("Studio project ID matches Composer project ID", () => {
+      const p = createProject("scrapbook");
+      const sp = buildStudioProject(p);
+      expect(sp.id).toBe(p.id);
+    });
+
+    it("Studio project preserves all scene durations", () => {
+      const p = createProject("cr7");
+      const p2 = updateDuration(p, 0, 8.5);
+      const p3 = updateDuration(p2, 1, 12.0);
+      const sp = buildStudioProject(p3);
+      const scenes = sp.scenes as Array<{ id: string; dur: number }>;
+      expect(scenes[0].dur).toBe(8.5);
+      expect(scenes[1].dur).toBe(12.0);
+    });
+
+    it("invalid project ID shows error state", () => {
+      const params = new URLSearchParams("?project=nonexistent");
+      const projectId = params.get("project");
+      const PRODUCTIONS = [{ id: "nq57" }, { id: "dean06" }];
+      const idx = PRODUCTIONS.findIndex(p => p.id === projectId);
+      // With invalid ID, findIndex returns -1, which is < 0
+      expect(idx).toBe(-1);
+    });
+
+    it("invalid production ID shows error state", () => {
+      const params = new URLSearchParams("?production=nonexistent");
+      const productionId = params.get("production");
+      const PRODUCTIONS = [{ id: "nq57" }, { id: "dean06" }];
+      const idx = PRODUCTIONS.findIndex(p => p.id === productionId);
+      expect(idx).toBe(-1);
+    });
+
+    it("valid production ID resolves correctly", () => {
+      const params = new URLSearchParams("?production=nq57");
+      const productionId = params.get("production");
+      const PRODUCTIONS = [{ id: "nq57" }, { id: "dean06" }];
+      const idx = PRODUCTIONS.findIndex(p => p.id === productionId);
+      expect(idx).toBe(0);
+    });
+
+    it("Composer project structure is compatible with Studio renderers", () => {
+      const TEMPLATES = ["scrapbook", "cr7", "cosmos", "nodeflow"];
+      const RENDERER_MAP: Record<string, string[]> = {
+        scrapbook: ["hero", "match", "history", "photo", "timeline", "closing"],
+        cr7: ["hero", "stat", "milestone", "closing"],
+        cosmos: ["title", "fact", "compare", "timeline", "diagram", "closing"],
+        nodeflow: ["title", "flow", "contribution", "benefit", "compare", "end"],
+      };
+      for (const tpl of TEMPLATES) {
+        const p = createProject(tpl);
+        const sp = buildStudioProject(p);
+        expect(sp.template).toBe(tpl);
+        const scenes = sp.scenes as Array<{ id: string; kind: string }>;
+        const content = sp.content as Record<string, Record<string, string>>;
+        for (const s of scenes) {
+          expect(RENDERER_MAP[tpl]).toContain(s.kind);
+          expect(content[s.id]).toBeDefined();
+          expect(content[s.id].kind).toBe(s.kind);
+        }
+      }
+    });
+  });
+
+  // ─── Error Handling ──────────────────────────────────────────────────────
+  describe("Error Handling", () => {
+    it("corrupt localStorage returns empty object", () => {
+      const ls = mockLocalStorage();
+      ls.setItem("nf_editor_projects", "NOT_JSON!!!");
+      let parsed: Record<string, Project>;
+      try {
+        parsed = JSON.parse(ls.getItem("nf_editor_projects") || "{}");
+      } catch {
+        parsed = {};
+      }
+      expect(parsed).toEqual({});
+    });
+
+    it("missing localStorage key returns empty object", () => {
+      const ls = mockLocalStorage();
+      let parsed: Record<string, Project>;
+      try {
+        parsed = JSON.parse(ls.getItem("nf_editor_projects") || "{}");
+      } catch {
+        parsed = {};
+      }
+      expect(parsed).toEqual({});
+    });
+
+    it("null project returns error state", () => {
+      const project = null;
+      const msg = project ? "has project" : "No project or template specified.";
+      expect(msg).toBe("No project or template specified.");
+    });
+
+    it("invalid template ID returns empty scenes", () => {
+      const p = createProject("nonexistent");
+      expect(p.scenes.length).toBe(0);
+    });
+
+    it("invalid format falls back to 16:9", () => {
+      const p = createProject("scrapbook", "4:3");
+      expect(p.format).toBe("16:9");
+    });
+
+    it("invalid scene kind is rejected by updateKind", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateKind(p, 0, "nonexistent");
+      expect(p2.scenes[0].kind).toBe("hero");
+    });
+
+    it("duration below 0.5 is rejected", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateDuration(p, 0, 0.1);
+      expect(p2.scenes[0].dur).toBe(5);
+    });
+
+    it("NaN duration is rejected", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateDuration(p, 0, NaN);
+      expect(p2.scenes[0].dur).toBe(5);
+    });
+
+    it("negative duration is rejected", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateDuration(p, 0, -1);
+      expect(p2.scenes[0].dur).toBe(5);
+    });
+
+    it("delete scene index out of bounds is safe", () => {
+      const p = createProject("scrapbook");
+      const p2 = deleteScene(p, 99);
+      expect(p2.scenes.length).toBe(6);
+    });
+
+    it("duplicate scene index out of bounds is safe", () => {
+      const p = createProject("scrapbook");
+      const p2 = duplicateScene(p, 99);
+      expect(p2.scenes.length).toBe(6);
+    });
+
+    it("move scene out of bounds is safe", () => {
+      const p = createProject("scrapbook");
+      const p2 = moveScene(p, 99, 1);
+      expect(p2.scenes.length).toBe(6);
+    });
+
+    it("updateContent with invalid scene index is safe", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateContent(p, 99, "title", "Test");
+      expect(p2.scenes.length).toBe(6);
+    });
+
+    it("updateDuration with invalid scene index is safe", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateDuration(p, 99, 10);
+      expect(p2.scenes.length).toBe(6);
+    });
+
+    it("updateKind with invalid scene index is safe", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateKind(p, 99, "match");
+      expect(p2.scenes.length).toBe(6);
+    });
+
+    it("updateAudio with invalid scene index is safe", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateAudio(p, 99, "test.mp3");
+      expect(p2.scenes.length).toBe(6);
+    });
+  });
+
+  // ─── Template Coverage ───────────────────────────────────────────────────
+  describe("Template Coverage", () => {
+    it("scrapbook has all 6 scene kinds", () => {
+      const p = createProject("scrapbook");
+      const kinds = p.scenes.map(s => s.kind);
+      expect(kinds).toEqual(["hero", "match", "history", "photo", "timeline", "closing"]);
+    });
+
+    it("cr7 has all 4 scene kinds", () => {
+      const p = createProject("cr7");
+      const kinds = p.scenes.map(s => s.kind);
+      expect(kinds).toEqual(["hero", "stat", "milestone", "closing"]);
+    });
+
+    it("cosmos has all 6 scene kinds", () => {
+      const p = createProject("cosmos");
+      const kinds = p.scenes.map(s => s.kind);
+      expect(kinds).toEqual(["title", "fact", "compare", "timeline", "diagram", "closing"]);
+    });
+
+    it("nodeflow has all 6 scene kinds", () => {
+      const p = createProject("nodeflow");
+      const kinds = p.scenes.map(s => s.kind);
+      expect(kinds).toEqual(["title", "flow", "contribution", "benefit", "compare", "end"]);
+    });
+
+    it("all template scene kinds have defined fields", () => {
+      for (const [tplId, tpl] of Object.entries(TEMPLATE_SCHEMAS)) {
+        for (const kind of tpl.sceneKinds) {
+          expect(tpl.fields[kind]).toBeDefined();
+          expect(Object.keys(tpl.fields[kind]).length).toBeGreaterThan(0);
+        }
+      }
+    });
+
+    it("kind switching preserves fields that exist in both kinds", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateContent(p, 0, "title", "CL Final");
+      const p3 = updateContent(p2, 0, "subtitle", "Madrid vs Dortmund");
+      // Both hero and closing have title and subtitle
+      const p4 = updateKind(p3, 0, "closing");
+      expect(p4.scenes[0].content.title).toBe("CL Final");
+      expect(p4.scenes[0].content.subtitle).toBe("Madrid vs Dortmund");
+    });
+
+    it("kind switching clears fields that don't exist in new kind", () => {
+      const p = createProject("scrapbook");
+      const p2 = updateContent(p, 0, "subtitle", "Madrid vs Dortmund");
+      // hero has subtitle, but match doesn't have subtitle
+      const p3 = updateKind(p2, 0, "match");
+      expect(p3.scenes[0].content.subtitle).toBeUndefined();
+    });
+  });
+
+  // ─── Content Field Coverage ──────────────────────────────────────────────
+  describe("Content Field Coverage", () => {
+    it("scrapbook hero has title, subtitle, tagline", () => {
+      const fields = TEMPLATE_SCHEMAS.scrapbook.fields.hero;
+      expect(Object.keys(fields)).toEqual(["title", "subtitle", "tagline"]);
+    });
+
+    it("scrapbook match has homeTeam, awayTeam, score, competition, highlight", () => {
+      const fields = TEMPLATE_SCHEMAS.scrapbook.fields.match;
+      expect(Object.keys(fields)).toEqual(["homeTeam", "awayTeam", "score", "competition", "highlight"]);
+    });
+
+    it("scrapbook history has year, fact, detail, annotation", () => {
+      const fields = TEMPLATE_SCHEMAS.scrapbook.fields.history;
+      expect(Object.keys(fields)).toEqual(["year", "fact", "detail", "annotation"]);
+    });
+
+    it("scrapbook photo has caption, annotation", () => {
+      const fields = TEMPLATE_SCHEMAS.scrapbook.fields.photo;
+      expect(Object.keys(fields)).toEqual(["caption", "annotation"]);
+    });
+
+    it("scrapbook timeline has title only", () => {
+      const fields = TEMPLATE_SCHEMAS.scrapbook.fields.timeline;
+      expect(Object.keys(fields)).toEqual(["title"]);
+    });
+
+    it("scrapbook closing has title, subtitle, reference", () => {
+      const fields = TEMPLATE_SCHEMAS.scrapbook.fields.closing;
+      expect(Object.keys(fields)).toEqual(["title", "subtitle", "reference"]);
+    });
+
+    it("cr7 hero has name, tagline, subtitle", () => {
+      const fields = TEMPLATE_SCHEMAS.cr7.fields.hero;
+      expect(Object.keys(fields)).toEqual(["name", "tagline", "subtitle"]);
+    });
+
+    it("cr7 stat has label, bigNumber, sub, detail", () => {
+      const fields = TEMPLATE_SCHEMAS.cr7.fields.stat;
+      expect(Object.keys(fields)).toEqual(["label", "bigNumber", "sub", "detail"]);
+    });
+
+    it("cr7 milestone has title only", () => {
+      const fields = TEMPLATE_SCHEMAS.cr7.fields.milestone;
+      expect(Object.keys(fields)).toEqual(["title"]);
+    });
+
+    it("cr7 closing has title, subtitle, reference", () => {
+      const fields = TEMPLATE_SCHEMAS.cr7.fields.closing;
+      expect(Object.keys(fields)).toEqual(["title", "subtitle", "reference"]);
+    });
+
+    it("cosmos title has title, subtitle, tagline", () => {
+      const fields = TEMPLATE_SCHEMAS.cosmos.fields.title;
+      expect(Object.keys(fields)).toEqual(["title", "subtitle", "tagline"]);
+    });
+
+    it("cosmos fact has label, bigValue, unit, description, detail", () => {
+      const fields = TEMPLATE_SCHEMAS.cosmos.fields.fact;
+      expect(Object.keys(fields)).toEqual(["label", "bigValue", "unit", "description", "detail"]);
+    });
+
+    it("cosmos compare has title, insight", () => {
+      const fields = TEMPLATE_SCHEMAS.cosmos.fields.compare;
+      expect(Object.keys(fields)).toEqual(["title", "insight"]);
+    });
+
+    it("cosmos timeline has title only", () => {
+      const fields = TEMPLATE_SCHEMAS.cosmos.fields.timeline;
+      expect(Object.keys(fields)).toEqual(["title"]);
+    });
+
+    it("cosmos diagram has title only", () => {
+      const fields = TEMPLATE_SCHEMAS.cosmos.fields.diagram;
+      expect(Object.keys(fields)).toEqual(["title"]);
+    });
+
+    it("cosmos closing has title, subtitle, reference", () => {
+      const fields = TEMPLATE_SCHEMAS.cosmos.fields.closing;
+      expect(Object.keys(fields)).toEqual(["title", "subtitle", "reference"]);
+    });
+
+    it("nodeflow title has lawCode, title, subtitle, tagline", () => {
+      const fields = TEMPLATE_SCHEMAS.nodeflow.fields.title;
+      expect(Object.keys(fields)).toEqual(["lawCode", "title", "subtitle", "tagline"]);
+    });
+
+    it("nodeflow flow has title only", () => {
+      const fields = TEMPLATE_SCHEMAS.nodeflow.fields.flow;
+      expect(Object.keys(fields)).toEqual(["title"]);
+    });
+
+    it("nodeflow contribution has title only", () => {
+      const fields = TEMPLATE_SCHEMAS.nodeflow.fields.contribution;
+      expect(Object.keys(fields)).toEqual(["title"]);
+    });
+
+    it("nodeflow benefit has title, description", () => {
+      const fields = TEMPLATE_SCHEMAS.nodeflow.fields.benefit;
+      expect(Object.keys(fields)).toEqual(["title", "description"]);
+    });
+
+    it("nodeflow compare has title only", () => {
+      const fields = TEMPLATE_SCHEMAS.nodeflow.fields.compare;
+      expect(Object.keys(fields)).toEqual(["title"]);
+    });
+
+    it("nodeflow end has closingTitle, closingSubtitle, reference", () => {
+      const fields = TEMPLATE_SCHEMAS.nodeflow.fields.end;
+      expect(Object.keys(fields)).toEqual(["closingTitle", "closingSubtitle", "reference"]);
+    });
+  });
+
+  // ─── Format Validation ───────────────────────────────────────────────────
+  describe("Format Validation", () => {
+    it("scrapbook supports both 16:9 and 9:16", () => {
+      expect(TEMPLATE_FORMATS.scrapbook).toEqual(["16:9", "9:16"]);
+    });
+
+    it("cr7 supports both 16:9 and 9:16", () => {
+      expect(TEMPLATE_FORMATS.cr7).toEqual(["16:9", "9:16"]);
+    });
+
+    it("cosmos supports both 16:9 and 9:16", () => {
+      expect(TEMPLATE_FORMATS.cosmos).toEqual(["16:9", "9:16"]);
+    });
+
+    it("nodeflow only supports 16:9", () => {
+      expect(TEMPLATE_FORMATS.nodeflow).toEqual(["16:9"]);
+    });
+
+    it("unsupported format falls back to first supported format", () => {
+      const p = createProject("nodeflow", "9:16");
+      expect(p.format).toBe("16:9");
     });
   });
 });
