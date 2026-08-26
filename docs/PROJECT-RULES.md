@@ -137,67 +137,39 @@ Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
 
 ---
 
-## 11. Template Library Data Consistency
+## 11. Composer Responsibility
 
-**Rule:** Library page data must stay consistent with canonical sources.
+**Rule:** Composer is a project state editor, not an NLE or renderer.
 
-- `preview/library.html` contains duplicated `TEMPLATES` and `PRODUCTIONS` arrays
-- Canonical sources: `TEMPLATE_SCHEMAS` in `contract.ts`, `TEMPLATE_FORMATS` in `studio.jsx`
-- When adding a new template or production, update BOTH `library.html` AND `studio.jsx`
-- Data consistency is validated by `src/__tests__/templateLibrary.vitest.ts`
-- Library page is standalone HTML (no build) — data is inline, not imported
-- Template statuses (`ready`/`legacy`) are library-only metadata, not in contract.ts
-
----
-
-## 12. Creator Shell Boundary
-
-**Rule:** Creator Shell sets context only — no editing, no rendering, no production creation.
-
-- Creator reads `?template=<id>` from URL, validates against known templates
-- "Use Template" creates creator context (template, format, name) — NOT a production
-- "Continue" routes to Editor (`preview/editor.html?template=<id>&format=<fmt>&name=<name>`)
-- Demo productions remain independent — never become the "selected video"
-- Legacy templates (nq57, stoiclove, blueprint) are preview-only in creator
-- Creator data (TEMPLATES) duplicated from library — same standalone HTML pattern
-- Composer/editor integration is DEFERRED — creator is a shell only
+- Composer edits `ComposerProject` (scenes, content, duration, audio)
+- Studio remains the authoritative animated Remotion renderer
+- Composer MUST NOT contain Remotion hooks (useCurrentFrame/useVideoConfig)
+- Composer MUST NOT mutate manifest productions or `src/data/*`
+- Composer MUST NOT implement TTS or AI generation
+- Composer MUST NOT introduce a backend or database
+- Project state is separate from production state
+- Persistence is localStorage only (no server)
 
 ---
 
-## 13. Creator Editor Boundary
+## 12. Project vs Production
 
-**Rule:** Editor manages project state with real preview — no MP4 export, no audio editing, no production mutation.
+**Rule:** Projects and productions are distinct concepts.
 
-- Editor creates/modifies editable project objects (template + scenes + content)
-- Content editing is text-only in MVP — structured data (nodes, edges, lists) is read-only
-- Scene management is CRUD + reorder — no scene composition or sub-scene nesting
-- Preview renders real template visuals (static, no animation) via THEMES + RENDERERS registries
-- Preview scale: CSS transform from 1920×1080 to editor canvas size
-- Fallback renderer for unsupported scene kinds (documented, shows "Preview not available")
-- Persistence is localStorage only — no server, no file system, no database
-- Legacy templates are rejected — editor only works with editable templates (scrapbook, cr7, cosmos, nodeflow)
-- Editor data (TEMPLATES) duplicated from library — same standalone HTML pattern
-- No universal scene schema — each template defines its own scene kinds and fields
-- No MP4 export — editor is state-only; rendering delegated to Preview Studio
-- No production mutation — editor projects are independent copies, canonical data untouched
-- Content immutability — all mutations create new objects
-- Kind switching rejects invalid kinds (not in template's sceneKinds)
-- No Composer UI (drag/drop, audio upload, TTS, AI generation) — DEFERRED
+- **Production** = immutable content in `src/data/*.ts` + `scripts/manifest.json`
+- **Project** = editable user state in localStorage (`composer_projects`)
+- Studio can render both productions and projects (via `?project=<id>`)
+- Project rendering does NOT modify production data
+- Virtual productions from projects are prefixed with `__composer__`
 
 ---
 
-## 14. Composer Boundary
+## 13. Audio Foundation
 
-**Rule:** Composer is the state editor for new projects; Preview Studio is the animation renderer.
+**Rule:** Audio is optional and decoupled from templates.
 
-- Composer creates/modifies project objects (template + scenes + content + audio reference)
-- Composer uses real static preview renderers (THEMES + RENDERERS registries)
-- Composer serializes project to localStorage for Studio handoff
-- Studio loads Composer projects via `?project=<id>` URL param + `nf_studio_project` localStorage
-- Composer does NOT render animations — only static previews
-- Composer does NOT handle audio playback — only stores audio path references
-- Composer does NOT export MP4 — rendering delegated to Preview Studio
-- No universal scene schema — each template defines its own scene kinds and fields
-- Content immutability — all mutations create new objects
-- Audio is reference-only (path string) — no upload, no playback in Composer
-- Kind switching rejects invalid kinds (not in template's sceneKinds)
+- Each scene may have an optional `audio: { path, present }` field
+- Missing audio is valid — templates must handle gracefully
+- No Edge-TTS dependency in Composer
+- No template dependency on audio implementation
+- Audio paths are relative to `public/` directory

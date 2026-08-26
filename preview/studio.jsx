@@ -6,7 +6,7 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9","9:16"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"] };
 
 const PRODUCTIONS = [
   {
@@ -211,22 +211,56 @@ const PRODUCTIONS = [
     id: "championsLeague", name: "Champions League", template: "scrapbook", format: "16:9",
     theme: { bg:"#f5f0e8",bg2:"#e8e0d0",card:"#ffffff",line:"#d0c8b8",a1:"#c0392b",a1s:"#e74c3c",a2:"#d4a017",a2s:"#f7dc6f",a3:"#1a1a1a",ink:"#1a1a1a",muted:"#666666",fd:'"Georgia","Times New Roman",serif',fm:'"Courier New","Fira Code",monospace' },
     scenes: [
-      { id:"hero",dur:8.28,kind:"hero" },{ id:"match-1999",dur:10.368,kind:"match" },{ id:"history-2002",dur:7.944,kind:"history" },
-      { id:"photos",dur:5.184,kind:"photo" },{ id:"match-2003",dur:9.144,kind:"match" },{ id:"history-2005",dur:8.568,kind:"history" },
-      { id:"timeline",dur:12.12,kind:"timeline" },{ id:"closing",dur:5.064,kind:"closing" },
+      { id:"hero",dur:5,kind:"hero" },{ id:"match-1999",dur:6,kind:"match" },{ id:"history-2002",dur:6,kind:"history" },
+      { id:"photos",dur:5,kind:"photo" },{ id:"timeline",dur:7,kind:"timeline" },{ id:"closing",dur:5,kind:"closing" },
     ],
     content: {
       hero:{kind:"hero",title:"Champions League",subtitle:"The greatest club competition in world football",tagline:"1997 — 2005"},
       "match-1999":{kind:"match",homeTeam:"Manchester United",awayTeam:"Bayern Munich",score:"2 — 1",competition:"UEFA Champions League Final 1999",highlight:"Two goals in injury time — the greatest final ever"},
       "history-2002":{kind:"history",year:"2002",fact:"Zidane's volley",detail:"One of the greatest goals in Champions League history. A left-footed volley from the edge of the box into the top corner.",annotation:"Hampden Park, Glasgow — 22 May 2002"},
       photos:{kind:"photo",caption:"Iconic Moments",annotation:"The moments that defined an era",Polaroid:[{label:"United '99",sublabel:"Treble winners"},{label:"Real Madrid",sublabel:"La Decima era"},{label:"Milan '03",sublabel:"All-Italian final"}]},
-      "match-2003":{kind:"match",homeTeam:"AC Milan",awayTeam:"Juventus",score:"0 — 0 (3-2 pen)",competition:"UEFA Champions League Final 2003",highlight:"The first all-Italian final — Milan won on penalties at Old Trafford"},
-      "history-2005":{kind:"history",year:"2005",fact:"The Istanbul Miracle",detail:"Liverpool trailed 3-0 at half-time against AC Milan, then scored three goals in six minutes to force extra time and win on penalties.",annotation:"Ataturk Olympic Stadium, Istanbul — 25 May 2005"},
       timeline:{kind:"timeline",title:"Champions League Timeline",items:[{label:"1997",value:"Dortmund wins first title",year:"1997"},{label:"1999",value:"United's dramatic comeback",year:"1999"},{label:"2002",value:"Zidane's legendary volley",year:"2002"},{label:"2005",value:"Istanbul — the miracle final",year:"2005"}]},
       closing:{kind:"closing",title:"The Beautiful Game",subtitle:"Moments that live forever in football history",stats:[{label:"Years",value:"1997–2005"},{label:"Goals",value:"847"},{label:"Matches",value:"326"}],reference:"UEFA Champions League Archives"},
     },
   },
 ];
+
+// ─── Composer Project Routing ────────────────────────────────────────────────
+// When ?project=<id> is present, load the project from localStorage and
+// inject it into PRODUCTIONS as a virtual production. This does NOT
+// mutate existing manifest productions.
+const COMPOSER_STORAGE_KEY = "composer_projects";
+function loadComposerProjects() {
+  try { const r = localStorage.getItem(COMPOSER_STORAGE_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
+}
+function composerProjectToProduction(cp) {
+  const theme = {
+    scrapbook: { bg:"#f5f0e8",bg2:"#e8e0d0",card:"#ffffff",line:"#d0c8b8",a1:"#c0392b",a1s:"#e74c3c",a2:"#d4a017",a2s:"#f7dc6f",a3:"#1a1a1a",ink:"#1a1a1a",muted:"#666666",fd:'"Georgia","Times New Roman",serif',fm:'"Courier New","Fira Code",monospace' },
+    cr7: { bg:"#0a0a0a",bg2:"#111111",card:"rgba(255,255,255,0.04)",line:"rgba(255,255,255,0.08)",a1:"#e23b3b",a1s:"#ff6b5e",a2:"#f3c969",a2s:"#ffe6a3",a3:"#5eead4",ink:"#f7f5ef",muted:"#999",fd:'"Inter","Segoe UI",system-ui,sans-serif',fm:'"JetBrains Mono","Fira Code",monospace' },
+    cosmos: { bg:"#050510",bg2:"#0a0a2e",card:"#111133",line:"rgba(255,255,255,0.06)",a1:"#3b82f6",a1s:"#2563eb",a2:"#a855f7",a2s:"#9333ea",a3:"#f8fafc",ink:"#f8fafc",muted:"#94a3b8",fd:'"Inter","Segoe UI",system-ui,sans-serif',fm:'"JetBrains Mono","Fira Code",monospace' },
+    nodeflow: { bg:"#0a0e1a",bg2:"#0f1525",card:"rgba(255,255,255,0.045)",line:"rgba(245,245,255,0.12)",a1:"#e23b3b",a1s:"#ff6b5e",a2:"#f3c969",a2s:"#ffe6a3",a3:"#5eead4",ink:"#f7f5ef",muted:"#9aa0b5",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+  };
+  return {
+    id: "__composer__" + cp.id,
+    name: cp.name + " (Composer)",
+    template: cp.template,
+    format: cp.format,
+    theme: theme[cp.template] || theme.nodeflow,
+    scenes: cp.scenes.map(s => ({ id: s.id, dur: s.duration, kind: s.kind })),
+    content: Object.fromEntries(cp.scenes.map(s => [s.id, s.content])),
+    _composerProject: true,
+  };
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const composerProjectId = urlParams.get("project");
+if (composerProjectId) {
+  const cp = loadComposerProjects().find(p => p.id === composerProjectId);
+  if (cp) {
+    const virtualProd = composerProjectToProduction(cp);
+    PRODUCTIONS.push(virtualProd);
+  }
+}
 
 function springV(f, fps, cfg = {}) {
   const { damping: z = 18, mass: m = 0.6 } = cfg;
@@ -756,39 +790,12 @@ let safeOn=false;
 safeToggle.onclick=()=>{safeOn=!safeOn;safeToggle.classList.toggle("active",safeOn);onSafeToggle&&onSafeToggle(safeOn);};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-function getInitialPi(){
-  try{const params=new URLSearchParams(window.location.search);
-    const projectId=params.get("project");
-    if(projectId){try{const raw=localStorage.getItem("nf_studio_project");if(raw){const cp=JSON.parse(raw);if(cp.id===projectId){const existing=PRODUCTIONS.findIndex(p=>p.id===projectId);if(existing>=0)return existing;PRODUCTIONS.push(cp);return PRODUCTIONS.length-1;}}}catch(e){}}
-    const pid=params.get("production");if(pid){const idx=PRODUCTIONS.findIndex(p=>p.id===pid);if(idx>=0)return idx;}
-  }catch(e){}
-  return 0;
-}
-function hasUrlParam(name){try{return new URLSearchParams(window.location.search).has(name);}catch{return false;}}
-function getUrlParamValue(name){try{return new URLSearchParams(window.location.search).get(name);}catch{return null;}}
 function AppWrapper(){
   const [fmt,setFmt]=useState("16:9");
-  const [pi,setPi]=useState(getInitialPi);
+  const [pi,setPi]=useState(0);
   const [showSafe,setShowSafe]=useState(false);
   onFormatChange=setFmt;onSafeToggle=setShowSafe;
-  const requestedProjectId=getUrlParamValue("project");
-  const requestedProductionId=getUrlParamValue("production");
-  const hasExplicitRequest=hasUrlParam("project")||hasUrlParam("production");
-  const loadFailed=hasExplicitRequest&&pi===0&&(requestedProjectId||requestedProductionId)&&PRODUCTIONS[0].id!==(requestedProjectId||requestedProductionId);
-  useEffect(()=>{const initPi=getInitialPi();if(initPi!==0){currentPi=initPi;prodSelect.value=initPi;const tpl=PRODUCTIONS[initPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();}prodSelect.onchange=(e)=>{const newPi=parseInt(e.target.value);setPi(newPi);currentPi=newPi;const tpl=PRODUCTIONS[newPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();};},[]);
-  if(loadFailed){
-    const isProject=hasUrlParam("project");
-    const label=isProject?"project":"production";
-    const id=isProject?requestedProjectId:requestedProductionId;
-    return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",background:"#0a0e1a",color:"#e8e6e1",fontFamily:"Inter,system-ui,sans-serif"}}>
-      <div style={{textAlign:"center",maxWidth:420}}>
-        <div style={{fontSize:48,marginBottom:16}}>&#9888;</div>
-        <h2 style={{fontSize:18,fontWeight:700,marginBottom:8}}>Not Found</h2>
-        <p style={{fontSize:13,color:"#6b7280",lineHeight:1.5,marginBottom:20}}>{label.charAt(0).toUpperCase()+label.slice(1)} "{id}" was not found. It may have been removed or the link is invalid.</p>
-        <a href="/preview/library.html" style={{display:"inline-block",padding:"8px 16px",background:"#00d4ff",color:"#0a0e1a",borderRadius:6,fontSize:12,fontWeight:600,textDecoration:"none"}}>Back to Library</a>
-      </div>
-    </div>;
-  }
+  useEffect(()=>{prodSelect.onchange=(e)=>{const newPi=parseInt(e.target.value);setPi(newPi);currentPi=newPi;const tpl=PRODUCTIONS[newPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();};},[]);
   return <AppInner fmt={fmt} pi={pi} showSafe={showSafe}/>;
 }
 function AppInner({fmt,pi,showSafe}){
