@@ -396,6 +396,7 @@ Proven workflow for creating a new production:
 - `stoiclove`: 9:16 only
 - `blueprint`: 16:9 only
 - `cosmos`: 16:9, 9:16
+- `scrapbook`: 16:9, 9:16
 - Unsupported formats are visually disabled in the Studio with explanation (tooltip)
 - Switching production auto-selects a supported format if current is unsupported
 
@@ -422,10 +423,11 @@ Proven workflow for creating a new production:
 
 **Status: ADOPTED**
 
-- 3 templates now validated across 11 productions
+- 4 templates now validated across 12 productions
 - NodeFlow: 1 production (BaoHiem2024)
 - CR7: 2 productions (CR7 Records, CR7 vs Messi) — cross-production reuse proven
 - Cosmos: 1 production (Solar System)
+- Scrapbook: 1 production (Champions League, 8 scenes)
 - nq57: 5 productions (shared legacy template)
 - All templates follow same architecture: data/contract.ts types, scene components, RemotionScenes adapter
 - Template choice determines visual grammar — this is a hard coupling
@@ -453,6 +455,7 @@ Proven workflow for creating a new production:
 | blueprint | title, pillars, measure, detail, process, seal | 16:9 | ADOPTED | 1 (BHXH V2) |
 | cr7 | hero, stat, milestone, closing | 16:9, 9:16 | ADOPTED | 2 (CR7 Records, CR7 vs Messi) |
 | cosmos | title, fact, compare, timeline, diagram, closing | 16:9, 9:16 | ADOPTED | 1 (Solar System) |
+| scrapbook | hero, match, history, photo, timeline, closing | 16:9, 9:16 | ADOPTED | 1 (Champions League) |
 
 ---
 
@@ -550,10 +553,10 @@ Proven workflow for creating a new production:
 
 - Visual grammar: aged paper, handwritten annotations, Polaroid cards, tape effects, VOX editorial overlays, chapter bar, page-turn transitions
 - Scene kinds: `hero | match | history | photo | timeline | closing` (6)
-- Production: Champions League (1997-2005 era) — rendered, validated, preview-wired
+- Production: Champions League (1997-2005 era) — 8 scenes, rendered, validated, preview-wired
 - Architecture: `contract.ts` → types; `templates/scrapbook/` → clean template; zero production coupling
 - Components: `PaperBg` (paper texture), `ChapterBar` (progress), `Polaroid` (photo cards), `Trophy` (sticker)
 - Motion: `highlightSwipe`, `handwrittenReveal`, `polaroidIn`, `tapeIn`, `trophyBounce`, `pageIn`
-- 16:9 primary format; 9:16 adaptation via responsive layout (not just scale)
+- 16:9 primary format; 9:16 adaptation enabled via `TEMPLATE_FORMATS`
 - 22 regression tests in `scrapbookArchitecture.vitest.ts`
-- Preview Studio: all 6 scene renderers with editorial styling
+- Preview Studio: all 6 scene renderers with editorial styling, format switching support

@@ -37,8 +37,8 @@ describe("Scrapbook template contract", () => {
     expect(result.errors).toHaveLength(0);
   });
 
-  it("Champions League has 6 scenes", () => {
-    expect(CHAMPIONS_LEAGUE_SCENES).toHaveLength(6);
+  it("Champions League has 8 scenes", () => {
+    expect(CHAMPIONS_LEAGUE_SCENES).toHaveLength(8);
   });
 
   it("sceneFrames produces positive integers", () => {

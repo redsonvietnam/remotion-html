@@ -36,7 +36,7 @@ export const HistorySceneData: React.FC<HistorySceneProps> = ({
   return (
     <AbsoluteFill>
       <PaperBg />
-      <ChapterBar sceneIndex={2} totalScenes={6} />
+      <ChapterBar sceneIndex={2} totalScenes={8} />
 
       <AbsoluteFill
         style={{

@@ -30,7 +30,7 @@ export const TimelineSceneData: React.FC<TimelineSceneProps> = ({
   return (
     <AbsoluteFill>
       <PaperBg />
-      <ChapterBar sceneIndex={4} totalScenes={6} />
+      <ChapterBar sceneIndex={4} totalScenes={8} />
 
       <AbsoluteFill
         style={{

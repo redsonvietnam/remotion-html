@@ -6,7 +6,7 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9","9:16"] };
 
 const PRODUCTIONS = [
   {
@@ -212,13 +212,16 @@ const PRODUCTIONS = [
     theme: { bg:"#f5f0e8",bg2:"#e8e0d0",card:"#ffffff",line:"#d0c8b8",a1:"#c0392b",a1s:"#e74c3c",a2:"#d4a017",a2s:"#f7dc6f",a3:"#1a1a1a",ink:"#1a1a1a",muted:"#666666",fd:'"Georgia","Times New Roman",serif',fm:'"Courier New","Fira Code",monospace' },
     scenes: [
       { id:"hero",dur:5,kind:"hero" },{ id:"match-1999",dur:6,kind:"match" },{ id:"history-2002",dur:6,kind:"history" },
-      { id:"photos",dur:5,kind:"photo" },{ id:"timeline",dur:7,kind:"timeline" },{ id:"closing",dur:5,kind:"closing" },
+      { id:"photos",dur:5,kind:"photo" },{ id:"match-2003",dur:6,kind:"match" },{ id:"history-2005",dur:7,kind:"history" },
+      { id:"timeline",dur:7,kind:"timeline" },{ id:"closing",dur:5,kind:"closing" },
     ],
     content: {
       hero:{kind:"hero",title:"Champions League",subtitle:"The greatest club competition in world football",tagline:"1997 — 2005"},
       "match-1999":{kind:"match",homeTeam:"Manchester United",awayTeam:"Bayern Munich",score:"2 — 1",competition:"UEFA Champions League Final 1999",highlight:"Two goals in injury time — the greatest final ever"},
       "history-2002":{kind:"history",year:"2002",fact:"Zidane's volley",detail:"One of the greatest goals in Champions League history. A left-footed volley from the edge of the box into the top corner.",annotation:"Hampden Park, Glasgow — 22 May 2002"},
       photos:{kind:"photo",caption:"Iconic Moments",annotation:"The moments that defined an era",Polaroid:[{label:"United '99",sublabel:"Treble winners"},{label:"Real Madrid",sublabel:"La Decima era"},{label:"Milan '03",sublabel:"All-Italian final"}]},
+      "match-2003":{kind:"match",homeTeam:"AC Milan",awayTeam:"Juventus",score:"0 — 0 (3-2 pen)",competition:"UEFA Champions League Final 2003",highlight:"The first all-Italian final — Milan won on penalties at Old Trafford"},
+      "history-2005":{kind:"history",year:"2005",fact:"The Istanbul Miracle",detail:"Liverpool trailed 3-0 at half-time against AC Milan, then scored three goals in six minutes to force extra time and win on penalties.",annotation:"Ataturk Olympic Stadium, Istanbul — 25 May 2005"},
       timeline:{kind:"timeline",title:"Champions League Timeline",items:[{label:"1997",value:"Dortmund wins first title",year:"1997"},{label:"1999",value:"United's dramatic comeback",year:"1999"},{label:"2002",value:"Zidane's legendary volley",year:"2002"},{label:"2005",value:"Istanbul — the miracle final",year:"2005"}]},
       closing:{kind:"closing",title:"The Beautiful Game",subtitle:"Moments that live forever in football history",stats:[{label:"Years",value:"1997–2005"},{label:"Goals",value:"847"},{label:"Matches",value:"326"}],reference:"UEFA Champions League Archives"},
     },

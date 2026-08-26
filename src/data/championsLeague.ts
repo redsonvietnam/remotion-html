@@ -12,6 +12,8 @@ export const CHAMPIONS_LEAGUE_SCENES: SceneDef[] = [
   { id: "match-1999", audio: "championsLeague/s2.mp3", caption: "Final 1999", dur: 6 },
   { id: "history-2002", audio: "championsLeague/s3.mp3", caption: "Zidane 2002", dur: 6 },
   { id: "photos", audio: "championsLeague/s4.mp3", caption: "Iconic Moments", dur: 5 },
+  { id: "match-2003", audio: "championsLeague/s7.mp3", caption: "Milan Derby 2003", dur: 6 },
+  { id: "history-2005", audio: "championsLeague/s8.mp3", caption: "Istanbul 2005", dur: 7 },
   { id: "timeline", audio: "championsLeague/s5.mp3", caption: "Timeline", dur: 7 },
   { id: "closing", audio: "championsLeague/s6.mp3", caption: "The Beautiful Game", dur: 5 },
 ];
@@ -47,6 +49,21 @@ export const CHAMPIONS_LEAGUE_CONTENT: Record<string, ScrapbookSceneContent> = {
       { label: "Real Madrid", sublabel: "La Decima era" },
       { label: "Milan '03", sublabel: "All-Italian final" },
     ],
+  },
+  "match-2003": {
+    kind: "match",
+    homeTeam: "AC Milan",
+    awayTeam: "Juventus",
+    score: "0 — 0 (3-2 pen)",
+    competition: "UEFA Champions League Final 2003",
+    highlight: "The first all-Italian final — Milan won on penalties at Old Trafford",
+  },
+  "history-2005": {
+    kind: "history",
+    year: "2005",
+    fact: "The Istanbul Miracle",
+    detail: "Liverpool trailed 3-0 at half-time against AC Milan, then scored three goals in six minutes to force extra time and win on penalties.",
+    annotation: "Ataturk Olympic Stadium, Istanbul — 25 May 2005",
   },
   timeline: {
     kind: "timeline",

@@ -35,7 +35,7 @@ export const HeroSceneData: React.FC<HeroSceneProps> = ({
   return (
     <AbsoluteFill>
       <PaperBg />
-      <ChapterBar sceneIndex={0} totalScenes={6} />
+      <ChapterBar sceneIndex={0} totalScenes={8} />
 
       <AbsoluteFill
         style={{

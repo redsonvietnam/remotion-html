@@ -32,7 +32,7 @@ export const PhotoSceneData: React.FC<PhotoSceneProps> = ({
   return (
     <AbsoluteFill>
       <PaperBg />
-      <ChapterBar sceneIndex={3} totalScenes={6} />
+      <ChapterBar sceneIndex={3} totalScenes={8} />
 
       <AbsoluteFill
         style={{

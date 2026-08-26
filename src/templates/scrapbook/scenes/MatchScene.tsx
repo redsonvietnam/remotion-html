@@ -36,7 +36,7 @@ export const MatchSceneData: React.FC<MatchSceneProps> = ({
   return (
     <AbsoluteFill>
       <PaperBg />
-      <ChapterBar sceneIndex={1} totalScenes={6} />
+      <ChapterBar sceneIndex={1} totalScenes={8} />
 
       <AbsoluteFill
         style={{

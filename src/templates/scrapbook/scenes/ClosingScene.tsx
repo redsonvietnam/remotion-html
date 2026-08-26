@@ -36,7 +36,7 @@ export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
   return (
     <AbsoluteFill>
       <PaperBg />
-      <ChapterBar sceneIndex={5} totalScenes={6} />
+      <ChapterBar sceneIndex={5} totalScenes={8} />
 
       <AbsoluteFill
         style={{
