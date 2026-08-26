@@ -147,3 +147,17 @@ Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
 - Data consistency is validated by `src/__tests__/templateLibrary.vitest.ts`
 - Library page is standalone HTML (no build) — data is inline, not imported
 - Template statuses (`ready`/`legacy`) are library-only metadata, not in contract.ts
+
+---
+
+## 12. Creator Shell Boundary
+
+**Rule:** Creator Shell sets context only — no editing, no rendering, no production creation.
+
+- Creator reads `?template=<id>` from URL, validates against known templates
+- "Use Template" creates creator context (template, format, name) — NOT a production
+- "Continue" shows confirmation state — no editor exists yet
+- Demo productions remain independent — never become the "selected video"
+- Legacy templates (nq57, stoiclove, blueprint) are preview-only in creator
+- Creator data (TEMPLATES) duplicated from library — same standalone HTML pattern
+- Composer/editor integration is DEFERRED — creator is a shell only

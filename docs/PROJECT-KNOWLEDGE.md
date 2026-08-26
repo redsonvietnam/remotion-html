@@ -582,3 +582,22 @@ Proven workflow for creating a new production:
 - Template statuses: `ready` (full renderer + demo), `legacy` (fallback renderer)
 - Champions League is canonical demo for Scrapbook template (16:9 + 9:16)
 - Composer integration is DEFERRED — library shows templates and links to Studio only
+
+---
+
+## 43. Creator Shell Architecture
+
+**Status: IMPLEMENTED**
+
+- Entry point: `preview/creator.html` — standalone HTML (React 18 CDN + Babel, no build step)
+- Purpose: "Use this template" → new video context creation
+- Flow: Library → Template Card → USE THIS TEMPLATE → Creator Shell
+- Reads `?template=<id>` from URL, validates template exists and status
+- Ready templates: format selector, video name input, Continue button
+- Legacy templates: "Preview only" message, demo production links only
+- "Continue" creates a confirmation state showing template/format/name — no actual editing
+- Creator context is independent of demo productions (Champions League is never the "selected production")
+- Demo productions linked separately via "Preview Demo" section → Studio
+- Default video name: "Untitled <Template Name> Video"
+- Default format: first supported format of the template
+- No persistence (URL state only), no Composer, no editor

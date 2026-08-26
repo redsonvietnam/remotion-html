@@ -167,6 +167,7 @@ function ProductionRow({ prod }) {
 
 function TemplateCard({ template }) {
   const prods = PRODUCTIONS.filter(p => p.template === template.id);
+  const isReady = template.status === "ready";
   return (
     <div className="card">
       <div className="card-header">
@@ -184,6 +185,18 @@ function TemplateCard({ template }) {
           {prods.map(p => <ProductionRow key={p.id} prod={p} />)}
         </div>
       )}
+      <div className="prods-section" style={{borderTop:"1px solid var(--line)",padding:"12px 20px 16px"}}>
+        {isReady ? (
+          <div className="use-template-btn" onClick={() => window.location.href = "/preview/creator.html?template=" + encodeURIComponent(template.id)}
+            style={{display:"inline-flex",alignItems:"center",gap:8,padding:"8px 16px",borderRadius:6,background:"var(--accent1)",color:"#0a0e1a",fontSize:13,fontWeight:700,cursor:"pointer",transition:"background 0.15s",border:"none"}}
+            onMouseOver={e => e.currentTarget.style.background="#00bfe6"}
+            onMouseOut={e => e.currentTarget.style.background="var(--accent1)"}>
+            USE THIS TEMPLATE &#8250;
+          </div>
+        ) : (
+          <span style={{fontSize:12,color:"var(--muted)",fontStyle:"italic"}}>Preview only — legacy template</span>
+        )}
+      </div>
     </div>
   );
 }
