@@ -238,6 +238,18 @@ export const Root: React.FC = () => {
           content: CHAMPIONS_LEAGUE_CONTENT,
         }}
       />
+      <Composition
+        id="ChampionsLeague9x16"
+        component={ScrapbookTemplate}
+        durationInFrames={CHAMPIONS_LEAGUE_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          scenes: CHAMPIONS_LEAGUE_SCENES,
+          content: CHAMPIONS_LEAGUE_CONTENT,
+        }}
+      />
     </>
   );
 };
