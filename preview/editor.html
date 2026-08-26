@@ -554,6 +554,33 @@ function App() {
     showToast("Project saved");
   }, [project, showToast]);
 
+  const handleExport = useCallback(() => {
+    if (!project) return;
+    const exportProject = {
+      id: project.id,
+      name: project.name,
+      template: project.templateId,
+      format: project.format,
+      scenes: project.scenes.map(s => ({
+        id: s.id,
+        kind: s.kind,
+        content: { kind: s.kind, ...s.content },
+        duration: s.dur,
+        audio: s.audio,
+      })),
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+    };
+    const blob = new Blob([JSON.stringify(exportProject, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${project.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "export"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Project JSON downloaded. Run: node scripts/export.mjs <file.json>");
+  }, [project, showToast]);
+
   const handlePreviewInStudio = useCallback(() => {
     if (!project) return;
     const projects = loadProjects();
@@ -600,6 +627,7 @@ function App() {
         <span className="save-status">{saveStatus === "saved" ? "Saved" : "Unsaved changes"}</span>
         <div className="spacer"></div>
         <button className="btn btn-secondary btn-sm" onClick={handlePreviewInStudio}>Preview in Studio</button>
+        <button className="btn btn-primary btn-sm" style={{background:"#34d399",color:"#0a0e1a"}} onClick={handleExport}>Export MP4</button>
         <button className="btn btn-primary btn-sm" onClick={handleSave}>Save</button>
         <a href="/preview/library.html" className="btn btn-secondary btn-sm">Library</a>
       </header>
