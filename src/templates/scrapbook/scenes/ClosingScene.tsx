@@ -12,26 +12,42 @@ import { Trophy } from "../components/Trophy";
 import { textIn, trophyBounce, handwrittenReveal } from "../helpers";
 import type { ScrapbookClosingContent } from "../types";
 
+/** Design viewport width — typography scales relative to this. */
+const DESIGN_WIDTH = 1920;
+
 export type ClosingSceneProps = {
   audio: string;
   caption: string;
   dur: number;
   frame: number;
   fps: number;
+  width?: number;
+  height?: number;
 } & ScrapbookClosingContent;
 
 export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
   frame,
   fps,
+  width = DESIGN_WIDTH,
   title,
   subtitle,
   stats,
   reference,
 }) => {
+  const scale = Math.min(1, width / DESIGN_WIDTH);
+
   const titleAnim = textIn(frame, 0, fps, 30);
   const subtitleAnim = textIn(frame, 15, fps, 20);
   const trophyAnim = trophyBounce(frame, 10, fps);
   const handReveal = handwrittenReveal(frame, 30, 35);
+
+  const titleFontSize = Math.round(64 * scale);
+  const titleMaxWidth = Math.round(800 * scale);
+  const subtitleFontSize = Math.round(24 * scale);
+  const subtitleMaxWidth = Math.round(600 * scale);
+  const statFontSize = Math.round(36 * scale);
+  const statLabelFontSize = Math.round(12 * scale);
+  const referenceFontSize = Math.round(16 * scale);
 
   return (
     <AbsoluteFill>
@@ -56,10 +72,10 @@ export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
             ...titleAnim,
             fontFamily: "Georgia, serif",
             fontWeight: 900,
-            fontSize: 64,
+            fontSize: titleFontSize,
             color: "#1a1a1a",
             textAlign: "center",
-            maxWidth: 800,
+            maxWidth: titleMaxWidth,
             lineHeight: 1.2,
           }}
         >
@@ -80,10 +96,10 @@ export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
           style={{
             ...subtitleAnim,
             fontFamily: "Georgia, serif",
-            fontSize: 24,
+            fontSize: subtitleFontSize,
             color: "#666666",
             textAlign: "center",
-            maxWidth: 600,
+            maxWidth: subtitleMaxWidth,
             lineHeight: 1.5,
           }}
         >
@@ -106,7 +122,7 @@ export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
                     style={{
                       fontFamily: "Georgia, serif",
                       fontWeight: 900,
-                      fontSize: 36,
+                      fontSize: statFontSize,
                       color: "#c0392b",
                     }}
                   >
@@ -115,7 +131,7 @@ export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
                   <div
                     style={{
                       fontFamily: "Courier New, monospace",
-                      fontSize: 12,
+                      fontSize: statLabelFontSize,
                       color: "#666666",
                       textTransform: "uppercase",
                       letterSpacing: 2,
@@ -134,7 +150,7 @@ export const ClosingSceneData: React.FC<ClosingSceneProps> = ({
           style={{
             ...handReveal,
             fontFamily: "Segoe Script, cursive",
-            fontSize: 16,
+            fontSize: referenceFontSize,
             color: "#c0392b",
             marginTop: 32,
             transform: "rotate(-1deg)",
