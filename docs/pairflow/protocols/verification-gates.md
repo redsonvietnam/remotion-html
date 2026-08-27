@@ -4,16 +4,17 @@
 
 Every workstream must pass all applicable gates before commit.
 
-| Gate | FEATURE | BUGFIX | REFACTOR | AUDIT | WORKFLOW | DOCS |
-|------|---------|--------|----------|-------|----------|------|
-| Tests pass | Required | Required | Required | N/A | If exists | N/A |
-| Lint clean | Required | Required | Required | N/A | If exists | N/A |
-| Typecheck clean | Required | Required | Required | N/A | If exists | N/A |
-| Build pass | Required | Required | Required | N/A | If exists | N/A |
-| E2E pass | If exists | If exists | If exists | N/A | N/A | N/A |
-| Browser QA | Required | If UI | Rarely | N/A | N/A | N/A |
-| API QA | Required | If API | Rarely | N/A | N/A | N/A |
-| Diff review | Required | Required | Required | Required | Required | Required |
+| Gate | FEATURE | BUGFIX | REFACTOR | AUDIT | QA | WORKFLOW | DOCS |
+|------|---------|--------|----------|-------|-----|----------|------|
+| Tests pass | Required | Required | Required | N/A | N/A | If exists | N/A |
+| Lint clean | Required | Required | Required | N/A | N/A | If exists | N/A |
+| Typecheck clean | Required | Required | Required | N/A | N/A | If exists | N/A |
+| Build pass | Required | Required | Required | N/A | N/A | If exists | N/A |
+| E2E pass | If exists | If exists | If exists | N/A | N/A | N/A | N/A |
+| Browser QA | Required | If UI | Rarely | N/A | **Required** | N/A | N/A |
+| API QA | Required | If API | Rarely | N/A | N/A | N/A | N/A |
+| Diff review | Required | Required | Required | Required | Required | Required | Required |
+| **No-defect result** | N/A | N/A | N/A | **CLOSE** | **CLOSE** | N/A | N/A |
 
 ## Verification Levels
 

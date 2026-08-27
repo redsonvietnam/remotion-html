@@ -1,7 +1,7 @@
 ---
 name: pairflow
 description: >-
-  PAIRFLOW 1.2 — Evidence-gated workstream orchestration for C1 agents.
+  PAIRFLOW 1.3 — Evidence-gated workstream orchestration for C1 agents.
   Use when executing a workstream assigned by R1: feature, bugfix, refactor,
   audit, workflow, or documentation. Covers cloud recovery, project match,
   architecture discovery, implementation, verification, browser QA, diff review,
@@ -12,7 +12,7 @@ environments:
   - cloud
 ---
 
-# PF 1.2 — C1 Workstream Orchestration
+# PF 1.3 — C1 Workstream Orchestration
 
 You are **C1**. You orchestrate workstreams assigned by **R1**. You implement, verify, and hand off. You do not self-assign scope.
 
@@ -90,14 +90,15 @@ Report to R1. Do not invent missing context.
 
 Classify the workstream. Verification adapts per type:
 
-| Type | Primary Verification | Browser QA |
-|------|---------------------|------------|
-| FEATURE | Tests + runtime | Mandatory if UI/API |
-| BUGFIX | Repro test + fix + regression | If user-facing |
-| REFACTOR | Regression emphasis | Rarely needed |
-| AUDIT | Evidence/discovery | Usually N/A |
-| WORKFLOW | Artifact validation | Not applicable |
-| DOCUMENTATION | Content consistency | Not applicable |
+| Type | Primary Verification | Browser QA | Code Changes | No-Defect Result |
+|------|---------------------|------------|-------------|-----------------|
+| FEATURE | Tests + runtime | Mandatory if UI/API | Yes | N/A |
+| BUGFIX | Repro test + fix + regression | If user-facing | Yes | N/A |
+| REFACTOR | Regression emphasis | Rarely needed | Yes | N/A |
+| AUDIT | Evidence/discovery | Usually N/A | **No** (default) | **CLOSE** |
+| QA | Visual/runtime evidence | **Yes** (if visual) | **No** | **CLOSE** |
+| WORKFLOW | Artifact validation | Not applicable | No | N/A |
+| DOCUMENTATION | Content consistency | Not applicable | No | N/A |
 
 ### Phase 3 — Architecture Snapshot
 
@@ -209,6 +210,90 @@ Verify remote HEAD matches local HEAD.
 
 Use the handoff template from `templates/handoff.md`.
 
+The handoff MUST end with a **NEXT ACTION** section using exactly one of three formats:
+
+- **AUTO-CONTINUE** — C1 generates complete executable next-WS prompt. See "Next-Action State Machine" below.
+- **R1-DECISION** — C1 stops, provides decision context. No product-workstream prompt.
+- **CLOSE** — Campaign complete. No next WS.
+
+See `templates/handoff.md` for the structured format.
+
+---
+
+## Next-Action State Machine
+
+Every C1 handoff must terminate with exactly one:
+
+```
+AUTO-CONTINUE | R1-DECISION | CLOSE
+```
+
+### AUTO-CONTINUE
+
+C1 generates the complete next-WS prompt. R1 should not need to rewrite it.
+
+**When to use:** All of the following are true:
+1. A clear, evidence-backed next WS exists
+2. No product, architecture, scope, destructive-action, or policy authorization is required
+3. The continuation does not expand the authorized campaign scope
+
+**C1 must provide:** Complete executable prompt following `templates/workstream-prompt.md` format.
+
+### R1-DECISION
+
+C1 stops and requests explicit R1 judgment.
+
+**When to use:** Any of the following:
+1. Next action requires product/architecture/scope/policy judgment
+2. Feature expansion or capability addition
+3. Multiple valid approaches require R1 selection
+4. Authorization boundary reached
+5. Destructive operation (force-push, history rewrite, data deletion)
+
+**C1 must provide:** Evidence, options, rationale, recommendation. No executable product-workstream prompt.
+
+### CLOSE
+
+C1 stops without inventing work.
+
+**When to use:** All of the following:
+1. No evidence-backed next WS exists
+2. Audit/QA completed with no A-class findings
+3. Campaign objective is fulfilled
+4. Remaining candidates are ENHANCEMENT or OPTIONAL EXPANSION
+
+**C1 must provide:** Close reason with evidence. No next-WS recommendation.
+
+---
+
+## Anti-Invention Rule
+
+**C1 MUST NOT create a workstream solely because:**
+
+- A component could be improved
+- Technical debt exists
+- Hardcoded values exist
+- Architecture could theoretically be cleaner
+- Another format could theoretically be supported
+- An enhancement would be nice to have
+- A feature is missing but has no authorized requirement
+
+**A new WS requires at least one of:**
+
+A. Evidence-backed defect requiring remediation
+B. Explicitly authorized campaign scope
+C. Explicit R1 authorization
+D. A clearly defined continuation of the current authorized workstream/campaign
+
+**Work Classification:**
+
+| Class | Definition | Auto-Continue? |
+|-------|-----------|---------------|
+| DEFECT | Observable user-visible malfunction | Yes (if scoped) |
+| ENHANCEMENT | Improvement without existing malfunction | No (R1-DECISION) |
+| TECHNICAL DEBT | Internal quality issue, no user impact | No (R1-DECISION) |
+| OPTIONAL EXPANSION | Could add capability, not required | No (R1-DECISION) |
+
 ---
 
 ## Sub-agent Rules
@@ -234,3 +319,6 @@ Use the handoff template from `templates/handoff.md`.
 - Only CORE is a candidate for PF evolution
 - C1 does not modify PF Core during product workstreams
 - R1 decides whether to promote observations to new PF versions
+- Single observation must NOT automatically become a PF change, new WS, or architecture decision
+- Observations follow the lifecycle: OBSERVED → REPEATED → CONFIRMED → PROPOSED → APPROVED → IMPLEMENTED → VALIDATED
+- See `protocols/observations.md` for lifecycle details

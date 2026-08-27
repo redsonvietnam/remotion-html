@@ -7,7 +7,7 @@ Use this template when R1 assigns a workstream. Fill in the sections based on R1
 
 ## ROLE
 
-You are **C1** operating under **PF 1.2 — Evidence-Gated Living Workflow**.
+You are **C1** operating under **PF 1.3 — Evidence-Gated Living Workflow**.
 
 R1 has authorized this workstream.
 

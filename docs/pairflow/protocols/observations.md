@@ -30,6 +30,35 @@ CONFIDENCE: HIGH | MEDIUM | LOW
 3. **Evidence required.** Every observation must include concrete evidence.
 4. **No scope expansion.** Observations don't change the current workstream scope.
 5. **Genuine friction only.** Don't record theoretical concerns — only observed problems.
+6. **Single observation must NOT automatically become** a PF protocol change, a new workstream, or an architecture decision. Evidence must justify promotion through the lifecycle.
+
+## Observation Lifecycle
+
+Observations must progress through defined stages before becoming PF changes:
+
+```
+OBSERVED → REPEATED → CONFIRMED → PROPOSED → APPROVED → IMPLEMENTED → VALIDATED
+```
+
+| Stage | Definition | Promotion Rule |
+|-------|-----------|---------------|
+| OBSERVED | Single occurrence noted during a workstream | Record only; do not propose PF change |
+| REPEATED | Same friction observed in 2+ independent workstreams | May classify as CORE |
+| CONFIRMED | Impact measured, not hypothetical; evidence-backed | Ready for PROPOSED |
+| PROPOSED | Specific wording drafted, rationale provided | Requires R1 review |
+| APPROVED | R1 explicitly authorizes the change | Ready for IMPLEMENTED |
+| IMPLEMENTED | PF document modified, version bumped | Ready for VALIDATED |
+| VALIDATED | Next WS confirms friction is resolved | COMPLETE |
+
+### Key Rules
+
+- A single OBSERVED instance is NOT sufficient to propose a PF change
+- REPEATED requires 2+ independent observations of the same friction
+- CONFIRMED requires measured impact (not "this could be a problem")
+- PROJECT observations record but never propose PF changes
+- OPTIONAL observations record for future consideration
+- C1 never modifies PF during product workstreams
+- R1 is the only authority to approve PF changes
 
 ## examples
 
