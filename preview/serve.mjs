@@ -57,6 +57,18 @@ const server = http.createServer((req, res) => {
   }
 });
 
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error("\nPreview server could not start:");
+    console.error("Port " + PORT + " is already in use.");
+    console.error("\nStop the existing preview server or configure another available port:");
+    console.error("  PREVIEW_PORT=<port> npm run preview\n");
+  } else {
+    console.error("\nPreview server error:", err.message);
+  }
+  process.exit(1);
+});
+
 server.listen(PORT, () => {
   const mode = STUDIO_MODE ? "Preview Studio (HTML)" : "standalone preview (MP4)";
   console.log(`NodeFlow ${mode}:`);
