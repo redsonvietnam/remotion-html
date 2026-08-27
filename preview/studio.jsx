@@ -18,7 +18,7 @@ const PRODUCTIONS = [
       { id:"s7",dur:15.624,kind:"end" },
     ],
     content: {
-      s1:{kind:"title",title:"Nghị quyết 57-NQ/TW",subtitle:"Đổi mới tổ chức và hoạt động của cơ quan nhà nước",tagline:"BỘ CHÍNH TRỊ"},
+      s1:{kind:"title",lawCode:"NQ 57-NQ/TW",title:"Nghị quyết 57-NQ/TW",subtitle:"Đổi mới tổ chức và hoạt động của cơ quan nhà nước",tagline:"BỘ CHÍNH TRỊ",nodes:[{label:"BỘ CHÍNH TRỊ",role:"Ban hành"},{label:"CHÍNH PHỦ",role:"Chỉ đạo"},{label:"BỘ, NGÀNH",role:"Thực hiện"}]},
       s2:{kind:"quote",text:"Nghị quyết 57-NQ/TW ngày 25/12/2024"},
       s3:{kind:"roles",sectionTitle:"Tổ chức thực hiện",roles:[{title:"Bộ Chính trị",subtitle:"Ban hành"},{title:"Thủ tướng",subtitle:"Chỉ đạo"},{title:"Các bộ, ngành",subtitle:"Tổ chức thực hiện"}]},
       s4:{kind:"pillars",title:"3 trụ cột chính",subtitle:"Cải cách toàn diện",pillars:[{title:"Tổ chức",body:"Sáp nhập, sắp xếp"},{title:"Hoạt động",body:"Số hóa, chuyển đổi"},{title:"Nhân sự",body:"Cải cách tiền lương"}]},
@@ -36,7 +36,7 @@ const PRODUCTIONS = [
       { id:"s7",dur:13.32,kind:"end" },
     ],
     content: {
-      s1:{kind:"title",title:"Đề án 06",subtitle:"Định danh số — Căn cước công dân",tagline:"BỘ CÔNG AN"},
+      s1:{kind:"title",lawCode:"Đề án 06",title:"Đề án 06",subtitle:"Định danh số — Căn cước công dân",tagline:"BỘ CÔNG AN",nodes:[{label:"BỘ CÔNG AN",role:"Chủ trì"},{label:"BỘ TT&TT",role:"Phối hợp"},{label:"UBND TỈNH",role:"Triển khai"}]},
       s2:{kind:"quote",text:"Đề án 06 về định danh và xác thực điện tử"},
       s3:{kind:"roles",sectionTitle:"Triển khai",roles:[{title:"Bộ Công An",subtitle:"Chủ trì"},{title:"Bộ TT&TT",subtitle:"Phối hợp"},{title:"UBND các tỉnh",subtitle:"Tổ chức thực hiện"}]},
       s4:{kind:"pillars",title:"3 mục tiêu chính",subtitle:"Định danh số quốc gia",pillars:[{title:"Định danh",body:"CCCD gắn chip"},{title:"Xác thực",body:"eKYC, sinh trắc học"},{title:"Dịch vụ",body:"VssID, DVConNT"}]},
@@ -54,7 +54,7 @@ const PRODUCTIONS = [
       { id:"s7",dur:14.856,kind:"end" },
     ],
     content: {
-      s1:{kind:"title",title:"Nghị quyết 79-NQ/TW",subtitle:"Đẩy mạnh ứng dụng CNTT trong hoạt động của cơ quan nhà nước",tagline:"BỘ CHÍNH TRỊ"},
+      s1:{kind:"title",lawCode:"NQ 79-NQ/TW",title:"Nghị quyết 79-NQ/TW",subtitle:"Đẩy mạnh ứng dụng CNTT trong hoạt động của cơ quan nhà nước",tagline:"BỘ CHÍNH TRỊ",nodes:[{label:"BỘ TT&TT",role:"Phối hợp"},{label:"CÁB BỘ, NGÀNH",role:"Thực hiện"},{label:"ĐỊA PHƯƠNG",role:"Triển khai"}]},
       s2:{kind:"quote",text:"Nghị quyết 79-NQ/TW ngày 06/6/2025"},
       s3:{kind:"roles",sectionTitle:"Tổ chức thực hiện",roles:[{title:"Bộ TT&TT",subtitle:"Phối hợp"},{title:"Các bộ, ngành",subtitle:"Tổ chức thực hiện"},{title:"Địa phương",subtitle:"Triển khai"}]},
       s4:{kind:"pillars",title:"3 nhiệm vụ trọng tâm",subtitle:"Ứng dụng CNTT",pillars:[{title:"Số hóa",body:"Hồ sơ, giấy tờ"},{title:"Kết nối",body:"Cơ sở dữ liệu"},{title:"Dịch vụ",body:"Công trực tuyến"}]},
@@ -94,7 +94,7 @@ const PRODUCTIONS = [
       { id:"s7",dur:13.584,kind:"end" },
     ],
     content: {
-      s1:{kind:"title",title:"Luật Căn cước công dân 2023",subtitle:"Định danh và quản lý cư trú",tagline:"QUỐC HỘI"},
+      s1:{kind:"title",lawCode:"Luật 26/2023/QH15",title:"Luật Căn cước công dân 2023",subtitle:"Định danh và quản lý cư trú",tagline:"QUỐC HỘI",nodes:[{label:"BỘ CÔNG AN",role:"Chủ trì"},{label:"UBND TỈNH",role:"Tổ chức"},{label:"CÔNG DÂN",role:"Đăng ký"}]},
       s2:{kind:"quote",text:"Luật Căn cước công dân số 26/2023/QH15"},
       s3:{kind:"roles",sectionTitle:"Triển khai",roles:[{title:"Bộ Công An",subtitle:"Chủ trì"},{title:"UBND các tỉnh",subtitle:"Tổ chức"},{title:"Công dân",subtitle:"Đăng ký"}]},
       s4:{kind:"pillars",title:"3 nội dung chính",subtitle:"Căn cước công dân",pillars:[{title:"Định danh",body:"CCCD gắn chip"},{title:"Quản lý",body:"Cơ sở dữ liệu"},{title:"Dịch vụ",body:"Công trực tuyến"}]},
@@ -112,7 +112,7 @@ const PRODUCTIONS = [
       { id:"s7",dur:15.216,kind:"end" },
     ],
     content: {
-      s1:{kind:"title",title:"Luật Trật tự, an toàn giao thông đường bộ",subtitle:"Luật số 36/2024/QH15",tagline:"QUỐC HỘI"},
+      s1:{kind:"title",lawCode:"Luật 36/2024/QH15",title:"Luật Trật tự, an toàn giao thông đường bộ",subtitle:"Luật số 36/2024/QH15",tagline:"QUỐC HỘI",nodes:[{label:"CÔNG AN",role:"Xử phạt"},{label:"GIAO THÔNG",role:"Tuân thủ"},{label:"ĐỊA PHƯƠNG",role:"Thực hiện"}]},
       s2:{kind:"quote",text:"Luật 36/2024/QH15 — Hiệu lực từ 01/01/2025"},
       s3:{kind:"roles",sectionTitle:"Áp dụng",roles:[{title:"Công an",subtitle:"Kiểm tra, xử phạt"},{title:"Giao thông",subtitle:"Tuân thủ"},{title:"Địa phương",subtitle:"Tổ chức thực hiện"}]},
       s4:{kind:"pillars",title:"3 nhóm quy định chính",subtitle:"An toàn giao thông",pillars:[{title:"PATH lights",body:"Phương tiện"},{title:"Hành vi",body:"Nghiêm cấm"},{title:"Xử phạt",body:"Mức phạt mới"}]},
@@ -230,8 +230,16 @@ const PRODUCTIONS = [
 // inject it into PRODUCTIONS as a virtual production. This does NOT
 // mutate existing manifest productions.
 const COMPOSER_STORAGE_KEY = "composer_projects";
+const EDITOR_STORAGE_KEY = "nf_editor_projects";
+const STUDIO_STORAGE_KEY = "nf_studio_project";
 function loadComposerProjects() {
   try { const r = localStorage.getItem(COMPOSER_STORAGE_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
+}
+function loadEditorProjects() {
+  try { const r = localStorage.getItem(EDITOR_STORAGE_KEY); return r ? JSON.parse(r) : {}; } catch { return {}; }
+}
+function loadStudioProject() {
+  try { const r = localStorage.getItem(STUDIO_STORAGE_KEY); return r ? JSON.parse(r) : null; } catch { return null; }
 }
 function composerProjectToProduction(cp) {
   const theme = {
@@ -243,22 +251,32 @@ function composerProjectToProduction(cp) {
   return {
     id: "__composer__" + cp.id,
     name: cp.name + " (Composer)",
-    template: cp.template,
+    template: cp.template || cp.templateId,
     format: cp.format,
     theme: theme[cp.template] || theme.nodeflow,
-    scenes: cp.scenes.map(s => ({ id: s.id, dur: s.duration, kind: s.kind })),
-    content: Object.fromEntries(cp.scenes.map(s => [s.id, s.content])),
+    scenes: cp.scenes.map(s => ({ id: s.id, dur: s.dur || s.duration, kind: s.kind })),
+    content: Object.fromEntries(cp.scenes.map(s => [s.id, s.content || {}])),
     _composerProject: true,
   };
 }
 
 const urlParams = new URLSearchParams(window.location.search);
 const composerProjectId = urlParams.get("project");
+let composerProjectIndex;
 if (composerProjectId) {
-  const cp = loadComposerProjects().find(p => p.id === composerProjectId);
+  let cp = loadComposerProjects().find(p => p.id === composerProjectId);
+  if (!cp) {
+    const editorProjects = loadEditorProjects();
+    cp = editorProjects[composerProjectId];
+  }
+  if (!cp) {
+    const studioProj = loadStudioProject();
+    if (studioProj && studioProj.id === composerProjectId) cp = studioProj;
+  }
   if (cp) {
     const virtualProd = composerProjectToProduction(cp);
     PRODUCTIONS.push(virtualProd);
+    composerProjectIndex = PRODUCTIONS.length - 1;
   }
 }
 
@@ -318,6 +336,7 @@ function NF_PB({ x, y, w, h = 24, pct, progress, label, valueLabel, color, th })
 }
 
 function NF_S1({ frame, fps, W, H, content: d, th }) {
+  if (!d||!d.lawCode||!d.nodes) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>S1: {d?.title||"Missing content"}</div></div>;
   const ba = textIn(frame,0,fps), ta = textIn(frame,8,fps,40), sa = textIn(frame,20,fps,30), ta2 = textIn(frame,34,fps,20);
   const nd = [45,60,75].map(d2=>rev(frame,d2,20));
   const e1 = edgeD(frame,90,18), e2 = edgeD(frame,108,18);
@@ -326,14 +345,16 @@ function NF_S1({ frame, fps, W, H, content: d, th }) {
   return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><svg width={W} height={H} viewBox={"0 0 "+W+" "+H} style={{position:"absolute",inset:0,pointerEvents:"none"}}><g style={ba}><rect x={100} y={80} width={d.lawCode.length*12+30} height={32} rx={4} fill={th.a1} fillOpacity={0.08} stroke={th.a1} strokeWidth={1} strokeOpacity={0.4}/><text x={115} y={100} fill={th.a1} fontSize={14} fontWeight={600} fontFamily={th.fm} letterSpacing={2}>{d.lawCode}</text></g><g style={ta}><text x={100} y={250} fill={th.ink} fontSize={110} fontWeight={900} fontFamily={th.fd} letterSpacing={-3}>{d.title}</text></g><g style={sa}><text x={100} y={310} fill={th.ink} fontSize={36} fontWeight={500} fontFamily={th.fd}>{d.subtitle}</text></g><g style={ta2}><text x={100} y={360} fill={th.muted} fontSize={18} fontWeight={600} fontFamily={th.fm} letterSpacing={4}>{d.tagline}</text></g><NF_EL x1={NCX[0]} y1={35} x2={NCX[1]} y2={35} progress={e1} color={th.line} sw={1.2} ah={false}/><NF_EL x1={NCX[1]} y1={35} x2={NCX[2]} y2={35} progress={e2} color={th.line} sw={1.2} ah={false}/><NF_SP x1={NCX[0]} y1={35} x2={NCX[1]} y2={35} frame={frame} period={55} color={th.a1} visible={sig}/><NF_SP x1={NCX[1]} y1={35} x2={NCX[2]} y2={35} frame={frame-20} period={55} color={th.a1} visible={sig}/>{d.nodes.map((n,i)=><NF_NB key={i} x={NX[i]} y={820} w={NW} h={NH} label={n.label} sublabel={n.role} active={nd[i]>0.5} activePct={nd[i]} color={[th.a3,th.a1,th.a2][i]} textSize={16} th={th}/>)}</svg></div>;
 }
 function NF_S2({ frame, fps, W, H, content: d, th }) {
+  if (!d||!d.edges||!d.flowNodes) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>S2: {d?.title||"Missing content"}</div></div>;
   const ta = textIn(frame,0,fps,30), da = textIn(frame,12,fps,25);
   const nd = [15,28,42].map(d2=>rev(frame,d2,22));
   const et = d.edges.map((_,i)=>edgeD(frame,65+i*25,22));
   const np = [{cx:210,cy:160,r:88},{cx:670,cy:160,r:88},{cx:440,cy:500,r:98}];
   const nc = [th.a1,th.a2,th.a3];
-  return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",top:0,left:0,bottom:0,width:820,display:"flex",flexDirection:"column",justifyContent:"center",paddingLeft:100,paddingRight:60,paddingTop:80,paddingBottom:80}}><div style={{fontFamily:th.fm,fontWeight:600,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Co che hoat dong</div><div style={ta}><div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,lineHeight:1.15,color:th.ink,marginBottom:24}}>{d.title}</div></div><div style={{width:"100%",height:1,background:"linear-gradient(90deg,transparent,"+th.a1+"80,transparent)",opacity:0.3,margin:"16px 0"}}/><div style={da}>{d.description.map((l,i)=><div key={i} style={{fontFamily:th.fd,fontSize:26,lineHeight:1.6,color:i===0?th.ink:th.muted,marginBottom:8}}>{l}</div>)}</div><div style={{marginTop:32,display:"flex",flexDirection:"column",gap:10}}>{d.flowNodes.map((n,i)=><div key={i} style={{opacity:nd[i],display:"flex",alignItems:"center",gap:12,fontFamily:th.fd,fontSize:20,color:nc[i],fontWeight:600}}><span style={{width:10,height:10,borderRadius:"50%",background:nc[i],display:"inline-block"}}/>{n.label}{n.rate && <span style={{fontFamily:th.fm,fontSize:15,color:th.muted}}> - {n.rate}</span>}</div>)}</div></div><svg width={880} height={680} viewBox="0 0 880 680" style={{position:"absolute",right:60,top:"50%",transform:"translateY(-50%)",overflow:"visible"}}>{d.edges.map((e,i)=>{const f=np[e.from],t=np[e.to];return <g key={i}><NF_EL x1={f.cx} y1={f.cy} x2={t.cx} y2={t.cy} progress={et[i]} color={nc[e.from]} sw={2}/>{et[i]>0.5 && <NF_DB x={(f.cx+t.cx)/2-10} y={(f.cy+t.cy)/2-10} value={e.label} activePct={et[i]} color={nc[e.from]} th={th}/>}</g>)}{d.flowNodes.map((n,i)=><NF_SYS key={i} frame={frame} fps={fps} cx={np[i].cx} cy={np[i].cy} r={np[i].r} label={n.label} sublabel={n.sublabel} active={nd[i]>0.5} activePct={nd[i]} color={nc[i]} th={th}/>)}</svg></div>;
+  return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",top:0,left:0,bottom:0,width:820,display:"flex",flexDirection:"column",justifyContent:"center",paddingLeft:100,paddingRight:60,paddingTop:80,paddingBottom:80}}><div style={{fontFamily:th.fm,fontWeight:600,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Co che hoat dong</div><div style={ta}><div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,lineHeight:1.15,color:th.ink,marginBottom:24}}>{d.title}</div></div><div style={{width:"100%",height:1,background:"linear-gradient(90deg,transparent,"+th.a1+"80,transparent)",opacity:0.3,margin:"16px 0"}}/><div style={da}>{d.description.map((l,i)=><div key={i} style={{fontFamily:th.fd,fontSize:26,lineHeight:1.6,color:i===0?th.ink:th.muted,marginBottom:8}}>{l}</div>)}</div><div style={{marginTop:32,display:"flex",flexDirection:"column",gap:10}}>{d.flowNodes.map((n,i)=><div key={i} style={{opacity:nd[i],display:"flex",alignItems:"center",gap:12,fontFamily:th.fd,fontSize:20,color:nc[i],fontWeight:600}}><span style={{width:10,height:10,borderRadius:"50%",background:nc[i],display:"inline-block"}}/>{n.label}{n.rate && <span style={{fontFamily:th.fm,fontSize:15,color:th.muted}}> - {n.rate}</span>}</div>)}</div></div><svg width={880} height={680} viewBox="0 0 880 680" style={{position:"absolute",right:60,top:"50%",transform:"translateY(-50%)",overflow:"visible"}}>{d.edges.map((e,i)=>{const f=np[e.from],t=np[e.to];return <g key={i}><NF_EL x1={f.cx} y1={f.cy} x2={t.cx} y2={t.cy} progress={et[i]} color={nc[e.from]} sw={2}/>{et[i]>0.5 && <NF_DB x={(f.cx+t.cx)/2-10} y={(f.cy+t.cy)/2-10} value={e.label} activePct={et[i]} color={nc[e.from]} th={th}/>}</g>})}{d.flowNodes.map((n,i)=><NF_SYS key={i} frame={frame} fps={fps} cx={np[i].cx} cy={np[i].cy} r={np[i].r} label={n.label} sublabel={n.sublabel} active={nd[i]>0.5} activePct={nd[i]} color={nc[i]} th={th}/>)}</svg></div>;
 }
 function NF_S3({ frame, fps, W, H, content: d, th }) {
+  if (!d||!d.rows) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>S3: {d?.title||"Missing content"}</div></div>;
   const ta = textIn(frame,0,fps,30);
   const rr = d.rows.map((_,i)=>rev(frame,15+i*20,18));
   const bf = d.rows.map((_,i)=>rev(frame,30+i*20,30));
@@ -343,6 +364,7 @@ function NF_S3({ frame, fps, W, H, content: d, th }) {
   return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",top:80,left:100,right:100}}><div style={ta}><div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Ty le dong gop</div><div style={{fontFamily:th.fd,fontWeight:800,fontSize:60,lineHeight:1.1,color:th.ink}}>{d.title}</div></div></div><svg width={1720} height={900} viewBox="0 0 1720 900" style={{position:"absolute",left:100,top:200,pointerEvents:"none"}}>{d.rows.map((row,i)=>{const y=CY-60+i*RG,c=rc[i%rc.length];return <g key={i} opacity={rr[i]}><text x={0} y={y-8} fill={c} fontSize={15} fontWeight={700} fontFamily={th.fm} letterSpacing={2}>{row.party.toUpperCase()}</text><NF_PB x={BX} y={y} w={BW} h={BH} pct={row.pct} progress={bf[i]} label={row.type} valueLabel={row.rateLabel} color={c} th={th}/><NF_DB x={BX+BW*row.pct*bf[i]+16} y={y+BH/2-6} value={row.rateLabel} activePct={bf[i]>0.4?(bf[i]-0.4)/0.6:0} color={c} th={th}/></g>})}<g opacity={tr}><rect x={BX} y={CY-60+d.rows.length*RG+20} width={BW+80} height={64} rx={6} fill={th.a2} fillOpacity={0.08} stroke={th.a2} strokeWidth={1} strokeOpacity={0.5}/><text x={BX+16} y={CY-60+d.rows.length*RG+54} fill={th.ink} fontSize={20} fontWeight={700} fontFamily={th.fd}>{d.totalLabel}</text><text x={BX+BW-20} y={CY-60+d.rows.length*RG+54} textAnchor="end" fill={th.a2} fontSize={28} fontWeight={900} fontFamily={th.fm}>{d.totalValue}</text></g></svg></div>;
 }
 function NF_S4({ frame, fps, W, H, content: d, th }) {
+  if (!d||!d.benefits) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>S4: {d?.title||"Missing content"}</div></div>;
   const ta = textIn(frame,0,fps,30), da = textIn(frame,12,fps,25);
   const cr = d.benefits.map((_,i)=>rev(frame,20+i*22,25));
   const CW=760,CH=60,CG=76,CX=80,IS=44;
@@ -352,6 +374,7 @@ function NF_S4({ frame, fps, W, H, content: d, th }) {
   return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",top:0,left:0,bottom:0,width:700,display:"flex",flexDirection:"column",justifyContent:"center",paddingLeft:100,paddingRight:60,paddingTop:80,paddingBottom:80}}><div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Quyen loi nguoi lao dong</div><div style={ta}><div style={{fontFamily:th.fd,fontWeight:800,fontSize:52,lineHeight:1.15,color:th.ink,marginBottom:20}}>{d.title}</div></div><div style={{width:"100%",height:1,background:"linear-gradient(90deg,transparent,"+th.a1+"80,transparent)",opacity:0.3,margin:"16px 0"}}/><div style={da}><div style={{fontFamily:th.fd,fontSize:24,lineHeight:1.6,color:th.muted}}>{d.description}</div></div></div><svg width={900} height={SH} viewBox={"0 0 900 "+SH} style={{position:"absolute",right:60,top:"50%",transform:"translateY(-"+SH/2+"px)",overflow:"visible"}}><NF_EL x1={60} y1={CH/2} x2={60} y2={(d.benefits.length-1)*CG+CH/2} progress={cr[Math.min(2,d.benefits.length-1)]} color={th.line} sw={1} ah={false}/>{d.benefits.map((b,i)=>{const y=i*CG,c=cc[i%cc.length];return <g key={i} opacity={cr[i]}><g transform={"translate(36 "+(y+(CH-IS)/2)+")"}><circle cx={IS/2} cy={IS/2} r={IS/2} fill={c} fillOpacity={0.1} stroke={c} strokeWidth={1} strokeOpacity={0.5}/><g transform={"translate("+(IS/2-8)+" "+(IS/2-8)+")"} stroke={c} strokeWidth={1.5} fill="none" strokeLinecap="round"><path d={IC[b.icon]||IC.work}/></g></g><text x={CX+IS+16} y={y+CH/2-8} fill={th.ink} fontSize={18} fontWeight={700} fontFamily={th.fd}>{b.label}</text>{b.value && <text x={CX+IS+16} y={y+CH/2+12} fill={c} fontSize={15} fontWeight={600} fontFamily={th.fm}>{b.value}</text>}</g>})}</svg></div>;
 }
 function NF_S5({ frame, fps, W, H, content: d, th }) {
+  if (!d||!d.before||!d.after) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>S5: {d?.title||"Missing content"}</div></div>;
   const ta = textIn(frame,0,fps,30);
   const lr = rev(frame,10,25), rr = rev(frame,30,25), dr = edgeD(frame,20,20), br = rev(frame,60,20);
   const CW=700,CH=70,CG=90,LX=80,RX=940,SY=80;
@@ -360,6 +383,7 @@ function NF_S5({ frame, fps, W, H, content: d, th }) {
   return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",top:60,left:100,right:100,...ta}}><div style={{fontFamily:th.fm,fontSize:15,letterSpacing:4,textTransform:"uppercase",color:th.muted,marginBottom:12}}>Thay doi quan trong</div><div style={{fontFamily:th.fd,fontWeight:800,fontSize:56,color:th.ink,lineHeight:1.1}}>{d.title}</div></div><svg width={1720} height={SH+40} viewBox={"0 0 1720 "+(SH+40)} style={{position:"absolute",left:100,top:200,overflow:"visible"}}><g opacity={lr}><text x={LX+CW/2} y={30} textAnchor="middle" fill={th.muted} fontSize={18} fontWeight={700} fontFamily={th.fm} letterSpacing={3}>LUAT CU</text><line x1={LX} y1={48} x2={LX+CW} y2={48} stroke={th.muted} strokeWidth={1} strokeOpacity={0.3}/></g><g opacity={rr}><text x={RX+CW/2} y={30} textAnchor="middle" fill={th.a1} fontSize={18} fontWeight={700} fontFamily={th.fm} letterSpacing={3}>LUAT MOI 2024</text><line x1={RX} y1={48} x2={RX+CW} y2={48} stroke={th.a1} strokeWidth={1.5} strokeOpacity={0.5}/></g><NF_EL x1={CW+LX+40} y1={0} x2={CW+LX+40} y2={SH} progress={dr} color={th.line} sw={1} ah={false}/>{d.before.items.map((it,i)=><g key={i} opacity={lr}><NF_NB x={LX} y={SY+i*CG} w={CW} h={CH} label={it.label} sublabel={it.value} active={false} activePct={1} color={th.muted} textSize={17} th={th}/></g>)}{d.after.items.map((it,i)=><g key={i} opacity={rr}><NF_NB x={RX} y={SY+i*CG} w={CW} h={CH} label={it.label} sublabel={it.value} active={true} activePct={1} color={it.highlight?th.a2:th.a1} textSize={17} th={th}/>{it.highlight && <NF_DB x={RX+CW+8} y={SY+i*CG+CH/2-8} value="MOI" activePct={br} color={th.a2} th={th}/>}</g>)}</svg></div>;
 }
 function NF_S6({ frame, fps, W, H, content: d, th }) {
+  if (!d||!d.stats) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>S6: {d?.title||d?.closingTitle||"Missing content"}</div></div>;
   const ta = textIn(frame,5,fps,40), sa = textIn(frame,22,fps,30), ra = textIn(frame,80,fps,20);
   const sr = d.stats.map((_,i)=>rev(frame,40+i*18,22));
   const nr = rev(frame,0,25), er = rev(frame,20,20);
@@ -729,9 +753,10 @@ const SCRAPBOOK_SCENES = { hero: Scrapbook_Hero, match: Scrapbook_Match, history
 
 // ─── Fallback renderer for unsupported templates ─────────────────────────────
 function Fallback_Scene({ frame, fps, W, H, content: d, th, kind }) {
+  if (!d) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>No content</div></div>;
   const ta = textIn(frame,0,fps,30), ca = textIn(frame,15,fps,25);
   const pulse = 0.01 * Math.sin((frame/fps)*1.5);
-  const title = d?.title || d?.name || d?.heading || d?.mainQuestion || d?.badge || d?.lawCode || kind.toUpperCase();
+  const title = d?.title || d?.name || d?.heading || d?.mainQuestion || d?.badge || d?.lawCode || (kind||"").toUpperCase() || "Scene";
   const subtitle = d?.subtitle || d?.subText || d?.tagline || "";
   const body = d?.description || d?.bodyLines?.join(" ") || d?.text || d?.caption || "";
   return <div style={{position:"absolute",inset:0,background:"radial-gradient(130% 130% at 50% 50%,"+(th.bg2||"#111")+" 0%,"+(th.bg||"#0a0a0a")+" 60%,#050505 100%)"}}>
@@ -780,8 +805,10 @@ const tplBadge = document.getElementById("template-badge");
 const safeToggle = document.getElementById("safe-toggle");
 
 PRODUCTIONS.forEach((p,i)=>{const opt=document.createElement("option");opt.value=i;opt.textContent=p.name;prodSelect.appendChild(opt);});
+if (typeof composerProjectIndex !== "undefined") { prodSelect.value = composerProjectIndex; currentFmt = PRODUCTIONS[composerProjectIndex].format || "16:9"; }
 
 let currentFmt="16:9",currentPi=0,onFormatChange=null,onSafeToggle=null;
+if (typeof composerProjectIndex !== "undefined") currentPi = composerProjectIndex;
 function renderFmtBtns(){const tpl=PRODUCTIONS[currentPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];fmtBtns.innerHTML="";["16:9","9:16"].forEach(f=>{const btn=document.createElement("button");const isSupported=supported.includes(f);btn.className="format-btn "+(f===currentFmt?"active":"")+(!isSupported?" disabled":"");btn.textContent=f;if(!isSupported)btn.title=PRODUCTIONS[currentPi].template+" does not support "+f;btn.onclick=()=>{if(!isSupported)return;currentFmt=f;renderFmtBtns();updateRes();onFormatChange&&onFormatChange(f);};fmtBtns.appendChild(btn);});}
 function updateRes(){const c=CANVAS[currentFmt];resChip.textContent=c.w+" x "+c.h;}
 function updateTplBadge(){tplBadge.textContent=PRODUCTIONS[currentPi].template;}
@@ -791,14 +818,14 @@ safeToggle.onclick=()=>{safeOn=!safeOn;safeToggle.classList.toggle("active",safe
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 function AppWrapper(){
-  const [fmt,setFmt]=useState("16:9");
-  const [pi,setPi]=useState(0);
+  const [format,setFmt]=useState(typeof composerProjectIndex !== "undefined" ? (PRODUCTIONS[composerProjectIndex].format || "16:9") : "16:9");
+  const [pi,setPi]=useState(typeof composerProjectIndex !== "undefined" ? composerProjectIndex : 0);
   const [showSafe,setShowSafe]=useState(false);
   onFormatChange=setFmt;onSafeToggle=setShowSafe;
   useEffect(()=>{prodSelect.onchange=(e)=>{const newPi=parseInt(e.target.value);setPi(newPi);currentPi=newPi;const tpl=PRODUCTIONS[newPi].template;const supported=TEMPLATE_FORMATS[tpl]||["16:9"];if(!supported.includes(currentFmt)){currentFmt=supported[0];setFmt(currentFmt);updateRes();}renderFmtBtns();updateTplBadge();};},[]);
-  return <AppInner fmt={fmt} pi={pi} showSafe={showSafe}/>;
+  return <AppInner format={format} pi={pi} showSafe={showSafe}/>;
 }
-function AppInner({fmt,pi,showSafe}){
+function AppInner({format,pi,showSafe}){
   const [as,setAs]=useState(null);
   const [frame,setFrame]=useState(0);
   const [playing,setPlaying]=useState(false);
@@ -821,9 +848,9 @@ function AppInner({fmt,pi,showSafe}){
   const totF=SF.reduce((a,s)=>a+s.frames,0);
   const elF=SF.slice(0,si).reduce((a,s)=>a+s.frames,0)+frame;
   const sceneProgress=sd>1?frame/(sd-1):0;
-  const canvas=CANVAS[fmt];
+  const canvas=CANVAS[format];
   const maxW=960;
-  const scale=fmt==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
+  const scale=format==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
   const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES };
   const renderers = renderersMap[prod.template] || NF_SCENES;
