@@ -1,5 +1,8 @@
 # WS-<ID> — FINAL HANDOFF
 
+> Handoff contract implements the Handoff Contract defined in `PF-CORE.md`.
+> Next Action state machine: AUTO-CONTINUE | R1-DECISION | CLOSE
+
 **STATUS:** COMPLETE / BLOCKED
 
 **BASE HEAD:**

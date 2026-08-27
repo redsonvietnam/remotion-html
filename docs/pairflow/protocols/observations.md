@@ -1,5 +1,8 @@
 # PF Observation System
 
+> This protocol implements the Observation Lifecycle defined in `PF-CORE.md`.
+> Core invariant: OBSERVED → REPEATED → CONFIRMED → PROPOSED → APPROVED → IMPLEMENTED → VALIDATED
+
 ## Purpose
 
 Record genuinely new workflow friction discovered during workstream execution. Observations feed PF evolution — they are not action items for the current workstream.

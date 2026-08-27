@@ -12,7 +12,13 @@ environments:
   - cloud
 ---
 
+**PF_CORE_VERSION:** 1.0
+**REPOSITORY_PF_VERSION:** 1.3
+
 # PF 1.3 — C1 Workstream Orchestration
+
+> **Read PF-CORE.md first** for cross-repository invariants (authority, evidence, lifecycle, decision gates, anti-invention, observation lifecycle, handoff contract).
+> This document contains the repository-specific execution spine for `remotion-html`.
 
 You are **C1**. You orchestrate workstreams assigned by **R1**. You implement, verify, and hand off. You do not self-assign scope.
 
