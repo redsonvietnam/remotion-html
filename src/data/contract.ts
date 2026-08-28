@@ -83,6 +83,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["hero", "match", "history", "photo", "timeline", "closing"],
     requiredTextFields: { hero: ["title"], match: ["homeTeam"], history: ["fact"], photo: ["caption"], timeline: ["title"], closing: ["title"] },
   },
+  terminal: {
+    allowedKinds: ["intro", "typing", "reveal", "outro"],
+    requiredTextFields: { intro: ["title"], typing: ["caption"], reveal: ["caption"], outro: ["title"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {
@@ -501,6 +505,59 @@ export type ScrapbookSceneContent =
   | ScrapbookPhotoContent
   | ScrapbookTimelineContent
   | ScrapbookClosingContent;
+
+// ---------------------------------------------------------------------------
+// Terminal Template Content Contract
+//
+// Canonical content types for the Terminal template (Matrix rain,
+// dark terminal, syntax-highlighted code, typing animation).
+// Pure content types — no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface TerminalCodeToken {
+  start: number;
+  length: number;
+  kind: "keyword" | "string" | "function" | "number" | "comment" | "variable" | "type";
+}
+
+export interface TerminalCodeLine {
+  text: string;
+  tokens?: TerminalCodeToken[];
+}
+
+export interface TerminalIntroContent {
+  kind: "intro";
+  kicker: string;
+  title: string;
+}
+
+export interface TerminalTypingContent {
+  kind: "typing";
+  language: string;
+  lines: TerminalCodeLine[];
+  caption: string;
+}
+
+export interface TerminalRevealContent {
+  kind: "reveal";
+  language: string;
+  lines: TerminalCodeLine[];
+  highlightLine: number;
+  caption: string;
+}
+
+export interface TerminalOutroContent {
+  kind: "outro";
+  kicker: string;
+  title: string;
+  subtitle: string;
+}
+
+export type TerminalSceneContent =
+  | TerminalIntroContent
+  | TerminalTypingContent
+  | TerminalRevealContent
+  | TerminalOutroContent;
 
 // ---------------------------------------------------------------------------
 // Storyboard Contract - the higher-level artifact C1 produces from research +

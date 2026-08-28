@@ -21,6 +21,7 @@ const TEMPLATE_MODULES = {
   cr7: "./templates/cr7",
   cosmos: "./templates/cosmos",
   nodeflow: "./templates/nodeflow",
+  terminal: "./templates/terminal",
 };
 
 const THEME_DEFAULTS = {
@@ -47,6 +48,14 @@ const THEME_DEFAULTS = {
     spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
     radii: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
     typography: { caption: 14, body: 18, subtitle: 24, title: 48, titleLg: 72, hero: 100 },
+  },
+  terminal: {
+    name: "terminal",
+    colors: { bg: "#000000", bg2: "#0a0a0a", card: "rgba(13,17,23,0.85)", line: "rgba(0,255,102,0.12)", accent1: "#00ff66", accent1Soft: "rgba(0,255,102,0.25)", accent2: "#00cc52", accent2Soft: "rgba(0,204,82,0.20)", accent3: "#003d1a", ink: "#e6e6e6", muted: "#6a7a8a" },
+    fonts: { display: "'Barlow Condensed','Segoe UI',system-ui,sans-serif", body: "'Barlow Condensed','Segoe UI',system-ui,sans-serif", mono: "'JetBrains Mono','Fira Code',monospace" },
+    spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+    radii: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
+    typography: { caption: 18, body: 22, subtitle: 28, title: 40, titleLg: 56, hero: 72 },
   },
 };
 
@@ -86,6 +95,7 @@ function extractCaption(template, content) {
     cr7: { hero: "name", stat: "bigNumber", milestone: "title", closing: "title" },
     cosmos: { title: "title", fact: "bigValue", compare: "title", diagram: "title", timeline: "title", closing: "title" },
     nodeflow: { title: "title", flow: "title", contribution: "title", benefit: "title", compare: "title", end: "title" },
+    terminal: { intro: "title", typing: "caption", reveal: "caption", outro: "title" },
   };
   const kind = content?.kind;
   const field = FIELD_MAP[template]?.[kind] ?? "title";
@@ -129,6 +139,14 @@ function buildPayload(project) {
       }
       if (s.kind === "contribution" && !sanitized.rows) sanitized.rows = [];
       if (s.kind === "compare" && !sanitized.columns) sanitized.columns = [];
+    } else if (project.template === "terminal") {
+      if (s.kind === "typing") {
+        if (!sanitized.lines) sanitized.lines = [];
+      }
+      if (s.kind === "reveal") {
+        if (!sanitized.lines) sanitized.lines = [];
+        if (typeof sanitized.highlightLine !== "number") sanitized.highlightLine = 0;
+      }
     }
     content[s.id] = sanitized;
   }
@@ -146,7 +164,8 @@ function generateEntryFile(payload) {
   const themeJson = needsTheme ? JSON.stringify(THEME_DEFAULTS[payload.template]) : null;
   const componentImport = payload.template === "scrapbook" ? "ScrapbookTemplate" :
     payload.template === "cr7" ? "CR7Template" :
-    payload.template === "cosmos" ? "CosmosTemplate" : "NodeFlowTemplate";
+    payload.template === "cosmos" ? "CosmosTemplate" :
+    payload.template === "terminal" ? "TerminalTemplate" : "NodeFlowTemplate";
   const themeProp = needsTheme ? `\n    theme={THEME}` : "";
   const themeConst = needsTheme ? `\nconst THEME = ${themeJson};\n` : "";
 

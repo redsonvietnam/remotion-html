@@ -6,7 +6,7 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"] };
 
 const PRODUCTIONS = [
   {
@@ -247,13 +247,16 @@ function composerProjectToProduction(cp) {
     cr7: { bg:"#0a0a0a",bg2:"#111111",card:"rgba(255,255,255,0.04)",line:"rgba(255,255,255,0.08)",a1:"#e23b3b",a1s:"#ff6b5e",a2:"#f3c969",a2s:"#ffe6a3",a3:"#5eead4",ink:"#f7f5ef",muted:"#999",fd:'"Inter","Segoe UI",system-ui,sans-serif',fm:'"JetBrains Mono","Fira Code",monospace' },
     cosmos: { bg:"#050510",bg2:"#0a0a2e",card:"#111133",line:"rgba(255,255,255,0.06)",a1:"#3b82f6",a1s:"#2563eb",a2:"#a855f7",a2s:"#9333ea",a3:"#f8fafc",ink:"#f8fafc",muted:"#94a3b8",fd:'"Inter","Segoe UI",system-ui,sans-serif',fm:'"JetBrains Mono","Fira Code",monospace' },
     nodeflow: { bg:"#0a0e1a",bg2:"#0f1525",card:"rgba(255,255,255,0.045)",line:"rgba(245,245,255,0.12)",a1:"#e23b3b",a1s:"#ff6b5e",a2:"#f3c969",a2s:"#ffe6a3",a3:"#5eead4",ink:"#f7f5ef",muted:"#9aa0b5",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    stoiclove: { bg:"#0a0a0c",bg2:"#111114",card:"rgba(255,250,240,0.03)",line:"rgba(210,180,120,0.15)",a1:"#f5e6c8",a1s:"#faf0e0",a2:"#d4a843",a2s:"#e8c56d",a3:"#8b7355",ink:"#faf8f3",muted:"#9a8c7a",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    blueprint: { bg:"#0a1830",bg2:"#0f2145",card:"rgba(224,238,255,0.04)",line:"rgba(224,238,255,0.22)",a1:"#eaf4ff",a1s:"rgba(234,244,255,0.55)",a2:"#e8a33d",a2s:"#f2c27a",a3:"#5b84b8",ink:"#f2f6fb",muted:"#7d93b3",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
+    terminal: { bg:"#000000",bg2:"#0a0a0a",card:"#0d1117",line:"rgba(255,255,255,0.08)",a1:"#00ff66",a1s:"#33ff88",a2:"#00cc55",a2s:"#33ff88",a3:"#ff79c6",ink:"#e6e6e6",muted:"#6272a4",fd:"'Barlow Condensed','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
   };
   return {
     id: "__composer__" + cp.id,
     name: cp.name + " (Composer)",
     template: cp.template || cp.templateId,
     format: cp.format,
-    theme: theme[cp.template] || theme.nodeflow,
+    theme: theme[cp.template || cp.templateId] || theme.nodeflow,
     scenes: cp.scenes.map(s => ({ id: s.id, dur: s.dur || s.duration, kind: s.kind })),
     content: Object.fromEntries(cp.scenes.map(s => [s.id, s.content || {}])),
     _composerProject: true,
@@ -751,6 +754,151 @@ function Scrapbook_Closing({ frame, fps, W, H, content: d, th }) {
 }
 const SCRAPBOOK_SCENES = { hero: Scrapbook_Hero, match: Scrapbook_Match, history: Scrapbook_History, photo: Scrapbook_Photo, timeline: Scrapbook_Timeline, closing: Scrapbook_Closing };
 
+// ─── Terminal Scene Renderers ───────────────────────────────────────────────
+
+function seededRandom(seed) { const x = Math.sin(seed * 9301 + 49297) * 49297; return x - Math.floor(x); }
+const MATRIX_CHARS = "アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF";
+
+function Terminal_Bg({ frame, W, H, th }) {
+  const charH = 18, charW = 14;
+  const cols = Math.ceil(W / charW), rows = Math.ceil(H / charH);
+  const drops = React.useMemo(() => {
+    const arr = [];
+    for (let i = 0; i < Math.floor(cols * 0.4); i++) {
+      const seed = i * 137 + 42;
+      const col = Math.floor(seededRandom(seed) * cols);
+      const len = 6 + Math.floor(seededRandom(seed + 1) * 10);
+      const chars = [];
+      for (let j = 0; j < len; j++) chars.push(MATRIX_CHARS[Math.floor(seededRandom(seed + j * 3 + 2) * MATRIX_CHARS.length)]);
+      arr.push({ x: col * charW, speed: 1.2 + seededRandom(seed + 3) * 2, startFrame: Math.floor(seededRandom(seed + 4) * 90), chars });
+    }
+    return arr;
+  }, [cols]);
+  return <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
+    {drops.map((drop, i) => {
+      const elapsed = frame - drop.startFrame;
+      if (elapsed < 0) return null;
+      const headY = Math.floor(elapsed * drop.speed);
+      return drop.chars.map((ch, j) => {
+        const y = headY - j;
+        if (y < 0 || y >= rows) return null;
+        const isHead = j === 0;
+        const alpha = isHead ? 1 : Math.max(0, 1 - j / drop.chars.length) * 0.4;
+        return <span key={i + "-" + j} style={{ position: "absolute", left: drop.x, top: y * charH, fontFamily: "'JetBrains Mono',monospace", fontSize: 13, lineHeight: charH + "px", color: isHead ? "#fff" : "#00ff66", opacity: alpha, textShadow: isHead ? "0 0 6px #00ff66" : "none" }}>{ch}</span>;
+      });
+    })}
+  </div>;
+}
+
+function Terminal_Card({ W, H, language, children }) {
+  const cardW = Math.min(W - 60, 920), cardH = H * 0.52;
+  return <div style={{ position: "absolute", left: (W - cardW) / 2, top: H * 0.2, width: cardW, height: cardH, background: "rgba(13,17,23,0.85)", borderRadius: 12, border: "1px solid rgba(0,255,102,0.12)", overflow: "hidden", boxShadow: "0 0 40px rgba(0,255,102,0.08)" }}>
+    <div style={{ display: "flex", alignItems: "center", height: 40, padding: "0 14px", background: "rgba(0,0,0,0.3)", borderBottom: "1px solid rgba(0,255,102,0.12)", gap: 8 }}>
+      <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f57" }} />
+      <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#febc2e" }} />
+      <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#28c840" }} />
+      <span style={{ marginLeft: "auto", fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#6a7a8a", letterSpacing: 0.5 }}>{language}</span>
+    </div>
+    <div style={{ padding: "16px 20px", overflow: "hidden", height: cardH - 40 }}>{children}</div>
+  </div>;
+}
+
+const SYNTAX_COLORS = { keyword: "#ff79c6", string: "#50fa7b", function: "#8be9fd", number: "#bd93f9", comment: "#6272a4", variable: "#f1fa8c", type: "#8be9fd" };
+
+function renderCodeLines(lines, visibleChars, highlightLine) {
+  let charCount = 0;
+  return lines.map((line, li) => {
+    const lineStart = charCount;
+    let rendered = null;
+    if (visibleChars !== undefined && visibleChars <= lineStart) {
+      rendered = null;
+    } else if (visibleChars !== undefined && line.tokens && line.tokens.length > 0) {
+      const avail = visibleChars - lineStart;
+      const parts = [];
+      let cur = 0;
+      for (const tok of line.tokens) {
+        if (tok.start > cur) parts.push(<span key={"p" + cur}>{line.text.slice(cur, Math.min(tok.start, cur + avail))}</span>);
+        cur = tok.start;
+        if (cur >= lineStart + avail) break;
+        const end = Math.min(tok.start + tok.length, lineStart + avail);
+        parts.push(<span key={"t" + tok.start} style={{ color: SYNTAX_COLORS[tok.kind] || "#e6e6e6" }}>{line.text.slice(cur, end)}</span>);
+        cur = end;
+      }
+      if (cur < lineStart + avail) parts.push(<span key={"e" + cur}>{line.text.slice(cur, lineStart + avail)}</span>);
+      rendered = parts;
+    } else if (visibleChars !== undefined) {
+      rendered = line.text.slice(0, Math.max(0, visibleChars - lineStart));
+    } else {
+      rendered = line.tokens && line.tokens.length > 0 ? line.tokens.reduce((acc, tok, ti) => {
+        const before = ti === 0 ? line.text.slice(0, tok.start) : line.text.slice(line.tokens[ti - 1].start + line.tokens[ti - 1].length, tok.start);
+        return [...acc, <span key={"b" + ti}>{before}</span>, <span key={"t" + ti} style={{ color: SYNTAX_COLORS[tok.kind] || "#e6e6e6" }}>{line.text.slice(tok.start, tok.start + tok.length)}</span>];
+      }, []).concat([<span key="last">{line.text.slice(line.tokens[line.tokens.length - 1].start + line.tokens[line.tokens.length - 1].length)}</span>]) : line.text;
+    }
+    charCount += line.text.length + 1;
+    const isHL = highlightLine === li;
+    return <div key={li} style={{ background: isHL ? "rgba(0,255,102,0.08)" : "transparent", borderLeft: isHL ? "2px solid #00ff66" : "2px solid transparent", paddingLeft: 8, margin: 0, fontFamily: "'JetBrains Mono',monospace", fontSize: 18, lineHeight: 1.7, color: "#e6e6e6", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{rendered || "\u00A0"}</div>;
+  });
+}
+
+function terminalLines(d) {
+  if (Array.isArray(d.lines) && d.lines.length > 0) return d.lines;
+  const caption = (d.caption || d.title || "console.log('hello world');").split("\n");
+  return caption.map((t) => ({ text: t || " ", tokens: [] }));
+}
+
+function Terminal_Intro({ frame, fps, W, H, content: d, th }) {
+  const ka = textIn(frame, 0, fps, 20), ta = textIn(frame, 10, fps, 25);
+  return <div style={{ position: "absolute", inset: 0 }}>
+    <Terminal_Bg frame={frame} W={W} H={H} th={th} />
+    <div style={{ position: "absolute", top: H * 0.25, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+      <div style={ka}><span style={{ fontFamily: th.fd, fontWeight: 600, fontSize: 24, color: "#00ff66", textTransform: "uppercase", letterSpacing: 4 }}>{d.kicker}</span></div>
+      <div style={ta}><span style={{ fontFamily: th.fd, fontWeight: 700, fontSize: 52, color: th.ink, textShadow: "0 2px 30px rgba(0,255,102,0.25)", textAlign: "center", lineHeight: 1.2, maxWidth: W * 0.8, display: "inline-block" }}>{d.title}</span></div>
+    </div>
+    <div style={{ position: "absolute", bottom: H * 0.1, left: 0, right: 0, textAlign: "center", padding: "0 40px", opacity: textIn(frame, 15, fps, 15).opacity }}>
+      <span style={{ fontFamily: th.fd, fontWeight: 600, fontSize: 34, color: th.ink, textShadow: "0 2px 20px rgba(0,255,102,0.3)" }}>{d.kicker + " — " + d.title}</span>
+    </div>
+  </div>;
+}
+
+function Terminal_Typing({ frame, fps, W, H, content: d, th }) {
+  const lines = terminalLines(d);
+  const totalChars = lines.reduce((s, l) => s + l.text.length + 1, 0);
+  const typingFrames = Math.max(1, Math.round((d.dur || 5) * fps * 0.85));
+  const charsVisible = Math.floor(Math.min(1, Math.max(0, (frame - 8) / typingFrames)) * totalChars);
+  return <div style={{ position: "absolute", inset: 0 }}>
+    <Terminal_Bg frame={frame} W={W} H={H} th={th} />
+    <Terminal_Card W={W} H={H} language={d.language}>{renderCodeLines(lines, charsVisible)}</Terminal_Card>
+    <div style={{ position: "absolute", bottom: H * 0.1, left: 0, right: 0, textAlign: "center", padding: "0 40px" }}>
+      <span style={{ fontFamily: th.fd, fontWeight: 600, fontSize: 34, color: th.ink, textShadow: "0 2px 20px rgba(0,255,102,0.3)" }}>{d.caption}</span>
+    </div>
+  </div>;
+}
+
+function Terminal_Reveal({ frame, fps, W, H, content: d, th }) {
+  const lines = terminalLines(d);
+  return <div style={{ position: "absolute", inset: 0 }}>
+    <Terminal_Bg frame={frame} W={W} H={H} th={th} />
+    <Terminal_Card W={W} H={H} language={d.language}>{renderCodeLines(lines, undefined, d.highlightLine)}</Terminal_Card>
+    <div style={{ position: "absolute", bottom: H * 0.1, left: 0, right: 0, textAlign: "center", padding: "0 40px" }}>
+      <span style={{ fontFamily: th.fd, fontWeight: 600, fontSize: 34, color: th.ink, textShadow: "0 2px 20px rgba(0,255,102,0.3)" }}>{d.caption}</span>
+    </div>
+  </div>;
+}
+
+function Terminal_Outro({ frame, fps, W, H, content: d, th }) {
+  const ka = textIn(frame, 0, fps, 20), ta = textIn(frame, 10, fps, 25), sa = textIn(frame, 20, fps, 20);
+  return <div style={{ position: "absolute", inset: 0 }}>
+    <Terminal_Bg frame={frame} W={W} H={H} th={th} />
+    <div style={{ position: "absolute", top: H * 0.28, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+      <div style={ka}><span style={{ fontFamily: th.fd, fontWeight: 600, fontSize: 22, color: "#00ff66", textTransform: "uppercase", letterSpacing: 3 }}>{d.kicker}</span></div>
+      <div style={ta}><span style={{ fontFamily: th.fd, fontWeight: 700, fontSize: 56, color: th.ink, textShadow: "0 2px 30px rgba(0,255,102,0.3)", textAlign: "center", lineHeight: 1.2, maxWidth: W * 0.8, display: "inline-block" }}>{d.title}</span></div>
+      <div style={sa}><span style={{ fontFamily: th.fd, fontWeight: 500, fontSize: 28, color: th.muted, textAlign: "center", maxWidth: W * 0.7, display: "inline-block" }}>{d.subtitle}</span></div>
+    </div>
+  </div>;
+}
+
+const TERMINAL_SCENES = { intro: Terminal_Intro, typing: Terminal_Typing, reveal: Terminal_Reveal, outro: Terminal_Outro };
+
 // ─── Fallback renderer for unsupported templates ─────────────────────────────
 function Fallback_Scene({ frame, fps, W, H, content: d, th, kind }) {
   if (!d) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>No content</div></div>;
@@ -852,11 +1000,12 @@ function AppInner({format,pi,showSafe}){
   const maxW=960;
   const scale=format==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
-  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES };
+  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES };
   const renderers = renderersMap[prod.template] || NF_SCENES;
   const sceneData=si>=0?scenes[si]:null;
   const content=sceneData?prod.content[sceneData.id]:null;
-  const SceneComp=content?(renderers[content.kind]||null):null;
+  const contentKind=(content&&content.kind)||(sceneData&&sceneData.kind);
+  const SceneComp=content?(renderers[contentKind]||null):null;
   const th=prod.theme;
   return <React.Fragment>
     <div className="main">

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Terminal Code Tip Video Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stage-w: 405px;
+    --stage-h: 720px;
+    --term-bg:#0d1117cc;
+    --term-border:#30363d;
+    --matrix-green:#00ff66;
+    --kw:#ff79c6;
+    --str:#50fa7b;
+    --fn:#8be9fd;
+    --num:#bd93f9;
+    --cm:#6272a4;
+    --var:#f1fa8c;
+    --op:#e6edf3;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+
+  #stage{
+    position:relative;
+    width:var(--stage-w); height:var(--stage-h);
+    overflow:hidden;
+    border-radius:20px;
+    box-shadow:0 30px 90px rgba(0,0,0,.7);
+    background:#000;
+    color:#fff;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  /* ---- self-generated matrix rain, no external assets ---- */
+  #matrix{ position:absolute; inset:0; z-index:0; }
+  #darken{
+    position:absolute; inset:0; z-index:1;
+    background:radial-gradient(ellipse at 50% 45%, rgba(0,0,0,.35) 0%, rgba(0,0,0,.75) 100%);
+  }
+
+  /* ---- kicker chip ---- */
+  #kicker{
+    position:absolute; top:44px; left:0; right:0; z-index:5;
+    text-align:center;
+  }
+  #kicker span{
+    display:inline-block;
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700; letter-spacing:2px; font-size:14px;
+    color:#0d1117;
+    background:var(--matrix-green);
+    padding:5px 14px;
+    border-radius:20px;
+    box-shadow:0 0 18px rgba(0,255,102,.5);
+  }
+
+  /* ---- terminal window ---- */
+  #termcard{
+    position:absolute; left:22px; right:22px; top:100px; z-index:5;
+    background:var(--term-bg);
+    -webkit-backdrop-filter:blur(6px);
+    backdrop-filter:blur(6px);
+    border:1px solid var(--term-border);
+    border-radius:12px;
+    box-shadow:0 20px 50px rgba(0,0,0,.55);
+    overflow:hidden;
+  }
+  #termbar{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 12px;
+    background:#161b22;
+    border-bottom:1px solid var(--term-border);
+  }
+  .dot{ width:11px; height:11px; border-radius:50%; }
+  .dot.r{ background:#ff5f56; } .dot.y{ background:#ffbd2e; } .dot.g{ background:#27c93f; }
+  #filename{
+    flex:1; text-align:center;
+    font-size:12px; color:#8b949e;
+  }
+  #termbody{
+    padding:16px 16px 22px;
+    font-size:14.5px; line-height:1.7;
+    min-height:190px;
+  }
+  .code-line{ white-space:pre-wrap; word-break:break-word; }
+  .kw{ color:var(--kw); } .str{ color:var(--str); } .fn{ color:var(--fn); }
+  .num{ color:var(--num); } .cm{ color:var(--cm); font-style:italic; } .vr{ color:var(--var); }
+  .op{ color:var(--op); }
+  .cursor{
+    display:inline-block; width:8px; height:16px; background:var(--matrix-green);
+    vertical-align:middle; margin-left:1px;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ---- explanation caption ---- */
+  #explainwrap{
+    position:absolute; left:24px; right:24px; top:400px; z-index:5;
+    text-align:center;
+  }
+  #explain{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700; font-size:22px; line-height:1.35;
+    color:#fff;
+    text-shadow:0 2px 12px rgba(0,0,0,.7);
+    opacity:0; transform:translateY(10px);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  #explain.show{ opacity:1; transform:translateY(0); }
+  #explain .accent{ color:var(--matrix-green); }
+
+  /* progress dots */
+  #dots{ position:absolute; bottom:26px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:5; }
+  #dots span{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.3); }
+  #dots span.on{ background:var(--matrix-green); box-shadow:0 0 8px var(--matrix-green); }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <canvas id="matrix"></canvas>
+  <div id="darken"></div>
+
+  <div id="kicker"><span id="kickertext">MẸO JAVASCRIPT #12</span></div>
+
+  <div id="termcard">
+    <div id="termbar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <div id="filename" id="filename">trick.js</div>
+    </div>
+    <div id="termbody"></div>
+  </div>
+
+  <div id="explainwrap"><div id="explain"></div></div>
+  <div id="dots"></div>
+</div>
+
+<script>
+/* ============================================================
+   NỘI DUNG — đổi topic/code/giải thích ở đây cho mỗi "trang"
+   ============================================================ */
+const TIPS = [
+  {
+    kicker: "MẸO JAVASCRIPT #12",
+    filename: "trick.js",
+    lines: [
+      { plain: `const { name = "Ẩn danh", age = 18 } = user;`,
+        html: `<span class="kw">const</span> <span class="op">{</span> <span class="vr">name</span> <span class="op">=</span> <span class="str">"Ẩn danh"</span><span class="op">,</span> <span class="vr">age</span> <span class="op">=</span> <span class="num">18</span> <span class="op">}</span> <span class="op">=</span> <span class="fn">user</span><span class="op">;</span>` },
+      { plain: `// không lỗi dù user.name bị undefined`,
+        html: `<span class="cm">// không lỗi dù user.name bị undefined</span>` },
+    ],
+    explain: `Destructuring + <span class="accent">giá trị mặc định</span><br>giúp code gọn, tránh lỗi undefined`
+  },
+  {
+    kicker: "MẸO PYTHON #7",
+    filename: "trick.py",
+    lines: [
+      { plain: `nums = [1, 2, 3, 4, 5]`,
+        html: `<span class="vr">nums</span> <span class="op">=</span> <span class="op">[</span><span class="num">1</span><span class="op">,</span> <span class="num">2</span><span class="op">,</span> <span class="num">3</span><span class="op">,</span> <span class="num">4</span><span class="op">,</span> <span class="num">5</span><span class="op">]</span>` },
+      { plain: `total = sum(n*n for n in nums if n % 2)`,
+        html: `<span class="vr">total</span> <span class="op">=</span> <span class="fn">sum</span><span class="op">(</span><span class="vr">n</span><span class="op">*</span><span class="vr">n</span> <span class="kw">for</span> <span class="vr">n</span> <span class="kw">in</span> <span class="vr">nums</span> <span class="kw">if</span> <span class="vr">n</span> <span class="op">%</span> <span class="num">2</span><span class="op">)</span>` },
+    ],
+    explain: `Generator expression trong <span class="accent">sum()</span><br>không tạo list trung gian, tiết kiệm RAM`
+  },
+  {
+    kicker: "MẸO CSS #3",
+    filename: "trick.css",
+    lines: [
+      { plain: `.card { aspect-ratio: 16 / 9; }`,
+        html: `<span class="fn">.card</span> <span class="op">{</span> <span class="kw">aspect-ratio</span><span class="op">:</span> <span class="num">16</span> <span class="op">/</span> <span class="num">9</span><span class="op">;</span> <span class="op">}</span>` },
+      { plain: `/* thay hack padding-top % cũ */`,
+        html: `<span class="cm">/* thay hack padding-top % cũ */</span>` },
+    ],
+    explain: `<span class="accent">aspect-ratio</span> giữ tỉ lệ khung hình<br>không cần trick padding nữa`
+  }
+];
+
+const TYPE_SPEED = 26;      // ms mỗi ký tự
+const LINE_PAUSE = 260;     // ms nghỉ giữa các dòng
+const HOLD_AFTER = 3200;    // ms giữ màn hình sau khi giải thích hiện xong
+const RESET_PAUSE = 700;    // ms nghỉ đen trước khi sang tip tiếp theo
+
+const termbody = document.getElementById('termbody');
+const kickertext = document.getElementById('kickertext');
+const filenameEl = document.getElementById('filename');
+const explainEl = document.getElementById('explain');
+const dotsEl = document.getElementById('dots');
+
+TIPS.forEach(()=>{ const d = document.createElement('span'); dotsEl.appendChild(d); });
+const dotEls = [...dotsEl.querySelectorAll('span')];
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+async function typeLine(container, plain, html){
+  const lineEl = document.createElement('div');
+  lineEl.className = 'code-line';
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  container.appendChild(lineEl);
+  lineEl.appendChild(cursor);
+  let acc = '';
+  for(const ch of plain){
+    acc += ch;
+    lineEl.textContent = acc;
+    lineEl.appendChild(cursor);
+    await sleep(TYPE_SPEED);
+  }
+  lineEl.innerHTML = html; // reveal syntax highlighting once line is complete
+  await sleep(LINE_PAUSE);
+}
+
+async function playTip(idx){
+  const tip = TIPS[idx];
+  kickertext.textContent = tip.kicker;
+  filenameEl.textContent = tip.filename;
+  termbody.innerHTML = '';
+  explainEl.classList.remove('show');
+  explainEl.innerHTML = '';
+  dotEls.forEach((d,i)=>d.classList.toggle('on', i===idx));
+
+  for(const line of tip.lines){
+    await typeLine(termbody, line.plain, line.html);
+  }
+  explainEl.innerHTML = tip.explain;
+  await sleep(150);
+  explainEl.classList.add('show');
+  await sleep(HOLD_AFTER);
+  await sleep(RESET_PAUSE);
+}
+
+async function loop(){
+  let i = 0;
+  while(true){
+    await playTip(i);
+    i = (i+1) % TIPS.length;
+  }
+}
+loop();
+
+/* ============ Matrix rain background (self-contained, no assets) ============ */
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+const stage = document.getElementById('stage');
+function resize(){ canvas.width = stage.clientWidth; canvas.height = stage.clientHeight; }
+resize();
+const chars = "01アイウエオカキクケコサシスセソタチツテト日ノ";
+const fontSize = 15;
+let columns = Math.floor(canvas.width / fontSize);
+let drops = new Array(columns).fill(1);
+
+function drawMatrix(){
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#00ff66';
+  ctx.font = fontSize + 'px monospace';
+  for(let i=0;i<drops.length;i++){
+    const text = chars[Math.floor(Math.random()*chars.length)];
+    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975){
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 55);
+</script>
+</body>
+</html>

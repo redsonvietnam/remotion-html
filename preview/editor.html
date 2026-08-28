@@ -117,6 +117,14 @@ const TEMPLATES = [
       compare:{title:"Title"},
       end:{closingTitle:"Title",closingSubtitle:"Subtitle",reference:"Reference"},
     }},
+  { id:"terminal", name:"Terminal Code Tip", status:"ready", formats:["9:16"],
+    sceneKinds:["intro","typing","reveal","outro"],
+    fields:{
+      intro:{kicker:"Kicker",title:"Title"},
+      typing:{language:"Language",caption:"Caption"},
+      reveal:{language:"Language",caption:"Caption",highlightLine:"Highlight Line"},
+      outro:{kicker:"Kicker",title:"Title",subtitle:"Subtitle"},
+    }},
 ];
 
 const EDITABLE_IDS = TEMPLATES.map(t => t.id);
@@ -131,6 +139,7 @@ const THEMES = {
   cr7: { bg:"#0c0a09", bg2:"#1c1917", card:"#292524", line:"rgba(255,255,255,0.06)", a1:"#f59e0b", a2:"#ef4444", a3:"#10b981", ink:"#fafaf9", muted:"#a8a29e", fd:'"Inter","Segoe UI",system-ui,sans-serif', fm:'"JetBrains Mono","Fira Code",monospace' },
   cosmos: { bg:"#050510", bg2:"#0a0a2e", card:"#111133", line:"rgba(255,255,255,0.06)", a1:"#3b82f6", a2:"#a855f7", a3:"#f8fafc", ink:"#f8fafc", muted:"#94a3b8", fd:'"Inter","Segoe UI",system-ui,sans-serif', fm:'"JetBrains Mono","Fira Code",monospace' },
   nodeflow: { bg:"#0a0e1a", bg2:"#0f1423", card:"#141a2e", line:"rgba(255,255,255,0.08)", a1:"#00d4ff", a2:"#d4a843", a3:"#34d399", ink:"#e8e6e1", muted:"#6b7280", fd:'"Inter","Segoe UI",system-ui,sans-serif', fm:'"JetBrains Mono","Fira Code",monospace' },
+  terminal: { bg:"#000000", bg2:"#0a0a0a", card:"rgba(13,17,23,0.85)", line:"rgba(0,255,102,0.12)", a1:"#00ff66", a2:"#00cc52", a3:"#003d1a", ink:"#e6e6e6", muted:"#6a7a8a", fd:'"Barlow Condensed","Segoe UI",system-ui,sans-serif', fm:'"JetBrains Mono","Fira Code",monospace' },
 };
 
 // ─── Preview Renderers (static, no animation) ───────────────────────────────

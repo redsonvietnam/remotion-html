@@ -110,6 +110,12 @@ const TEMPLATES = [
     formats: ["16:9"],
     sceneKinds: ["title","pillars","measure","detail","process","seal"],
   },
+  {
+    id: "terminal", name: "Terminal Code Tip", status: "ready",
+    description: "Matrix rain background, dark terminal window, syntax-highlighted code, typing animation. For coding tips and developer content.",
+    formats: ["9:16"],
+    sceneKinds: ["intro","typing","reveal","outro"],
+  },
 ];
 
 const PRODUCTIONS = [
@@ -126,6 +132,7 @@ const PRODUCTIONS = [
   { id: "luatGTDB", name: "Luat GTDB", template: "nq57", format: "16:9" },
   { id: "stoiclove", name: "Stoic Love", template: "stoiclove", format: "9:16" },
   { id: "luatBHXH", name: "Luat BHXH", template: "blueprint", format: "16:9" },
+  { id: "terminalDemo", name: "5 JavaScript Tips", template: "terminal", format: "9:16" },
 ];
 
 function FormatBadge({ format }) {

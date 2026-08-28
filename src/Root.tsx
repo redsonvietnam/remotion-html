@@ -34,6 +34,9 @@ import { SOLAR_SYSTEM_SCENES, SOLAR_SYSTEM_CONTENT, sceneFrames as solarSystemSc
 import { cosmos } from "./theme/cosmos";
 import { ScrapbookTemplate } from "./templates/scrapbook";
 import { CHAMPIONS_LEAGUE_SCENES, CHAMPIONS_LEAGUE_CONTENT, sceneFramesCl } from "./data/championsLeague";
+import { TerminalTemplate } from "./templates/terminal";
+import { TERMINAL_SCENES, TERMINAL_CONTENT, terminalSceneFrames } from "./data/terminalDemo";
+import { terminalTheme } from "./theme/terminal";
 
 const FPS = 30;
 
@@ -83,6 +86,10 @@ const SOLAR_SYSTEM_FRAMES =
 const CHAMPIONS_LEAGUE_FRAMES =
   CHAMPIONS_LEAGUE_SCENES.reduce((acc, s) => acc + sceneFramesCl(s.dur), 0) -
   (CHAMPIONS_LEAGUE_SCENES.length - 1) * 16;
+
+const TERMINAL_DEMO_FRAMES =
+  TERMINAL_SCENES.reduce((acc, s) => acc + terminalSceneFrames(s.dur), 0) +
+  (TERMINAL_SCENES.length - 1) * 12;
 
 export const Root: React.FC = () => {
   return (
@@ -248,6 +255,19 @@ export const Root: React.FC = () => {
         defaultProps={{
           scenes: CHAMPIONS_LEAGUE_SCENES,
           content: CHAMPIONS_LEAGUE_CONTENT,
+        }}
+      />
+      <Composition
+        id="TerminalCodeTip"
+        component={TerminalTemplate}
+        durationInFrames={TERMINAL_DEMO_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          scenes: TERMINAL_SCENES,
+          content: TERMINAL_CONTENT,
+          theme: terminalTheme,
         }}
       />
     </>
