@@ -102,7 +102,36 @@ function buildPayload(project) {
     caption: extractCaption(project.template, s.content), dur: s.duration,
   }));
   const content = {};
-  for (const s of project.scenes) { content[s.id] = { kind: s.kind, ...s.content }; }
+  for (const s of project.scenes) {
+    const c = s.content || {};
+    const sanitized = { kind: s.kind, ...c };
+    if (project.template === "scrapbook") {
+      if (s.kind === "photo" && !sanitized.Polaroid) sanitized.Polaroid = [];
+      if (s.kind === "timeline" && !sanitized.items) sanitized.items = [];
+      if (s.kind === "closing" && !sanitized.stats) sanitized.stats = [];
+    } else if (project.template === "cr7") {
+      if (s.kind === "milestone" && !sanitized.items) sanitized.items = [];
+    } else if (project.template === "cosmos") {
+      if (s.kind === "diagram") {
+        if (!sanitized.nodes) sanitized.nodes = [];
+        if (!sanitized.edges) sanitized.edges = [];
+      }
+      if (s.kind === "timeline" && !sanitized.events) sanitized.events = [];
+      if (s.kind === "compare") {
+        if (!sanitized.left) sanitized.left = { value: "", label: "" };
+        if (!sanitized.right) sanitized.right = { value: "", label: "" };
+      }
+    } else if (project.template === "nodeflow") {
+      if (s.kind === "title" && !sanitized.nodes) sanitized.nodes = [];
+      if (s.kind === "flow") {
+        if (!sanitized.description) sanitized.description = [];
+        if (!sanitized.flowNodes) sanitized.flowNodes = [];
+      }
+      if (s.kind === "contribution" && !sanitized.rows) sanitized.rows = [];
+      if (s.kind === "compare" && !sanitized.columns) sanitized.columns = [];
+    }
+    content[s.id] = sanitized;
+  }
   const totalFrames = scenes.reduce((acc, s) => acc + sceneFrames(s.dur), 0)
     + Math.max(0, scenes.length - 1) * 16;
   return { template: project.template, scenes, content, format: project.format,
