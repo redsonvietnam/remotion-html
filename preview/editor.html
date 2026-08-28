@@ -652,7 +652,7 @@ function App() {
       studioProject.content[s.id] = { kind: s.kind, ...s.content };
     }
     try { localStorage.setItem(STUDIO_PROJECT_KEY, JSON.stringify(studioProject)); } catch {}
-    window.open("/preview/studio.html?project=" + encodeURIComponent(project.id), "_blank");
+    window.location.href = "/preview/studio.html?project=" + encodeURIComponent(project.id);
   }, [project]);
 
   if (!project) {
