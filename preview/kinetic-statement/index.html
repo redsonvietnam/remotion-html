@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Kinetic Statement — Remotion-HTML Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --stage-w: 405px; --stage-h: 720px; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:#1a1a1a; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; font-family:'Inter',sans-serif; color:#ddd; padding:30px 0;
+  }
+
+  /* ============================================================
+     VIDEO STAGE — kích thước/tỉ lệ CỐ ĐỊNH, đây là khung hình render.
+     Trong Remotion đây tương ứng <AbsoluteFill> với width/height Composition.
+     ============================================================ */
+  #stage{
+    position:relative;
+    width:var(--stage-w); height:var(--stage-h);
+    overflow:hidden;
+    border-radius:6px;
+    box-shadow:0 30px 90px rgba(0,0,0,.7);
+    background:#000;
+  }
+  .scene{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    opacity:0; /* set purely via JS mỗi frame, KHÔNG dùng CSS transition */
+  }
+  #endfade{
+    position:absolute; inset:0; z-index:50; background:#000; opacity:0; pointer-events:none;
+  }
+
+  /* ---- scene 1: hook ---- */
+  #scene-hook{ background:#0b0d14; }
+  #hookwords{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding:0 34px; }
+  #hookwords span{ font-weight:900; font-size:30px; color:#fff; letter-spacing:.5px; will-change:transform,opacity,filter; }
+
+  /* ---- scene 2: stat ---- */
+  #scene-stat{ background:linear-gradient(160deg,#1a0b2e,#3a0ca3); }
+  #statnumber{ font-weight:900; font-size:92px; color:#ffd166; will-change:transform,opacity; text-align:center; line-height:1; }
+  #statlabel{ margin-top:16px; font-size:15px; color:#e6dcff; text-align:center; padding:0 46px; line-height:1.5; will-change:opacity,transform; }
+
+  /* ---- scene 3: quote ---- */
+  #scene-quote{ background:#f5f1e8; }
+  #quotewords{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px 8px; padding:0 40px; }
+  #quotewords span{ font-weight:800; font-size:23px; color:#d8d0bf; line-height:1.5; position:relative; padding:2px 3px; border-radius:4px; }
+  #quotewords span.revealed{ color:#1c1c1e; }
+  #quotewords span.active{ background:#e0a72e; color:#1c1c1e; }
+
+  /* ---- scene 4: outro ---- */
+  #scene-outro{ background:linear-gradient(180deg,#05060a,#12131c); }
+  #brandtext{ font-weight:900; font-size:26px; color:#ffd166; letter-spacing:2px; will-change:transform,opacity; }
+  #taglinetext{ margin-top:8px; font-size:13px; color:#9a9aad; letter-spacing:1px; will-change:opacity; }
+  #ctatext{ margin-top:26px; font-size:15px; font-weight:700; color:#fff; border:1.5px solid #ffd166; border-radius:24px; padding:9px 22px; will-change:opacity,transform; }
+
+  /* ============================================================
+     PROTOTYPE-ONLY CHROME — timeline/scrubber/play control.
+     KHÔNG thuộc video render, chỉ để xem trước & demo trong browser.
+     ============================================================ */
+  #chrome{ width:var(--stage-w); }
+  #timeline{
+    position:relative; height:34px; border-radius:8px; overflow:hidden;
+    display:flex; cursor:pointer; background:#000;
+  }
+  .tlseg{ position:relative; display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(255,255,255,.7); font-weight:600; border-right:1px solid rgba(0,0,0,.4); }
+  #playhead{ position:absolute; top:0; bottom:0; width:2px; background:#fff; box-shadow:0 0 6px #fff; pointer-events:none; }
+  #transportrow{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; font-size:11px; color:#888; }
+  #playpausebtn{
+    background:#2a2a2a; color:#fff; border:none; border-radius:6px; padding:5px 12px;
+    font-size:11px; cursor:pointer; font-weight:600;
+  }
+  #timecode{ font-variant-numeric:tabular-nums; }
+  #chromenote{ font-size:10.5px; color:#666; margin-top:10px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="scene" id="scene-hook"><div id="hookwords"></div></div>
+
+  <div class="scene" id="scene-stat">
+    <div id="statnumber">0%</div>
+    <div id="statlabel"></div>
+  </div>
+
+  <div class="scene" id="scene-quote"><div id="quotewords"></div></div>
+
+  <div class="scene" id="scene-outro">
+    <div id="brandtext"></div>
+    <div id="taglinetext"></div>
+    <div id="ctatext"></div>
+  </div>
+
+  <div id="endfade"></div>
+</div>
+
+<div id="chrome">
+  <div id="timeline"></div>
+  <div id="transportrow">
+    <button id="playpausebtn">⏸ Pause</button>
+    <span id="timecode">0.00s / 0.00s</span>
+  </div>
+  <div id="chromenote">
+    Thanh timeline + nút play chỉ để xem trước trong browser — không thuộc video render.
+    Bấm vào timeline để tua tới bất kỳ frame nào (chứng minh render là hàm thuần của frame).
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   1) DATA — nội dung, có thể thay đổi hoàn toàn độc lập với animation.
+   Đây là phần sẽ trở thành `props` của Remotion Composition.
+   ================================================================ */
+const DATA = {
+  hook: {
+    words: ["3", "GIÂY", "ĐẦU", "QUYẾT ĐỊNH", "TẤT CẢ"]
+  },
+  stat: {
+    value: 73,
+    suffix: "%",
+    label: "người xem sẽ lướt qua video của bạn nếu 3 giây đầu không đủ cuốn"
+  },
+  quote: {
+    text: "Một video tốt không cần dài, chỉ cần đúng nhịp và đúng lúc."
+  },
+  outro: {
+    brand: "REMOTION-HTML",
+    tagline: "VIDEO TEMPLATE ENGINE",
+    cta: "Xem thêm mẫu →"
+  }
+};
+
+/* ================================================================
+   2) THEME — màu sắc / typography, tách riêng khỏi DATA và ANIMATION.
+   ================================================================ */
+const THEME = {
+  hook:  { bg:"#0b0d14", text:"#ffffff" },
+  stat:  { bgFrom:"#1a0b2e", bgTo:"#3a0ca3", number:"#ffd166", label:"#e6dcff" },
+  quote: { bg:"#f5f1e8", dim:"#d8d0bf", active:"#e0a72e", revealed:"#1c1c1e" },
+  outro: { brand:"#ffd166", tagline:"#9a9aad", cta:"#ffffff" }
+};
+
+/* ================================================================
+   3) CONFIG — cấu trúc timeline: fps, kích thước, danh sách scene
+   với thời lượng tính bằng FRAME (giống hệt cách Remotion khai báo
+   <Sequence from={} durationInFrames={}>).
+   ================================================================ */
+const CONFIG = {
+  fps: 30,
+  width: 1080,
+  height: 1920, // tỉ lệ 9:16
+  scenes: [
+    { id:"hook",  durationInFrames: 90  },  // 3.0s
+    { id:"stat",  durationInFrames: 105 },  // 3.5s
+    { id:"quote", durationInFrames: 120 },  // 4.0s
+    { id:"outro", durationInFrames: 75  },  // 2.5s
+  ]
+};
+// tính điểm bắt đầu (frame) của từng scene dựa trên thứ tự khai báo ở trên
+let cursor = 0;
+CONFIG.scenes.forEach(s=>{ s.startFrame = cursor; cursor += s.durationInFrames; });
+const TOTAL_FRAMES = cursor; // 390 frames = 13.0s @ 30fps — điểm KẾT THÚC video
+
+/* ================================================================
+   4) ENGINE — thuần theo frame. Mỗi hàm renderX(localFrame, dur)
+   CHỈ đọc localFrame + DATA/THEME, KHÔNG có state ẩn, KHÔNG dùng
+   setTimeout/CSS-transition. Gọi lại với cùng 1 frame luôn ra
+   đúng 1 kết quả — đây là điều bắt buộc để chuyển sang Remotion.
+   ================================================================ */
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+function interpolate(frame, [i0,i1], [o0,o1], easing=t=>t){
+  const t = clamp((frame-i0)/(i1-i0), 0, 1);
+  return o0 + (o1-o0)*easing(t);
+}
+const easeOutCubic = t => 1-Math.pow(1-t,3);
+const easeOutBack = t => { const c1=1.70158, c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); };
+
+// --- build static DOM once (nội dung lấy từ DATA) ---
+const hookWordsEl = document.getElementById('hookwords');
+DATA.hook.words.forEach(w=>{
+  const span = document.createElement('span');
+  span.textContent = w;
+  hookWordsEl.appendChild(span);
+});
+const hookWordEls = [...hookWordsEl.children];
+
+document.getElementById('statlabel').textContent = DATA.stat.label;
+
+const quoteWordsEl = document.getElementById('quotewords');
+DATA.quote.text.split(' ').forEach(w=>{
+  const span = document.createElement('span');
+  span.textContent = w;
+  quoteWordsEl.appendChild(span);
+});
+const quoteWordEls = [...quoteWordsEl.children];
+
+document.getElementById('brandtext').textContent = DATA.outro.brand;
+document.getElementById('taglinetext').textContent = DATA.outro.tagline;
+document.getElementById('ctatext').textContent = DATA.outro.cta;
+
+const sceneEl = {
+  hook: document.getElementById('scene-hook'),
+  stat: document.getElementById('scene-stat'),
+  quote: document.getElementById('scene-quote'),
+  outro: document.getElementById('scene-outro'),
+};
+
+// mỗi scene fade-in 15 frame đầu, fade-out 15 frame cuối (tự thân, không phụ thuộc scene khác)
+function sceneOpacity(localFrame, dur){
+  return interpolate(localFrame,[0,15],[0,1],easeOutCubic) * interpolate(localFrame,[dur-15,dur],[1,0],easeOutCubic);
+}
+
+function renderHook(localFrame, dur){
+  sceneEl.hook.style.opacity = sceneOpacity(localFrame,dur);
+  hookWordEls.forEach((el,i)=>{
+    const delay = i*8;
+    const o = interpolate(localFrame, [delay,delay+15], [0,1], easeOutCubic);
+    const y = interpolate(localFrame, [delay,delay+15], [26,0], easeOutCubic);
+    const blur = interpolate(localFrame, [delay,delay+15], [10,0]);
+    el.style.opacity = o;
+    el.style.transform = `translateY(${y}px)`;
+    el.style.filter = `blur(${blur}px)`;
+  });
+}
+
+function renderStat(localFrame, dur){
+  sceneEl.stat.style.opacity = sceneOpacity(localFrame,dur);
+  const progress = interpolate(localFrame, [10,55], [0,DATA.stat.value], easeOutCubic);
+  const scale = interpolate(localFrame, [10,26], [0.7,1], easeOutBack);
+  const numEl = document.getElementById('statnumber');
+  numEl.textContent = Math.round(progress) + DATA.stat.suffix;
+  numEl.style.transform = `scale(${Math.max(0,scale)})`;
+  numEl.style.opacity = interpolate(localFrame,[8,18],[0,1]);
+
+  const labelEl = document.getElementById('statlabel');
+  labelEl.style.opacity = interpolate(localFrame, [58,74], [0,1]);
+  labelEl.style.transform = `translateY(${interpolate(localFrame,[58,74],[10,0],easeOutCubic)}px)`;
+}
+
+function renderQuote(localFrame, dur){
+  sceneEl.quote.style.opacity = sceneOpacity(localFrame,dur);
+  const total = quoteWordEls.length;
+  const activeFloat = interpolate(localFrame, [8, dur-34], [0, total], t=>t);
+  const activeIndex = Math.floor(activeFloat);
+  quoteWordEls.forEach((el,i)=>{
+    el.classList.toggle('revealed', i < activeIndex);
+    el.classList.toggle('active', i === activeIndex);
+  });
+}
+
+function renderOutro(localFrame, dur){
+  sceneEl.outro.style.opacity = sceneOpacity(localFrame,dur);
+  const brandEl = document.getElementById('brandtext');
+  const brandScale = interpolate(localFrame,[0,18],[0.6,1],easeOutBack);
+  brandEl.style.opacity = interpolate(localFrame,[0,14],[0,1]);
+  brandEl.style.transform = `scale(${Math.max(0,brandScale)})`;
+
+  const tagEl = document.getElementById('taglinetext');
+  tagEl.style.opacity = interpolate(localFrame,[18,30],[0,1]);
+
+  const ctaEl = document.getElementById('ctatext');
+  const ctaBase = interpolate(localFrame,[36,50],[0,1]);
+  const pulse = 1 + 0.035*Math.sin(localFrame*0.18);
+  ctaEl.style.opacity = ctaBase;
+  ctaEl.style.transform = `scale(${localFrame>50 ? pulse : 1})`;
+}
+
+const RENDERERS = { hook:renderHook, stat:renderStat, quote:renderQuote, outro:renderOutro };
+
+// hàm renderFrame(frame) — nguồn sự thật DUY NHẤT cho cả video ở 1 thời điểm.
+// Trong Remotion, đây tương đương việc mỗi <Sequence> tự tính theo useCurrentFrame().
+function renderFrame(frame){
+  CONFIG.scenes.forEach(s=>{
+    const el = sceneEl[s.id];
+    const local = frame - s.startFrame;
+    if(local >= 0 && local < s.durationInFrames){
+      RENDERERS[s.id](local, s.durationInFrames);
+    } else {
+      el.style.opacity = 0;
+    }
+  });
+  // fade to black ở đoạn cuối cùng — điểm KẾT THÚC video rõ ràng
+  const endFadeEl = document.getElementById('endfade');
+  endFadeEl.style.opacity = interpolate(frame, [TOTAL_FRAMES-14, TOTAL_FRAMES], [0,1]);
+}
+
+/* ================================================================
+   5) PROTOTYPE PLAYBACK — chỉ để xem trong browser.
+   requestAnimationFrame loop tính frame hiện tại rồi gọi renderFrame().
+   Lặp lại (loop) khi hết video CHỈ để tiện xem demo liên tục —
+   video Remotion thật sự sẽ dừng hẳn ở TOTAL_FRAMES.
+   ================================================================ */
+const timelineEl = document.getElementById('timeline');
+const playheadEl = document.createElement('div');
+playheadEl.id = 'playhead';
+timelineEl.appendChild(playheadEl);
+CONFIG.scenes.forEach(s=>{
+  const seg = document.createElement('div');
+  seg.className = 'tlseg';
+  seg.style.flex = s.durationInFrames;
+  seg.style.background = {hook:'#243', stat:'#409', quote:'#a86', outro:'#333'}[s.id] || '#333';
+  seg.textContent = s.id;
+  timelineEl.insertBefore(seg, playheadEl);
+});
+
+let isPlaying = true;
+let playStartPerf = performance.now();
+let seekFrame = 0;
+
+function currentFrame(){
+  if(!isPlaying) return seekFrame;
+  const elapsedSec = (performance.now() - playStartPerf)/1000;
+  return Math.floor(elapsedSec * CONFIG.fps);
+}
+
+function updateChrome(frame){
+  const pct = clamp(frame/TOTAL_FRAMES,0,1);
+  playheadEl.style.left = (pct*100)+'%';
+  const t = frame/CONFIG.fps, total = TOTAL_FRAMES/CONFIG.fps;
+  document.getElementById('timecode').textContent = `${t.toFixed(2)}s / ${total.toFixed(2)}s`;
+}
+
+function loop(){
+  let frame = currentFrame();
+  if(isPlaying && frame >= TOTAL_FRAMES){
+    playStartPerf = performance.now(); // prototype-only auto-restart
+    frame = 0;
+  }
+  renderFrame(frame);
+  updateChrome(frame);
+  requestAnimationFrame(loop);
+}
+loop();
+
+// play/pause (prototype chrome only)
+document.getElementById('playpausebtn').addEventListener('click', ()=>{
+  if(isPlaying){
+    seekFrame = currentFrame();
+    isPlaying = false;
+    document.getElementById('playpausebtn').textContent = '▶ Play';
+  } else {
+    playStartPerf = performance.now() - (seekFrame/CONFIG.fps)*1000;
+    isPlaying = true;
+    document.getElementById('playpausebtn').textContent = '⏸ Pause';
+  }
+});
+
+// click timeline to seek — chứng minh render(frame) là hàm thuần, tua tới đâu đúng tới đó
+timelineEl.addEventListener('click', (e)=>{
+  const rect = timelineEl.getBoundingClientRect();
+  const pct = clamp((e.clientX-rect.left)/rect.width, 0, 1);
+  const frame = Math.floor(pct*TOTAL_FRAMES);
+  seekFrame = frame;
+  isPlaying = false;
+  document.getElementById('playpausebtn').textContent = '▶ Play';
+  renderFrame(frame);
+  updateChrome(frame);
+});
+</script>
+</body>
+</html>
