@@ -257,6 +257,46 @@ export const TEMPLATE_CAPABILITIES: Record<string, TemplateCapability> = {
       },
     ],
   },
+  kineticStatement: {
+    template: "kineticStatement",
+    label: "Kinetic Statement",
+    formats: ["9:16"],
+    defaultSceneKind: "hook",
+    sceneKinds: [
+      {
+        kind: "hook",
+        label: "Hook",
+        fields: [
+          { key: "words", label: "Words (comma-separated)", type: "text", required: true },
+        ],
+      },
+      {
+        kind: "stat",
+        label: "Stat",
+        fields: [
+          { key: "value", label: "Value", type: "number", required: true },
+          { key: "suffix", label: "Suffix", type: "text" },
+          { key: "label", label: "Label", type: "text", required: true },
+        ],
+      },
+      {
+        kind: "quote",
+        label: "Quote",
+        fields: [
+          { key: "text", label: "Text", type: "textarea", required: true },
+        ],
+      },
+      {
+        kind: "outro",
+        label: "Outro",
+        fields: [
+          { key: "brand", label: "Brand", type: "text", required: true },
+          { key: "tagline", label: "Tagline", type: "text" },
+          { key: "cta", label: "CTA", type: "text" },
+        ],
+      },
+    ],
+  },
 };
 
 /** Get capability for a template, or null if unknown. */

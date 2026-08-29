@@ -87,6 +87,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["intro", "typing", "reveal", "outro"],
     requiredTextFields: { intro: ["title"], typing: ["caption"], reveal: ["caption"], outro: ["title"] },
   },
+  kineticStatement: {
+    allowedKinds: ["hook", "stat", "quote", "outro"],
+    requiredTextFields: { hook: ["words"], stat: ["label"], quote: ["text"], outro: ["brand"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {

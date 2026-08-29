@@ -6,7 +6,7 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"], kineticStatement: ["9:16"] };
 
 const PRODUCTIONS = [
   {
@@ -223,6 +223,19 @@ const PRODUCTIONS = [
       closing:{kind:"closing",title:"The Beautiful Game",subtitle:"Moments that live forever in football history",stats:[{label:"Years",value:"1997–2005"},{label:"Goals",value:"847"},{label:"Matches",value:"326"}],reference:"UEFA Champions League Archives"},
     },
   },
+  {
+    id: "kineticStatement", name: "Kinetic Statement", template: "kineticStatement", format: "9:16",
+    theme: { bg:"#0b0d14",bg2:"#1a0b2e",card:"rgba(255,255,255,0.05)",line:"rgba(255,255,255,0.08)",a1:"#ffd166",a1s:"rgba(255,209,102,0.25)",a2:"#3a0ca3",a2s:"rgba(58,12,163,0.25)",a3:"#1c1c1e",ink:"#ffffff",muted:"#9a9aad",fd:"'Inter','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
+    scenes: [
+      { id:"s1",dur:3.0,kind:"hook" },{ id:"s2",dur:3.5,kind:"stat" },{ id:"s3",dur:4.0,kind:"quote" },{ id:"s4",dur:2.5,kind:"outro" },
+    ],
+    content: {
+      s1:{kind:"hook",words:["3","GIÂY","ĐẦU","QUYẾT ĐỊNH","TẤT CẢ"]},
+      s2:{kind:"stat",value:73,suffix:"%",label:"người xem sẽ lướt qua video của bạn nếu 3 giây đầu không đủ cuốn"},
+      s3:{kind:"quote",text:"Một video tốt không cần dài, chỉ cần đúng nhịp và đúng lúc."},
+      s4:{kind:"outro",brand:"REMOTION-HTML",tagline:"VIDEO TEMPLATE ENGINE",cta:"Xem thêm mẫu →"},
+    },
+  },
 ];
 
 // ─── Composer Project Routing ────────────────────────────────────────────────
@@ -250,6 +263,7 @@ function composerProjectToProduction(cp) {
     stoiclove: { bg:"#0a0a0c",bg2:"#111114",card:"rgba(255,250,240,0.03)",line:"rgba(210,180,120,0.15)",a1:"#f5e6c8",a1s:"#faf0e0",a2:"#d4a843",a2s:"#e8c56d",a3:"#8b7355",ink:"#faf8f3",muted:"#9a8c7a",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
     blueprint: { bg:"#0a1830",bg2:"#0f2145",card:"rgba(224,238,255,0.04)",line:"rgba(224,238,255,0.22)",a1:"#eaf4ff",a1s:"rgba(234,244,255,0.55)",a2:"#e8a33d",a2s:"#f2c27a",a3:"#5b84b8",ink:"#f2f6fb",muted:"#7d93b3",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
     terminal: { bg:"#000000",bg2:"#0a0a0a",card:"#0d1117",line:"rgba(255,255,255,0.08)",a1:"#00ff66",a1s:"#33ff88",a2:"#00cc55",a2s:"#33ff88",a3:"#ff79c6",ink:"#e6e6e6",muted:"#6272a4",fd:"'Barlow Condensed','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
+    kineticStatement: { bg:"#0b0d14",bg2:"#1a0b2e",card:"rgba(255,255,255,0.05)",line:"rgba(255,255,255,0.08)",a1:"#ffd166",a1s:"rgba(255,209,102,0.25)",a2:"#3a0ca3",a2s:"rgba(58,12,163,0.25)",a3:"#1c1c1e",ink:"#ffffff",muted:"#9a9aad",fd:"'Inter','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
   };
   return {
     id: "__composer__" + cp.id,
@@ -899,6 +913,82 @@ function Terminal_Outro({ frame, fps, W, H, content: d, th }) {
 
 const TERMINAL_SCENES = { intro: Terminal_Intro, typing: Terminal_Typing, reveal: Terminal_Reveal, outro: Terminal_Outro };
 
+// ─── Kinetic Statement Scene Renderers ──────────────────────────────────────
+
+function kineticInterp(frame, i0, i1, o0, o1) {
+  const t = Math.max(0, Math.min(1, (frame - i0) / (i1 - i0)));
+  return o0 + (o1 - o0) * t;
+}
+function kineticEaseOut(t) { return 1 - Math.pow(1 - t, 3); }
+function kineticSceneOpacity(frame, dur) {
+  return kineticInterp(frame, 0, 15, 0, 1) * kineticInterp(frame, dur - 15, dur, 1, 0);
+}
+
+function Kinetic_Hook({ frame, fps, W, H, content: d, th }) {
+  const opacity = kineticSceneOpacity(frame, d?.words ? 90 : 90);
+  const words = d?.words || [];
+  return <div style={{ position: "absolute", inset: 0, background: th.bg, display: "flex", alignItems: "center", justifyContent: "center", opacity }}>
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, padding: "0 34px" }}>
+      {words.map((w, i) => {
+        const delay = i * 8;
+        const o = kineticInterp(frame, delay, delay + 15, 0, 1);
+        const y = kineticInterp(frame, delay, delay + 15, 26, 0);
+        const blur = kineticInterp(frame, delay, delay + 15, 10, 0);
+        return <span key={i} style={{ fontWeight: 900, fontSize: 30, color: th.ink, letterSpacing: 0.5, opacity: o, transform: `translateY(${y}px)`, filter: `blur(${blur}px)` }}>{w}</span>;
+      })}
+    </div>
+  </div>;
+}
+
+function Kinetic_Stat({ frame, fps, W, H, content: d, th }) {
+  const opacity = kineticSceneOpacity(frame, 105);
+  const progress = kineticInterp(frame, 10, 55, 0, d?.value || 0);
+  const scale = kineticInterp(frame, 10, 26, 0.7, 1);
+  const c1 = 1.70158;
+  const back = 1 + (c1 + 1) * Math.pow(Math.min(1, Math.max(0, scale)) - 1, 3) + c1 * Math.pow(Math.min(1, Math.max(0, scale)) - 1, 2);
+  const numOp = kineticInterp(frame, 8, 18, 0, 1);
+  const labelOp = kineticInterp(frame, 58, 74, 0, 1);
+  const labelY = kineticInterp(frame, 58, 74, 10, 0);
+  return <div style={{ position: "absolute", inset: 0, background: `linear-gradient(160deg, ${th.bg2}, ${th.a2})`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", opacity }}>
+    <div style={{ fontWeight: 900, fontSize: 92, color: th.a1, textAlign: "center", lineHeight: 1, opacity: numOp, transform: `scale(${Math.max(0, back)})` }}>{Math.round(progress)}{d?.suffix || ""}</div>
+    <div style={{ marginTop: 16, fontSize: 15, color: th.muted, textAlign: "center", padding: "0 46px", lineHeight: 1.5, opacity: labelOp, transform: `translateY(${labelY}px)` }}>{d?.label || ""}</div>
+  </div>;
+}
+
+function Kinetic_Quote({ frame, fps, W, H, content: d, th }) {
+  const opacity = kineticSceneOpacity(frame, 120);
+  const words = (d?.text || "").split(" ");
+  const activeFloat = kineticInterp(frame, 8, 120 - 34, 0, words.length);
+  const activeIdx = Math.floor(activeFloat);
+  return <div style={{ position: "absolute", inset: 0, background: "#f5f1e8", display: "flex", alignItems: "center", justifyContent: "center", opacity }}>
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "8px 8px", padding: "0 40px" }}>
+      {words.map((w, i) => {
+        const revealed = i < activeIdx;
+        const active = i === activeIdx;
+        return <span key={i} style={{ fontWeight: 800, fontSize: 23, color: revealed || active ? "#1c1c1e" : "#d8d0bf", lineHeight: 1.5, padding: "2px 3px", borderRadius: 4, background: active ? "#e0a72e" : "transparent" }}>{w}</span>;
+      })}
+    </div>
+  </div>;
+}
+
+function Kinetic_Outro({ frame, fps, W, H, content: d, th }) {
+  const opacity = kineticSceneOpacity(frame, 75);
+  const brandOp = kineticInterp(frame, 0, 14, 0, 1);
+  const brandScale = kineticInterp(frame, 0, 18, 0.6, 1);
+  const c1 = 1.70158;
+  const back = 1 + (c1 + 1) * Math.pow(Math.min(1, Math.max(0, brandScale)) - 1, 3) + c1 * Math.pow(Math.min(1, Math.max(0, brandScale)) - 1, 2);
+  const tagOp = kineticInterp(frame, 18, 30, 0, 1);
+  const ctaOp = kineticInterp(frame, 36, 50, 0, 1);
+  const ctaPulse = frame > 50 ? 1 + 0.035 * Math.sin(frame * 0.18) : 1;
+  return <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #05060a, #12131c)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", opacity }}>
+    <div style={{ fontWeight: 900, fontSize: 26, color: th.a1, letterSpacing: 2, opacity: brandOp, transform: `scale(${Math.max(0, back)})` }}>{d?.brand || ""}</div>
+    <div style={{ marginTop: 8, fontSize: 13, color: th.muted, letterSpacing: 1, opacity: tagOp }}>{d?.tagline || ""}</div>
+    <div style={{ marginTop: 26, fontSize: 15, fontWeight: 700, color: th.ink, border: `1.5px solid ${th.a1}`, borderRadius: 24, padding: "9px 22px", opacity: ctaOp, transform: `scale(${ctaPulse})` }}>{d?.cta || ""}</div>
+  </div>;
+}
+
+const KINETIC_SCENES = { hook: Kinetic_Hook, stat: Kinetic_Stat, quote: Kinetic_Quote, outro: Kinetic_Outro };
+
 // ─── Fallback renderer for unsupported templates ─────────────────────────────
 function Fallback_Scene({ frame, fps, W, H, content: d, th, kind }) {
   if (!d) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>No content</div></div>;
@@ -1000,7 +1090,7 @@ function AppInner({format,pi,showSafe}){
   const maxW=960;
   const scale=format==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
-  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES };
+  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES, kineticStatement: KINETIC_SCENES };
   const renderers = renderersMap[prod.template] || NF_SCENES;
   const sceneData=si>=0?scenes[si]:null;
   const content=sceneData?prod.content[sceneData.id]:null;

@@ -37,6 +37,9 @@ import { CHAMPIONS_LEAGUE_SCENES, CHAMPIONS_LEAGUE_CONTENT, sceneFramesCl } from
 import { TerminalTemplate } from "./templates/terminal";
 import { TERMINAL_SCENES, TERMINAL_CONTENT, terminalSceneFrames } from "./data/terminalDemo";
 import { terminalTheme } from "./theme/terminal";
+import { KineticStatementTemplate } from "./templates/kinetic-statement";
+import { KINETIC_SCENES, KINETIC_CONTENT, kineticSceneFrames } from "./data/kineticStatement";
+import { kineticStatementTheme } from "./templates/kinetic-statement/theme";
 
 const FPS = 30;
 
@@ -90,6 +93,10 @@ const CHAMPIONS_LEAGUE_FRAMES =
 const TERMINAL_DEMO_FRAMES =
   TERMINAL_SCENES.reduce((acc, s) => acc + terminalSceneFrames(s.dur), 0) +
   (TERMINAL_SCENES.length - 1) * 12;
+
+const KINETIC_STATEMENT_FRAMES =
+  KINETIC_SCENES.reduce((acc, s) => acc + kineticSceneFrames(s.dur), 0) +
+  (KINETIC_SCENES.length - 1) * 12;
 
 export const Root: React.FC = () => {
   return (
@@ -268,6 +275,19 @@ export const Root: React.FC = () => {
           scenes: TERMINAL_SCENES,
           content: TERMINAL_CONTENT,
           theme: terminalTheme,
+        }}
+      />
+      <Composition
+        id="KineticStatement"
+        component={KineticStatementTemplate}
+        durationInFrames={KINETIC_STATEMENT_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          scenes: KINETIC_SCENES,
+          content: KINETIC_CONTENT,
+          theme: kineticStatementTheme,
         }}
       />
     </>

@@ -52,7 +52,7 @@ function validateProjectInput(project) {
   if (!project.id || typeof project.id !== "string") return "Project id is required";
   if (!project.name || typeof project.name !== "string" || !project.name.trim()) return "Project name is required";
   if (!project.template || typeof project.template !== "string") return "Template is required";
-  const validTemplates = ["scrapbook", "cr7", "cosmos", "nodeflow", "terminal"];
+  const validTemplates = ["scrapbook", "cr7", "cosmos", "nodeflow", "terminal", "kineticStatement"];
   if (!validTemplates.includes(project.template)) return "Unknown template: " + project.template;
   if (!project.format || typeof project.format !== "string") return "Format is required";
   if (!["16:9", "9:16"].includes(project.format)) return "Unsupported format: " + project.format;

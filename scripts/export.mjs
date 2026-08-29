@@ -22,6 +22,7 @@ const TEMPLATE_MODULES = {
   cosmos: "./templates/cosmos",
   nodeflow: "./templates/nodeflow",
   terminal: "./templates/terminal",
+  kineticStatement: "./templates/kinetic-statement",
 };
 
 const THEME_DEFAULTS = {
@@ -56,6 +57,14 @@ const THEME_DEFAULTS = {
     spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
     radii: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
     typography: { caption: 18, body: 22, subtitle: 28, title: 40, titleLg: 56, hero: 72 },
+  },
+  kineticStatement: {
+    name: "kineticStatement",
+    colors: { bg: "#0b0d14", bg2: "#1a0b2e", card: "rgba(255,255,255,0.05)", line: "rgba(255,255,255,0.08)", accent1: "#ffd166", accent1Soft: "rgba(255,209,102,0.25)", accent2: "#3a0ca3", accent2Soft: "rgba(58,12,163,0.25)", accent3: "#1c1c1e", ink: "#ffffff", muted: "#9a9aad" },
+    fonts: { display: "'Inter','Segoe UI',system-ui,sans-serif", body: "'Inter','Segoe UI',system-ui,sans-serif", mono: "'JetBrains Mono','Fira Code',monospace" },
+    spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+    radii: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
+    typography: { caption: 15, body: 18, subtitle: 24, title: 40, titleLg: 56, hero: 92 },
   },
 };
 
@@ -96,6 +105,7 @@ function extractCaption(template, content) {
     cosmos: { title: "title", fact: "bigValue", compare: "title", diagram: "title", timeline: "title", closing: "title" },
     nodeflow: { title: "title", flow: "title", contribution: "title", benefit: "title", compare: "title", end: "title" },
     terminal: { intro: "title", typing: "caption", reveal: "caption", outro: "title" },
+    kineticStatement: { hook: "words", stat: "label", quote: "text", outro: "brand" },
   };
   const kind = content?.kind;
   const field = FIELD_MAP[template]?.[kind] ?? "title";
@@ -147,6 +157,14 @@ function buildPayload(project) {
         if (!sanitized.lines) sanitized.lines = [];
         if (typeof sanitized.highlightLine !== "number") sanitized.highlightLine = 0;
       }
+    } else if (project.template === "kineticStatement") {
+      if (s.kind === "hook") {
+        if (!Array.isArray(sanitized.words)) sanitized.words = [];
+      }
+      if (s.kind === "stat") {
+        if (typeof sanitized.value !== "number") sanitized.value = 0;
+        if (!sanitized.suffix) sanitized.suffix = "";
+      }
     }
     content[s.id] = sanitized;
   }
@@ -165,7 +183,8 @@ function generateEntryFile(payload) {
   const componentImport = payload.template === "scrapbook" ? "ScrapbookTemplate" :
     payload.template === "cr7" ? "CR7Template" :
     payload.template === "cosmos" ? "CosmosTemplate" :
-    payload.template === "terminal" ? "TerminalTemplate" : "NodeFlowTemplate";
+    payload.template === "terminal" ? "TerminalTemplate" :
+    payload.template === "kineticStatement" ? "KineticStatementTemplate" : "NodeFlowTemplate";
   const themeProp = needsTheme ? `\n    theme={THEME}` : "";
   const themeConst = needsTheme ? `\nconst THEME = ${themeJson};\n` : "";
 
