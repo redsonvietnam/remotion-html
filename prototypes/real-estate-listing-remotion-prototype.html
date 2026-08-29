@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Real Estate Listing — Remotion-HTML Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --stage-w: 405px; --stage-h: 720px; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:#1a1a1a; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; font-family:'Inter',sans-serif; color:#ddd; padding:30px 0;
+  }
+
+  #stage{
+    position:relative; width:var(--stage-w); height:var(--stage-h);
+    overflow:hidden; border-radius:6px; box-shadow:0 30px 90px rgba(0,0,0,.7);
+    background:#f6f2ea; color:#221e19;
+  }
+  .scene{ position:absolute; inset:0; opacity:0; }
+
+  /* ---- scene: cover ---- */
+  #scene-cover{ display:flex; flex-direction:column; justify-content:center; padding:0 32px; }
+  #covertag{ display:inline-flex; align-self:flex-start; font-family:'Inter',sans-serif; font-weight:700; font-size:10.5px; letter-spacing:2px; color:#f6f2ea; background:#a9762f; padding:5px 12px; border-radius:20px; }
+  #covertype{ font-size:13.5px; color:#7a7268; margin-top:16px; font-weight:600; }
+  #coverprice{ font-family:'Fraunces',serif; font-weight:700; font-size:44px; margin-top:8px; letter-spacing:-.5px; }
+  #coveraddr{ font-size:13px; color:#5a534a; margin-top:12px; display:flex; align-items:center; gap:6px; }
+
+  /* ---- scene: specs ---- */
+  #scene-specs{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 24px; }
+  #specstitle{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin-bottom:26px; }
+  #specrow{ display:flex; gap:12px; width:100%; }
+  .speccard{ flex:1; background:#fff; border:1px solid #e8e0d2; border-radius:16px; padding:18px 10px; text-align:center; }
+  .speccard .ic{ font-size:24px; }
+  .speccard .val{ font-family:'Fraunces',serif; font-weight:700; font-size:24px; margin-top:8px; }
+  .speccard .lbl{ font-size:10.5px; color:#7a7268; margin-top:4px; }
+
+  /* ---- scene: highlights ---- */
+  #scene-highlights{ padding:80px 30px 0; }
+  #highlightstitle{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin-bottom:22px; }
+  .highlight{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .highlight .check{ width:24px; height:24px; border-radius:50%; background:#a9762f; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; flex:none; }
+  .highlight .txt{ font-size:14.5px; font-weight:600; color:#2a251f; }
+
+  /* ---- scene: outro (agent card) ---- */
+  #scene-outro{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 30px; }
+  #agentcard{ background:#221e19; color:#f6f2ea; border-radius:20px; padding:26px 24px; width:100%; text-align:center; }
+  #agentavatar{ width:56px; height:56px; border-radius:50%; background:#a9762f; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px; }
+  #agentname{ font-family:'Fraunces',serif; font-weight:600; font-size:18px; margin-top:12px; }
+  #agentrole{ font-size:11.5px; color:#c9bfaf; opacity:.7; margin-top:2px; }
+  #agentcta{ margin-top:18px; background:#a9762f; color:#fff; font-weight:700; font-size:13px; padding:11px 20px; border-radius:24px; display:inline-block; }
+  #agentphone{ margin-top:12px; font-size:12px; color:#c9bfaf; }
+
+  /* prototype chrome */
+  #chrome{ width:var(--stage-w); }
+  #timeline{ position:relative; height:34px; border-radius:8px; overflow:hidden; display:flex; cursor:pointer; background:#000; }
+  .tlseg{ position:relative; display:flex; align-items:center; justify-content:center; font-size:9.5px; color:rgba(255,255,255,.75); font-weight:600; border-right:1px solid rgba(0,0,0,.4); }
+  #playhead{ position:absolute; top:0; bottom:0; width:2px; background:#fff; box-shadow:0 0 6px #fff; pointer-events:none; }
+  #transportrow{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; font-size:11px; color:#888; }
+  #playpausebtn{ background:#2a2a2a; color:#fff; border:none; border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; font-weight:600; }
+  #timecode{ font-variant-numeric:tabular-nums; }
+  #chromenote{ font-size:10.5px; color:#666; margin-top:10px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="scene" id="scene-cover">
+    <div id="covertag"></div>
+    <div id="covertype"></div>
+    <div id="coverprice">0₫</div>
+    <div id="coveraddr"></div>
+  </div>
+
+  <div class="scene" id="scene-specs">
+    <div id="specstitle">Thông số căn hộ</div>
+    <div id="specrow"></div>
+  </div>
+
+  <div class="scene" id="scene-highlights">
+    <div id="highlightstitle">Điểm nổi bật</div>
+    <div id="highlightlist"></div>
+  </div>
+
+  <div class="scene" id="scene-outro">
+    <div id="agentcard">
+      <div id="agentavatar"></div>
+      <div id="agentname"></div>
+      <div id="agentrole"></div>
+      <div id="agentcta"></div>
+      <div id="agentphone"></div>
+    </div>
+  </div>
+</div>
+
+<div id="chrome">
+  <div id="timeline"></div>
+  <div id="transportrow">
+    <button id="playpausebtn">⏸ Pause</button>
+    <span id="timecode">0.00s / 0.00s</span>
+  </div>
+  <div id="chromenote">
+    Giá bán đếm lên có định dạng tiền tệ Việt Nam đầy đủ (dấu chấm phân
+    cách hàng nghìn, hậu tố ₫) — hàm format() thuần, seek đâu đúng đó.
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   1) DATA — nội dung bất động sản, tách khỏi thiết kế.
+   ================================================================ */
+const DATA = {
+  cover: {
+    tag: "MỚI NIÊM YẾT",
+    type: "Căn hộ cao cấp · 3 phòng ngủ",
+    price: 4200000000,
+    address: "12 Nguyễn Huệ, Quận 1, TP.HCM"
+  },
+  specs: [
+    { icon:"🛏️", value:3, suffix:"", label:"Phòng ngủ" },
+    { icon:"🛁", value:2, suffix:"", label:"Phòng tắm" },
+    { icon:"📐", value:120, suffix:"m²", label:"Diện tích" },
+  ],
+  highlightsTitle: "Điểm nổi bật",
+  highlights: [
+    "View sông thoáng đãng, ban công rộng",
+    "Nội thất cao cấp, đầy đủ tiện nghi",
+    "Gần trường quốc tế, trung tâm thương mại",
+    "Sổ hồng riêng, sẵn sàng bàn giao",
+  ],
+  agent: { name:"Trần Thị Lan", role:"Chuyên viên tư vấn · Lan Real Estate", phone:"090 123 4567", cta:"Liên hệ xem nhà ngay" }
+};
+
+/* ================================================================
+   2) THEME — branding bất động sản cao cấp, ấm áp.
+   ================================================================ */
+const THEME = {
+  color: { bg:"#f6f2ea", ink:"#221e19", inkSoft:"#5a534a", muted:"#7a7268", accent:"#a9762f", card:"#ffffff", border:"#e8e0d2" },
+  serif: "'Fraunces', serif", sans: "'Inter', sans-serif",
+};
+
+/* ================================================================
+   3) TIMING / CONFIG
+   ================================================================ */
+const TIMING = { fps:30, sceneFadeFrames:14 };
+const CONFIG = {
+  fps: TIMING.fps, width:1080, height:1920,
+  scenes: [
+    { id:"cover",      durationInFrames:70  }, // 2.3s
+    { id:"specs",      durationInFrames:100 }, // 3.3s
+    { id:"highlights", durationInFrames:130 }, // 4.3s
+    { id:"outro",      durationInFrames:80  }, // 2.7s
+  ]
+};
+let cursor = 0;
+CONFIG.scenes.forEach(s=>{ s.startFrame = cursor; cursor += s.durationInFrames; });
+const TOTAL_FRAMES = cursor;
+
+/* ================================================================
+   4) ENGINE — pure per-frame.
+   ================================================================ */
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+function interpolate(frame,[i0,i1],[o0,o1],easing=t=>t){
+  const t = clamp((frame-i0)/(i1-i0),0,1);
+  return o0 + (o1-o0)*easing(t);
+}
+const easeOutCubic = t=>1-Math.pow(1-t,3);
+const easeOutBack = t=>{ const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); };
+function formatVND(n){ return Math.round(n).toLocaleString('vi-VN')+'₫'; }
+
+function sceneOpacity(localFrame,dur){
+  const f = TIMING.sceneFadeFrames;
+  return interpolate(localFrame,[0,f],[0,1]) * interpolate(localFrame,[dur-f,dur],[1,0]);
+}
+
+/* ---- scene: cover ---- */
+document.getElementById('covertag').textContent = DATA.cover.tag;
+document.getElementById('covertype').textContent = DATA.cover.type;
+document.getElementById('coveraddr').innerHTML = `📍 ${DATA.cover.address}`;
+function renderCover(localFrame,dur){
+  document.getElementById('scene-cover').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('covertag').style.opacity = interpolate(localFrame,[0,10],[0,1]);
+  document.getElementById('covertype').style.opacity = interpolate(localFrame,[10,20],[0,1]);
+  const priceProgress = interpolate(localFrame,[16,44],[0,DATA.cover.price],easeOutCubic);
+  document.getElementById('coverprice').textContent = formatVND(priceProgress);
+  document.getElementById('coverprice').style.opacity = interpolate(localFrame,[14,22],[0,1]);
+  document.getElementById('coveraddr').style.opacity = interpolate(localFrame,[46,56],[0,1]);
+}
+
+/* ---- scene: specs ---- */
+document.getElementById('specstitle').textContent = "Thông số căn hộ";
+const specrowEl = document.getElementById('specrow');
+DATA.specs.forEach((s,i)=>{
+  const el = document.createElement('div');
+  el.className = 'speccard'; el.id = 'spec-'+i;
+  el.innerHTML = `<div class="ic">${s.icon}</div><div class="val" id="specval-${i}">0${s.suffix}</div><div class="lbl">${s.label}</div>`;
+  specrowEl.appendChild(el);
+});
+function renderSpecs(localFrame,dur){
+  document.getElementById('scene-specs').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('specstitle').style.opacity = interpolate(localFrame,[0,12],[0,1]);
+  DATA.specs.forEach((s,i)=>{
+    const start = 12 + i*10;
+    const el = document.getElementById('spec-'+i);
+    el.style.opacity = interpolate(localFrame,[start,start+16],[0,1]);
+    el.style.transform = `scale(${interpolate(localFrame,[start,start+16],[0.85,1],easeOutBack)})`;
+    const val = interpolate(localFrame,[start+6,start+26],[0,s.value],easeOutCubic);
+    document.getElementById('specval-'+i).textContent = Math.round(val)+s.suffix;
+  });
+}
+
+/* ---- scene: highlights ---- */
+document.getElementById('highlightstitle').textContent = DATA.highlightsTitle;
+const highlightlistEl = document.getElementById('highlightlist');
+DATA.highlights.forEach((h,i)=>{
+  const el = document.createElement('div');
+  el.className = 'highlight'; el.id = 'hl-'+i;
+  el.innerHTML = `<div class="check">✓</div><div class="txt">${h}</div>`;
+  highlightlistEl.appendChild(el);
+});
+function renderHighlights(localFrame,dur){
+  document.getElementById('scene-highlights').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('highlightstitle').style.opacity = interpolate(localFrame,[0,12],[0,1]);
+  DATA.highlights.forEach((h,i)=>{
+    const start = 14 + i*18;
+    const el = document.getElementById('hl-'+i);
+    el.style.opacity = interpolate(localFrame,[start,start+14],[0,1]);
+    el.style.transform = `translateX(${interpolate(localFrame,[start,start+14],[-14,0],easeOutCubic)}px)`;
+  });
+}
+
+/* ---- scene: outro ---- */
+document.getElementById('agentavatar').textContent = DATA.agent.name.split(' ').slice(-1)[0][0];
+document.getElementById('agentname').textContent = DATA.agent.name;
+document.getElementById('agentrole').textContent = DATA.agent.role;
+document.getElementById('agentcta').textContent = DATA.agent.cta;
+document.getElementById('agentphone').textContent = "📞 "+DATA.agent.phone;
+function renderOutro(localFrame,dur){
+  document.getElementById('scene-outro').style.opacity = sceneOpacity(localFrame,dur);
+  const card = document.getElementById('agentcard');
+  card.style.transform = `scale(${interpolate(localFrame,[0,18],[0.9,1],easeOutBack)})`;
+  document.getElementById('agentavatar').style.opacity = interpolate(localFrame,[0,12],[0,1]);
+  document.getElementById('agentname').style.opacity = interpolate(localFrame,[10,20],[0,1]);
+  document.getElementById('agentrole').style.opacity = interpolate(localFrame,[14,24],[0,1]);
+  const ctaEl = document.getElementById('agentcta');
+  ctaEl.style.opacity = interpolate(localFrame,[26,36],[0,1]);
+  ctaEl.style.transform = localFrame>38 ? `scale(${1+0.03*Math.sin(localFrame*0.15)})` : 'scale(1)';
+  document.getElementById('agentphone').style.opacity = interpolate(localFrame,[40,50],[0,1]);
+}
+
+const RENDERERS = { cover:renderCover, specs:renderSpecs, highlights:renderHighlights, outro:renderOutro };
+function renderFrame(frame){
+  CONFIG.scenes.forEach(s=>{
+    const local = frame - s.startFrame;
+    if(local>=0 && local<s.durationInFrames){ RENDERERS[s.id](local, s.durationInFrames); }
+    else{ document.getElementById('scene-'+s.id).style.opacity = 0; }
+  });
+}
+
+/* ================================================================
+   5) PROTOTYPE PLAYBACK
+   ================================================================ */
+const timelineEl = document.getElementById('timeline');
+const playheadEl = document.createElement('div');
+playheadEl.id = 'playhead';
+timelineEl.appendChild(playheadEl);
+CONFIG.scenes.forEach((s,i)=>{
+  const seg = document.createElement('div');
+  seg.className = 'tlseg';
+  seg.style.flex = s.durationInFrames;
+  seg.style.background = ['#3a2f20','#2e2a20','#26241c','#1c1a16'][i];
+  seg.textContent = s.id;
+  timelineEl.insertBefore(seg, playheadEl);
+});
+
+let isPlaying = true, playStartPerf = performance.now(), seekFrame = 0;
+function currentFrame(){ return isPlaying ? Math.floor(((performance.now()-playStartPerf)/1000)*CONFIG.fps) : seekFrame; }
+function updateChrome(frame){
+  playheadEl.style.left = (clamp(frame/TOTAL_FRAMES,0,1)*100)+'%';
+  document.getElementById('timecode').textContent = `${(frame/CONFIG.fps).toFixed(2)}s / ${(TOTAL_FRAMES/CONFIG.fps).toFixed(2)}s`;
+}
+function loop(){
+  let frame = currentFrame();
+  if(isPlaying && frame>=TOTAL_FRAMES){ playStartPerf = performance.now(); frame = 0; }
+  renderFrame(frame); updateChrome(frame);
+  requestAnimationFrame(loop);
+}
+loop();
+document.getElementById('playpausebtn').addEventListener('click', ()=>{
+  if(isPlaying){ seekFrame = currentFrame(); isPlaying=false; document.getElementById('playpausebtn').textContent='▶ Play'; }
+  else{ playStartPerf = performance.now() - (seekFrame/CONFIG.fps)*1000; isPlaying=true; document.getElementById('playpausebtn').textContent='⏸ Pause'; }
+});
+timelineEl.addEventListener('click', e=>{
+  const rect = timelineEl.getBoundingClientRect();
+  const frame = Math.floor(clamp((e.clientX-rect.left)/rect.width,0,1)*TOTAL_FRAMES);
+  seekFrame = frame; isPlaying = false;
+  document.getElementById('playpausebtn').textContent = '▶ Play';
+  renderFrame(frame); updateChrome(frame);
+});
+</script>
+
+<!--
+================================================================
+TEMPLATE PROTOTYPE
+
+Name: Real Estate Listing Reveal
+Description: Video giới thiệu bất động sản theo branding premium listing
+  hiện đại (sans 'Inter' phối serif ấm 'Fraunces' cho giá bán), tông
+  be/đồng sang trọng nhưng gần gũi. Giá bán đếm lên với định dạng tiền
+  tệ Việt Nam đầy đủ; thông số căn hộ (phòng ngủ/tắm/diện tích) đếm số
+  so le; điểm nổi bật hiện lần lượt; kết bằng thẻ liên hệ môi giới.
+  Không có kịch bản thao tác, chỉ là 1 video listing gọn, đẹp, đủ thông tin.
+
+Recommended aspect ratio: 9:16 (1080x1920)
+Recommended duration: 12.0s @ 30fps (380 frames)
+
+Scenes:
+- Scene 1 — Cover (2.3s): tag "MỚI NIÊM YẾT", loại hình, giá đếm lên
+  bằng formatVND() (dấu chấm phân cách hàng nghìn + ₫), địa chỉ.
+- Scene 2 — Specs (3.3s): 3 thẻ thông số pop-in so le (easeOutBack),
+  từng số liệu đếm lên độc lập theo giá trị trong DATA.specs.
+- Scene 3 — Highlights (4.3s): danh sách điểm nổi bật có dấu tick,
+  trượt vào từ trái, cách nhau 18 frame/dòng.
+- Scene 4 — Outro (2.7s): thẻ môi giới (avatar chữ cái đầu, tên, vai
+  trò, nút CTA pulse nhẹ, số điện thoại).
+
+Configurable content:
+- DATA.cover.{tag,type,price,address}
+- DATA.specs[] (icon, value, suffix, label) — số lượng thẻ tự do
+- DATA.highlightsTitle / DATA.highlights[] — số dòng tự do
+- DATA.agent.{name,role,phone,cta}
+- THEME.color.* / THEME.serif / THEME.sans
+
+Assets:
+- Google Font 'Fraunces' (serif ấm cho giá/tiêu đề) + 'Inter' (sans).
+  Không ảnh thật — nên thêm ảnh căn hộ ở scene cover khi lên bản thật,
+  không ảnh hưởng logic timing vì mọi animation chỉ tác động text/số.
+
+Prototype-only behavior:
+- Auto-loop khi hết video, timeline/scrubber/play-pause là chrome xem
+  trước, nằm ngoài #stage, không thuộc render output.
+
+Remotion migration considerations:
+- formatVND() giữ nguyên — hàm thuần, không phụ thuộc gì ngoài input.
+- DATA.specs.map() / DATA.highlights.map() ánh xạ trực tiếp sang JSX,
+  các hằng số offset (start = 12+i*10, 14+i*18) giữ nguyên công thức.
+- agentavatar lấy ký tự đầu tên bằng JS string — nên tính sẵn trong
+  props hoặc component thay vì DOM query như prototype này.
+- Nếu thêm ảnh bất động sản thật ở scene cover, dùng <Img> của
+  Remotion (tự chờ ảnh load xong mới render frame) thay <img> thường.
+================================================================
+-->
+</body>
+</html>

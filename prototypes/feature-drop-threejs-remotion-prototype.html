@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Feature Drop (SVG + Three.js) — Remotion-HTML Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{ --stage-w: 405px; --stage-h: 720px; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:#1a1a1a; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; font-family:'Inter',sans-serif; color:#ddd; padding:30px 0;
+  }
+
+  #stage{
+    position:relative; width:var(--stage-w); height:var(--stage-h);
+    overflow:hidden; border-radius:22px; box-shadow:0 30px 90px rgba(0,0,0,.75);
+    background:#0a0812; color:#f5f4fa;
+  }
+  .scene{ position:absolute; inset:0; opacity:0; }
+
+  #emojilayer{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+  .emoji{ position:absolute; font-size:22px; filter:drop-shadow(0 4px 10px rgba(0,0,0,.4)); }
+
+  /* ---- scene: hook ---- */
+  #scene-hook{ display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:5; padding:0 30px; }
+  #hookeyebrow{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px; color:#3ddcff; }
+  .masklinewrap{ overflow:hidden; }
+  .maskline{ font-weight:900; font-size:32px; line-height:1.2; text-align:center; letter-spacing:-.5px; }
+  #threewrap{ width:190px; height:190px; margin-top:12px; }
+  #threecanvas{ width:100%; height:100%; display:block; }
+
+  /* ---- scene: features (SVG icon draw-in) ---- */
+  #scene-features{ z-index:5; padding:64px 26px 0; }
+  #featuretitle{ text-align:center; font-size:11px; font-weight:700; letter-spacing:3px; color:rgba(245,244,250,.5); margin-bottom:20px; }
+  .featrow{ display:flex; align-items:center; gap:16px; margin-bottom:22px; }
+  .iconwrap{ width:56px; height:56px; flex:none; }
+  .iconwrap svg{ width:100%; height:100%; }
+  .iconwrap path{ fill:none; stroke:#fff; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
+  .featlabel{ font-weight:800; font-size:19px; line-height:1.25; }
+  .featsub{ font-size:11.5px; color:rgba(245,244,250,.55); margin-top:3px; }
+
+  /* ---- scene: outro (layered ghost typography) ---- */
+  #scene-outro{ display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:5; text-align:center; }
+  #outrowrap{ position:relative; }
+  #outroghost{
+    position:absolute; inset:0; font-weight:900; font-size:56px; letter-spacing:-1px;
+    color:transparent; -webkit-text-stroke:1.4px rgba(245,244,250,.18);
+    transform:translate(6px,6px) scale(1.06); z-index:0;
+  }
+  #outrofront{ position:relative; font-weight:900; font-size:56px; letter-spacing:-1px; z-index:1;
+    background:linear-gradient(90deg,#7c5cff,#3ddcff); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  #outrocta{ margin-top:22px; font-weight:700; font-size:14px; background:#fff; color:#0a0812; padding:11px 24px; border-radius:24px; }
+
+  /* prototype chrome */
+  #chrome{ width:var(--stage-w); }
+  #timeline{ position:relative; height:34px; border-radius:8px; overflow:hidden; display:flex; cursor:pointer; background:#000; }
+  .tlseg{ position:relative; display:flex; align-items:center; justify-content:center; font-size:9.5px; color:rgba(255,255,255,.75); font-weight:600; border-right:1px solid rgba(0,0,0,.4); }
+  #playhead{ position:absolute; top:0; bottom:0; width:2px; background:#fff; box-shadow:0 0 6px #fff; pointer-events:none; }
+  #transportrow{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; font-size:11px; color:#888; }
+  #playpausebtn{ background:#2a2a2a; color:#fff; border:none; border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; font-weight:600; }
+  #timecode{ font-variant-numeric:tabular-nums; }
+  #chromenote{ font-size:10.5px; color:#666; margin-top:10px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="emojilayer"></div>
+
+  <div class="scene" id="scene-hook">
+    <div id="hookeyebrow"></div>
+    <div class="masklinewrap"><div class="maskline" id="hookline1"></div></div>
+    <div class="masklinewrap"><div class="maskline" id="hookline2"></div></div>
+    <div id="threewrap"><canvas id="threecanvas"></canvas></div>
+  </div>
+
+  <div class="scene" id="scene-features">
+    <div id="featuretitle">3 TÍNH NĂNG NỔI BẬT</div>
+    <div id="featurelist"></div>
+  </div>
+
+  <div class="scene" id="scene-outro">
+    <div id="outrowrap"><div id="outroghost"></div><div id="outrofront"></div></div>
+    <div id="outrocta"></div>
+  </div>
+</div>
+
+<div id="chrome">
+  <div id="timeline"></div>
+  <div id="transportrow">
+    <button id="playpausebtn">⏸ Pause</button>
+    <span id="timecode">0.00s / 0.00s</span>
+  </div>
+  <div id="chromenote">
+    Không dùng ảnh/video thật — hero là khối 3D Three.js (xoay theo
+    frame, không theo thời gian thực), icon tự vẽ bằng SVG path.
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   1) DATA — nội dung, tách khỏi thiết kế/animation.
+   ================================================================ */
+const DATA = {
+  hook: { eyebrow:"BẢN CẬP NHẬT MỚI", title:["3 tính năng","bạn sẽ mê"] },
+  features: [
+    { icon:"sync",   label:"Đồng bộ tức thì", sub:"Mọi thiết bị luôn khớp dữ liệu real-time" },
+    { icon:"shield", label:"Bảo mật 2 lớp", sub:"Mã hoá đầu cuối, xác thực sinh trắc học" },
+    { icon:"bolt",   label:"Nhanh gấp đôi", sub:"Tối ưu lại toàn bộ engine xử lý" },
+  ],
+  outro: { brand:"NOVA", cta:"Cập nhật ngay →" },
+  floatingEmoji: ["✨","⚡","🔒","🚀","💎","🌟","🎯","🧭"],
+};
+
+/* ================================================================
+   2) THEME — design tokens + icon path library (SVG), tách khỏi DATA.
+   ================================================================ */
+const THEME = {
+  color: { bg:"#0a0812", accentA:"#7c5cff", accentB:"#3ddcff", textPrimary:"#f5f4fa" },
+  // path vẽ tay, viewBox 0 0 100 100 — không dùng icon font/thư viện ngoài
+  iconPaths: {
+    sync:   "M78 30 A34 34 0 1 0 82 55 M78 30 L78 12 M78 30 L60 30",
+    shield: "M50 8 L84 22 V50 C84 74 68 88 50 94 C32 88 16 74 16 50 V22 Z",
+    bolt:   "M56 6 L22 56 H46 L40 96 L82 40 H56 Z",
+  },
+};
+
+/* ================================================================
+   3) TIMING / CONFIG
+   ================================================================ */
+const TIMING = { fps:30, sceneFadeFrames:14 };
+const CONFIG = {
+  fps: TIMING.fps, width:1080, height:1920,
+  scenes: [
+    { id:"hook",     durationInFrames:75  }, // 2.5s
+    { id:"features", durationInFrames:190 }, // 6.3s
+    { id:"outro",    durationInFrames:75  }, // 2.5s
+  ]
+};
+let cursor = 0;
+CONFIG.scenes.forEach(s=>{ s.startFrame = cursor; cursor += s.durationInFrames; });
+const TOTAL_FRAMES = cursor;
+
+/* ================================================================
+   4) ENGINE — pure per-frame.
+   ================================================================ */
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+function interpolate(frame,[i0,i1],[o0,o1],easing=t=>t){
+  const t = clamp((frame-i0)/(i1-i0),0,1);
+  return o0 + (o1-o0)*easing(t);
+}
+const easeOutCubic = t=>1-Math.pow(1-t,3);
+const easeOutExpo = t=> t===1?1:1-Math.pow(2,-10*t);
+const easeOutBack = t=>{ const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); };
+
+function sceneOpacity(localFrame,dur){
+  const f = TIMING.sceneFadeFrames;
+  return interpolate(localFrame,[0,f],[0,1]) * interpolate(localFrame,[dur-f,dur],[1,0]);
+}
+
+/* ---- floating emoji layer: trôi nổi parallax, vị trí = hàm sin/cos của frame ---- */
+const emojilayerEl = document.getElementById('emojilayer');
+DATA.floatingEmoji.forEach((e,i)=>{
+  const el = document.createElement('div');
+  el.className = 'emoji'; el.id = 'emoji-'+i;
+  el.textContent = e;
+  emojilayerEl.appendChild(el);
+});
+function renderEmojiLayer(frame){
+  DATA.floatingEmoji.forEach((e,i)=>{
+    const baseX = 10 + (i*11)%80;
+    const baseY = 8 + (i*23)%84;
+    const amp = 4 + (i%3)*2;
+    const freq = 0.01 + (i%4)*0.003;
+    const phase = i*1.7;
+    const x = baseX + amp*Math.sin(frame*freq + phase);
+    const y = baseY + amp*0.8*Math.cos(frame*freq*1.3 + phase);
+    const opacity = 0.16 + 0.10*Math.sin(frame*0.02 + i);
+    const el = document.getElementById('emoji-'+i);
+    el.style.left = x+'%'; el.style.top = y+'%';
+    el.style.opacity = Math.max(0.06, opacity);
+    el.style.transform = `scale(${0.8+i%3*0.15}) rotate(${8*Math.sin(frame*0.015+i)}deg)`;
+  });
+}
+
+/* ---- scene: hook ---- */
+document.getElementById('hookeyebrow').textContent = DATA.hook.eyebrow;
+document.getElementById('hookline1').textContent = DATA.hook.title[0];
+document.getElementById('hookline2').textContent = DATA.hook.title[1];
+function renderHook(localFrame,dur){
+  document.getElementById('scene-hook').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('hookeyebrow').style.opacity = interpolate(localFrame,[0,10],[0,1]);
+  document.getElementById('hookline1').style.transform = `translateY(${interpolate(localFrame,[8,26],[110,0],easeOutExpo)}%)`;
+  document.getElementById('hookline2').style.transform = `translateY(${interpolate(localFrame,[16,34],[110,0],easeOutExpo)}%)`;
+  const threewrap = document.getElementById('threewrap');
+  threewrap.style.opacity = interpolate(localFrame,[26,42],[0,1]);
+  threewrap.style.transform = `scale(${interpolate(localFrame,[26,42],[0.7,1],easeOutBack)})`;
+}
+
+/* ---- scene: features — SVG icon draw-in bằng stroke-dashoffset thật ---- */
+const featurelistEl = document.getElementById('featurelist');
+DATA.features.forEach((f,i)=>{
+  const row = document.createElement('div');
+  row.className = 'featrow'; row.id = 'feat-'+i;
+  row.innerHTML = `
+    <div class="iconwrap"><svg viewBox="0 0 100 100"><path id="iconpath-${i}" d="${THEME.iconPaths[f.icon]}"/></svg></div>
+    <div><div class="featlabel">${f.label}</div><div class="featsub">${f.sub}</div></div>
+  `;
+  featurelistEl.appendChild(row);
+});
+const iconLens = DATA.features.map((f,i)=>{
+  const el = document.getElementById('iconpath-'+i);
+  const len = el.getTotalLength();
+  el.style.strokeDasharray = len;
+  return len;
+});
+function renderFeatures(localFrame,dur){
+  document.getElementById('scene-features').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('featuretitle').style.opacity = interpolate(localFrame,[0,12],[0,1]);
+  DATA.features.forEach((f,i)=>{
+    const start = 12 + i*36;
+    const row = document.getElementById('feat-'+i);
+    row.style.opacity = interpolate(localFrame,[start,start+14],[0,1]);
+    row.style.transform = `translateX(${interpolate(localFrame,[start,start+14],[-16,0],easeOutCubic)}px)`;
+    const drawProgress = interpolate(localFrame,[start+6,start+30],[0,1],easeOutCubic);
+    const iconEl = document.getElementById('iconpath-'+i);
+    iconEl.style.strokeDashoffset = iconLens[i]*(1-drawProgress);
+    iconEl.style.stroke = i===0?THEME.color.accentA : (i===1?THEME.color.accentB:'#fff');
+  });
+}
+
+/* ---- scene: outro — layered ghost typography ---- */
+document.getElementById('outroghost').textContent = DATA.outro.brand;
+document.getElementById('outrofront').textContent = DATA.outro.brand;
+document.getElementById('outrocta').textContent = DATA.outro.cta;
+function renderOutro(localFrame,dur){
+  document.getElementById('scene-outro').style.opacity = sceneOpacity(localFrame,dur);
+  const wrap = document.getElementById('outrowrap');
+  wrap.style.transform = `scale(${interpolate(localFrame,[0,18],[0.8,1],easeOutBack)})`;
+  document.getElementById('outroghost').style.transform = `translate(${interpolate(localFrame,[0,20],[16,6])}px, 6px) scale(1.06)`;
+  const ctaEl = document.getElementById('outrocta');
+  ctaEl.style.opacity = interpolate(localFrame,[24,36],[0,1]);
+  ctaEl.style.transform = localFrame>38 ? `scale(${1+0.03*Math.sin(localFrame*0.15)})` : 'scale(1)';
+}
+
+/* ================================================================
+   4b) THREE.JS — hero 3D thay cho ảnh chụp, xoay THEO FRAME
+   (không dùng animation loop nội bộ / thời gian thực của three.js)
+   ================================================================ */
+let renderer3d, scene3d, camera3d, meshSolid, meshWire;
+function initThree(){
+  const canvas = document.getElementById('threecanvas');
+  renderer3d = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+  renderer3d.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+  renderer3d.setSize(190,190,false);
+
+  scene3d = new THREE.Scene();
+  camera3d = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  camera3d.position.set(0,0,4.3);
+
+  const light1 = new THREE.DirectionalLight(0xffffff, 1.15);
+  light1.position.set(2,3,4);
+  scene3d.add(light1);
+  scene3d.add(new THREE.AmbientLight(0x6644ff, 0.55));
+
+  const geo = new THREE.IcosahedronGeometry(1.25, 0);
+  const mat = new THREE.MeshStandardMaterial({ color:0x7c5cff, flatShading:true, roughness:0.35, metalness:0.25 });
+  meshSolid = new THREE.Mesh(geo, mat);
+  scene3d.add(meshSolid);
+
+  const wireGeo = new THREE.IcosahedronGeometry(1.3, 0);
+  const wireMat = new THREE.MeshBasicMaterial({ color:0x3ddcff, wireframe:true, transparent:true, opacity:0.55 });
+  meshWire = new THREE.Mesh(wireGeo, wireMat);
+  scene3d.add(meshWire);
+}
+function renderThree(globalFrame){
+  if(!renderer3d) return;
+  const rx = globalFrame*0.0065;
+  const ry = globalFrame*0.011;
+  meshSolid.rotation.set(rx, ry, 0);
+  meshWire.rotation.set(rx*1.02, ry*1.02, 0);
+  renderer3d.render(scene3d, camera3d);
+}
+
+const RENDERERS = { hook:renderHook, features:renderFeatures, outro:renderOutro };
+function renderFrame(frame){
+  renderEmojiLayer(frame);
+  CONFIG.scenes.forEach(s=>{
+    const local = frame - s.startFrame;
+    if(local>=0 && local<s.durationInFrames){ RENDERERS[s.id](local, s.durationInFrames); }
+    else{ document.getElementById('scene-'+s.id).style.opacity = 0; }
+  });
+  const hookScene = CONFIG.scenes.find(s=>s.id==='hook');
+  if(frame < hookScene.startFrame+hookScene.durationInFrames){ renderThree(frame); }
+}
+
+/* ================================================================
+   5) PROTOTYPE PLAYBACK
+   ================================================================ */
+initThree();
+const timelineEl = document.getElementById('timeline');
+const playheadEl = document.createElement('div');
+playheadEl.id = 'playhead';
+timelineEl.appendChild(playheadEl);
+CONFIG.scenes.forEach((s,i)=>{
+  const seg = document.createElement('div');
+  seg.className = 'tlseg';
+  seg.style.flex = s.durationInFrames;
+  seg.style.background = ['#241c3a','#1c1830','#241c3a'][i];
+  seg.textContent = s.id;
+  timelineEl.insertBefore(seg, playheadEl);
+});
+
+let isPlaying = true, playStartPerf = performance.now(), seekFrame = 0;
+function currentFrame(){ return isPlaying ? Math.floor(((performance.now()-playStartPerf)/1000)*CONFIG.fps) : seekFrame; }
+function updateChrome(frame){
+  playheadEl.style.left = (clamp(frame/TOTAL_FRAMES,0,1)*100)+'%';
+  document.getElementById('timecode').textContent = `${(frame/CONFIG.fps).toFixed(2)}s / ${(TOTAL_FRAMES/CONFIG.fps).toFixed(2)}s`;
+}
+function loop(){
+  let frame = currentFrame();
+  if(isPlaying && frame>=TOTAL_FRAMES){ playStartPerf = performance.now(); frame = 0; }
+  renderFrame(frame); updateChrome(frame);
+  requestAnimationFrame(loop);
+}
+loop();
+document.getElementById('playpausebtn').addEventListener('click', ()=>{
+  if(isPlaying){ seekFrame = currentFrame(); isPlaying=false; document.getElementById('playpausebtn').textContent='▶ Play'; }
+  else{ playStartPerf = performance.now() - (seekFrame/CONFIG.fps)*1000; isPlaying=true; document.getElementById('playpausebtn').textContent='⏸ Pause'; }
+});
+timelineEl.addEventListener('click', e=>{
+  const rect = timelineEl.getBoundingClientRect();
+  const frame = Math.floor(clamp((e.clientX-rect.left)/rect.width,0,1)*TOTAL_FRAMES);
+  seekFrame = frame; isPlaying = false;
+  document.getElementById('playpausebtn').textContent = '▶ Play';
+  renderFrame(frame); updateChrome(frame);
+});
+</script>
+
+<!--
+================================================================
+TEMPLATE PROTOTYPE
+
+Name: Feature Drop (SVG + Three.js, no photography)
+Description: Video công bố tính năng KHÔNG dùng ảnh/video thật — toàn
+  bộ "hình ảnh" được thay bằng: (1) icon SVG tự vẽ tay, animate bằng
+  stroke-dashoffset thật (không phải icon font), (2) typography làm
+  ngôn ngữ hình ảnh chính (mask-reveal, layered ghost-text tạo chiều
+  sâu), (3) emoji trôi nổi parallax nền, và (4) 1 khối 3D dựng bằng
+  Three.js (icosahedron xoay) thay cho ảnh hero sản phẩm. Ba.js được
+  render THEO FRAME (rotation = f(frame)), không dùng animation loop
+  thời gian thực nội bộ của thư viện — giữ đúng nguyên tắc "mỗi frame
+  là 1 hàm thuần" của toàn bộ prototype.
+
+Recommended aspect ratio: 9:16 (1080x1920)
+Recommended duration: 11.3s @ 30fps (340 frames)
+
+Scenes:
+- Scene 1 — Hook (2.5s): eyebrow tag, 2 dòng tiêu đề mask-reveal, khối
+  3D icosahedron (lõi màu + khung dây) pop-in rồi xoay liên tục.
+- Scene 2 — Features (6.3s): 3 icon SVG tự vẽ path, mỗi icon "vẽ ra"
+  bằng stroke-dashoffset thật (đo độ dài path thật qua getTotalLength),
+  kèm nhãn tính năng trượt vào từ trái, so le 36 frame/tính năng.
+- Scene 3 — Outro (2.5s): brand wordmark dùng kỹ thuật layered ghost
+  typography (2 lớp chữ chồng lệch, 1 lớp outline mờ tạo chiều sâu),
+  CTA pulse nhẹ.
+- Toàn video: lớp emoji trôi nổi (8 emoji, quỹ đạo sin/cos riêng theo
+  index) làm nền động xuyên suốt, thay cho ảnh minh hoạ trang trí.
+
+Configurable content:
+- DATA.hook.{eyebrow,title[]}
+- DATA.features[] (icon: khoá tham chiếu tới THEME.iconPaths, label, sub)
+- DATA.outro.{brand,cta}
+- DATA.floatingEmoji[] — số lượng/emoji tự do
+- THEME.color.* / THEME.iconPaths{} — thêm icon mới chỉ cần thêm 1
+  cặp key:path SVG (viewBox 0 0 100 100), không đụng ENGINE
+
+Assets:
+- Google Font 'Inter' + 'JetBrains Mono'.
+- Three.js r128 từ cdnjs (https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js).
+- Icon SVG viết tay trong THEME.iconPaths — không dùng icon font/thư
+  viện icon ngoài (Font Awesome, Lucide...) để giữ tự chủ hoàn toàn
+  về hình ảnh.
+- Không ảnh/video thật ở bất kỳ scene nào.
+
+Prototype-only behavior:
+- initThree() gọi 1 lần khi tải trang (khởi tạo renderer/scene/camera/
+  mesh) — trong Remotion nên chuyển thành setup 1 lần ở component cấp
+  cao (hoặc dùng @remotion/three có sẵn cơ chế này).
+- Auto-loop khi hết video, timeline/scrubber/play-pause là chrome xem
+  trước, nằm ngoài #stage.
+- iconEl.getTotalLength() gọi 1 lần lúc dựng DOM — API trình duyệt,
+  hoạt động bình thường trong Chromium headless của Remotion.
+
+Remotion migration considerations:
+- Nên dùng package chính thức @remotion/three thay vì tự quản lý
+  WebGLRenderer/canvas như prototype này — @remotion/three cung cấp
+  <ThreeCanvas> tự đồng bộ với useCurrentFrame() và xử lý sẵn vòng
+  đời render/dispose khi Sequence unmount.
+- renderThree(frame) hiện set rotation trực tiếp rồi gọi renderer.render()
+  thủ công mỗi khi renderFrame() chạy — đây chính là mô hình đúng cần
+  giữ khi chuyển sang React (chỉ đổi cách gọi, không đổi công thức
+  rotation = frame * hệ số).
+- iconPaths nên tách thành file .js riêng (icon-library.js) nếu bộ
+  icon lớn dần, để THEME chỉ còn tham chiếu, không phình to.
+- Cân nhắc dispose geometry/material của three.js khi scene "hook"
+  không còn active lâu dài (video dài, nhiều Sequence) để tránh rò
+  rỉ bộ nhớ GPU — prototype này không cần vì video ngắn và tự loop.
+================================================================
+-->
+</body>
+</html>
