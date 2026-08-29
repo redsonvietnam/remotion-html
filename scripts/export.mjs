@@ -165,6 +165,9 @@ function buildPayload(project) {
         if (typeof sanitized.value !== "number") sanitized.value = 0;
         if (!sanitized.suffix) sanitized.suffix = "";
       }
+      if (s.kind === "quote") {
+        if (!sanitized.text) sanitized.text = "";
+      }
     }
     content[s.id] = sanitized;
   }
@@ -195,7 +198,7 @@ import { Composition } from "remotion";
 import { ${componentImport} } from "${mod}";
 
 const SCENES = ${scenesJson};
-const CONTENT = ${contentJson};
+const CONTENT = ${contentJson} as const;
 const TOTAL_FRAMES = ${payload.totalFrames};
 const FPS = ${payload.fps};
 const WIDTH = ${payload.width};
