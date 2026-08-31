@@ -45,6 +45,8 @@ import { PRODUCT_TEASER_SCENES, PRODUCT_TEASER_CONTENT, PRODUCT_TEASER_TOTAL_FRA
 import { productTeaser } from "./theme/productTeaser";
 import { EditorialFeatureTemplate } from "./templates/editorial-feature";
 import { EDITORIAL_FEATURE_CONTENT, EDITORIAL_FEATURE_TOTAL_FRAMES } from "./data/editorialFeature";
+import { RealEstateListingTemplate } from "./templates/real-estate-listing";
+import { REAL_ESTATE_LISTING_CONTENT, REAL_ESTATE_LISTING_TOTAL_FRAMES } from "./data/realEstateListing";
 
 const FPS = 30;
 
@@ -321,6 +323,21 @@ export const Root: React.FC = () => {
           takeawaysTitle: EDITORIAL_FEATURE_CONTENT.takeawaysTitle,
           takeaways: EDITORIAL_FEATURE_CONTENT.takeaways,
           outro: EDITORIAL_FEATURE_CONTENT.outro,
+        }}
+      />
+      <Composition
+        id="RealEstateListing"
+        component={RealEstateListingTemplate}
+        durationInFrames={REAL_ESTATE_LISTING_TOTAL_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          cover: REAL_ESTATE_LISTING_CONTENT.cover,
+          specs: REAL_ESTATE_LISTING_CONTENT.specs,
+          highlightsTitle: REAL_ESTATE_LISTING_CONTENT.highlightsTitle,
+          highlights: REAL_ESTATE_LISTING_CONTENT.highlights,
+          agent: REAL_ESTATE_LISTING_CONTENT.agent,
         }}
       />
     </>
