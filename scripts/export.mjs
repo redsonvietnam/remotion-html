@@ -23,6 +23,7 @@ const TEMPLATE_MODULES = {
   nodeflow: "./templates/nodeflow",
   terminal: "./templates/terminal",
   kineticStatement: "./templates/kinetic-statement",
+  bentoGrid: "./templates/bento-grid",
 };
 
 const THEME_DEFAULTS = {
@@ -66,6 +67,14 @@ const THEME_DEFAULTS = {
     radii: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
     typography: { caption: 15, body: 18, subtitle: 24, title: 40, titleLg: 56, hero: 92 },
   },
+  bentoGrid: {
+    name: "bentoGrid",
+    colors: { bg: "#06050a", bg2: "#0c0a14", card: "rgba(255,255,255,0.055)", line: "rgba(255,255,255,0.13)", accent1: "#7c5cff", accent1Soft: "rgba(124,92,255,0.25)", accent2: "#ff6bd6", accent2Soft: "rgba(255,107,214,0.25)", accent3: "#3ddcff", ink: "#f5f4fa", muted: "rgba(245,244,250,0.65)" },
+    fonts: { display: "'Inter','Segoe UI',system-ui,sans-serif", body: "'Inter','Segoe UI',system-ui,sans-serif", mono: "'Inter','Segoe UI',system-ui,sans-serif" },
+    spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+    radii: { sm: 6, md: 12, lg: 18, xl: 24, full: 9999 },
+    typography: { caption: 11, body: 13, subtitle: 18, title: 26, titleLg: 38, hero: 56 },
+  },
 };
 
 const FORMAT_DIMENSIONS = {
@@ -106,6 +115,7 @@ function extractCaption(template, content) {
     nodeflow: { title: "title", flow: "title", contribution: "title", benefit: "title", compare: "title", end: "title" },
     terminal: { intro: "title", typing: "caption", reveal: "caption", outro: "title" },
     kineticStatement: { hook: "words", stat: "label", quote: "text", outro: "brand" },
+    bentoGrid: { hook: "line1", bento: "title", outro: "brand" },
   };
   const kind = content?.kind;
   const field = FIELD_MAP[template]?.[kind] ?? "title";
@@ -187,7 +197,8 @@ function generateEntryFile(payload) {
     payload.template === "cr7" ? "CR7Template" :
     payload.template === "cosmos" ? "CosmosTemplate" :
     payload.template === "terminal" ? "TerminalTemplate" :
-    payload.template === "kineticStatement" ? "KineticStatementTemplate" : "NodeFlowTemplate";
+    payload.template === "kineticStatement" ? "KineticStatementTemplate" :
+    payload.template === "bentoGrid" ? "BentoGridTemplate" : "NodeFlowTemplate";
   const themeProp = needsTheme ? `\n    theme={THEME}` : "";
   const themeConst = needsTheme ? `\nconst THEME = ${themeJson};\n` : "";
 

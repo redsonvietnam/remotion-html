@@ -122,6 +122,12 @@ const TEMPLATES = [
     formats: ["9:16"],
     sceneKinds: ["hook","stat","quote","outro"],
   },
+  {
+    id: "bentoGrid", name: "Bento Grid", status: "ready",
+    description: "Glassmorphism bento grid with aurora background, animated stat counters, SVG chart, staggered card reveals. For modern vertical product showcases.",
+    formats: ["9:16"],
+    sceneKinds: ["hook","bento","outro"],
+  },
 ];
 
 const PRODUCTIONS = [
@@ -140,6 +146,7 @@ const PRODUCTIONS = [
   { id: "luatBHXH", name: "Luat BHXH", template: "blueprint", format: "16:9" },
   { id: "terminalDemo", name: "5 JavaScript Tips", template: "terminal", format: "9:16" },
   { id: "kineticStatementDemo", name: "3 Seconds Hook", template: "kineticStatement", format: "9:16" },
+  { id: "bentoGridDemo", name: "AURA Product Showcase", template: "bentoGrid", format: "9:16" },
 ];
 
 function FormatBadge({ format }) {

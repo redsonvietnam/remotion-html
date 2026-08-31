@@ -297,6 +297,42 @@ export const TEMPLATE_CAPABILITIES: Record<string, TemplateCapability> = {
       },
     ],
   },
+  bentoGrid: {
+    template: "bentoGrid",
+    label: "Bento Grid",
+    formats: ["9:16"],
+    defaultSceneKind: "hook",
+    sceneKinds: [
+      {
+        kind: "hook",
+        label: "Hook",
+        fields: [
+          { key: "line1", label: "Line 1", type: "text", required: true },
+          { key: "line2", label: "Line 2", type: "text", required: true },
+        ],
+      },
+      {
+        kind: "bento",
+        label: "Bento",
+        fields: [
+          { key: "title", label: "Title", type: "text", required: true },
+          { key: "stat", label: "Stat", type: "text" },
+          { key: "feature1", label: "Feature 1", type: "text" },
+          { key: "feature2", label: "Feature 2", type: "text" },
+          { key: "quote", label: "Quote", type: "textarea" },
+        ],
+      },
+      {
+        kind: "outro",
+        label: "Outro",
+        fields: [
+          { key: "brand", label: "Brand", type: "text", required: true },
+          { key: "tagline", label: "Tagline", type: "text" },
+          { key: "cta", label: "CTA", type: "text" },
+        ],
+      },
+    ],
+  },
 };
 
 /** Get capability for a template, or null if unknown. */

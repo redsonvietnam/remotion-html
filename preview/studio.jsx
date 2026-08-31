@@ -6,7 +6,7 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"], kineticStatement: ["9:16"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"], kineticStatement: ["9:16"], bentoGrid: ["9:16"] };
 
 const PRODUCTIONS = [
   {
@@ -236,6 +236,18 @@ const PRODUCTIONS = [
       s4:{kind:"outro",brand:"REMOTION-HTML",tagline:"VIDEO TEMPLATE ENGINE",cta:"Xem thêm mẫu →"},
     },
   },
+  {
+    id: "bentoGridDemo", name: "AURA Product Showcase", template: "bentoGrid", format: "9:16",
+    theme: { bg:"#06050a",bg2:"#0c0a14",card:"rgba(255,255,255,0.055)",line:"rgba(255,255,255,0.13)",a1:"#7c5cff",a1s:"rgba(124,92,255,0.25)",a2:"#ff6bd6",a2s:"rgba(255,107,214,0.25)",a3:"#3ddcff",ink:"#f5f4fa",muted:"rgba(245,244,250,0.65)",fd:"'Inter','Segoe UI',sans-serif",fm:"'Inter','Segoe UI',sans-serif" },
+    scenes: [
+      { id:"s1",dur:3.0,kind:"hook" },{ id:"s2",dur:5.0,kind:"bento" },{ id:"s3",dur:2.5,kind:"outro" },
+    ],
+    content: {
+      s1:{kind:"hook",line1:"INTRODUCING",line2:"AURA"},
+      s2:{kind:"bento",title:"Design System",stat:"2026",feature1:"Glassmorphism",feature2:"Aurora BG",chart:[30,45,60,80,95],quote:"Beyond pixels.",palette:["#7c5cff","#ff6bd6","#3ddcff","#ffb84d"]},
+      s3:{kind:"outro",brand:"AURA",tagline:"DESIGN SYSTEM",cta:"Get Started →"},
+    },
+  },
 ];
 
 // ─── Composer Project Routing ────────────────────────────────────────────────
@@ -264,6 +276,7 @@ function composerProjectToProduction(cp) {
     blueprint: { bg:"#0a1830",bg2:"#0f2145",card:"rgba(224,238,255,0.04)",line:"rgba(224,238,255,0.22)",a1:"#eaf4ff",a1s:"rgba(234,244,255,0.55)",a2:"#e8a33d",a2s:"#f2c27a",a3:"#5b84b8",ink:"#f2f6fb",muted:"#7d93b3",fd:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif",fm:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif" },
     terminal: { bg:"#000000",bg2:"#0a0a0a",card:"#0d1117",line:"rgba(255,255,255,0.08)",a1:"#00ff66",a1s:"#33ff88",a2:"#00cc55",a2s:"#33ff88",a3:"#ff79c6",ink:"#e6e6e6",muted:"#6272a4",fd:"'Barlow Condensed','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
     kineticStatement: { bg:"#0b0d14",bg2:"#1a0b2e",card:"rgba(255,255,255,0.05)",line:"rgba(255,255,255,0.08)",a1:"#ffd166",a1s:"rgba(255,209,102,0.25)",a2:"#3a0ca3",a2s:"rgba(58,12,163,0.25)",a3:"#1c1c1e",ink:"#ffffff",muted:"#9a9aad",fd:"'Inter','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
+    bentoGrid: { bg:"#06050a",bg2:"#0c0a14",card:"rgba(255,255,255,0.055)",line:"rgba(255,255,255,0.13)",a1:"#7c5cff",a1s:"rgba(124,92,255,0.25)",a2:"#ff6bd6",a2s:"rgba(255,107,214,0.25)",a3:"#3ddcff",ink:"#f5f4fa",muted:"rgba(245,244,250,0.65)",fd:"'Inter','Segoe UI',sans-serif",fm:"'Inter','Segoe UI',sans-serif" },
   };
   return {
     id: "__composer__" + cp.id,
@@ -989,6 +1002,98 @@ function Kinetic_Outro({ frame, fps, W, H, content: d, th }) {
 
 const KINETIC_SCENES = { hook: Kinetic_Hook, stat: Kinetic_Stat, quote: Kinetic_Quote, outro: Kinetic_Outro };
 
+// ─── Bento Grid Scene Renderers ──────────────────────────────────────────────
+function bentoInterp(frame, i0, i1, o0, o1) {
+  const t = Math.max(0, Math.min(1, (frame - i0) / (i1 - i0)));
+  return o0 + (o1 - o0) * t;
+}
+function bentoSceneOpacity(frame, dur) {
+  return bentoInterp(frame, 0, 15, 0, 1) * bentoInterp(frame, dur - 12, dur, 1, 0);
+}
+
+function Bento_Hook({ frame, fps, W, H, content: d, th }) {
+  const dur = 90;
+  const opacity = bentoSceneOpacity(frame, dur);
+  const maskW = bentoInterp(frame, 5, 35, 0, 100);
+  const l1Op = bentoInterp(frame, 8, 20, 0, 1);
+  const l1Y = bentoInterp(frame, 8, 20, 20, 0);
+  const l2Op = bentoInterp(frame, 18, 32, 0, 1);
+  const l2Y = bentoInterp(frame, 18, 32, 20, 0);
+  return <div style={{ position:"absolute",inset:0,background:th.bg,display:"flex",alignItems:"center",justifyContent:"center",opacity }}>
+    <div style={{ clipPath:`inset(0 ${100-maskW}% 0 0)`,display:"flex",flexDirection:"column",alignItems:"center",gap:8,padding:"0 40px" }}>
+      <div style={{ fontSize:14,fontWeight:700,letterSpacing:6,color:th.muted,opacity:l1Op,transform:`translateY(${l1Y}px)` }}>{d?.line1||""}</div>
+      <div style={{ fontSize:72,fontWeight:900,color:th.ink,letterSpacing:2,opacity:l2Op,transform:`translateY(${l2Y}px)` }}>{d?.line2||""}</div>
+    </div>
+  </div>;
+}
+
+function Bento_Bento({ frame, fps, W, H, content: d, th }) {
+  const dur = 150;
+  const opacity = bentoSceneOpacity(frame, dur);
+  const titleOp = bentoInterp(frame, 5, 18, 0, 1);
+  const statOp = bentoInterp(frame, 12, 25, 0, 1);
+  const gridOp = bentoInterp(frame, 20, 35, 0, 1);
+  const chartOp = bentoInterp(frame, 50, 65, 0, 1);
+  const quoteOp = bentoInterp(frame, 70, 85, 0, 1);
+  const chartData = d?.chart || [30,50,70,85,95];
+  const maxVal = Math.max(...chartData, 1);
+  const barW = 36;
+  const gap = 12;
+  const totalW = chartData.length * (barW + gap) - gap;
+  const chartH = 80;
+  return <div style={{ position:"absolute",inset:0,background:`linear-gradient(160deg,${th.bg},${th.bg2})`,opacity,padding:"60px 32px",display:"flex",flexDirection:"column",gap:20 }}>
+    <div style={{ fontSize:13,fontWeight:700,letterSpacing:4,color:th.muted,opacity:titleOp }}>AURA</div>
+    <div style={{ fontSize:34,fontWeight:900,color:th.ink,opacity:titleOp }}>{d?.title||""}</div>
+    <div style={{ fontSize:48,fontWeight:900,color:th.a1,opacity:statOp }}>{d?.stat||""}</div>
+    <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,opacity:gridOp }}>
+      <div style={{ background:th.card,border:`1px solid ${th.line}`,borderRadius:14,padding:"18px 16px" }}>
+        <div style={{ fontSize:11,color:th.muted,marginBottom:4 }}>Feature 1</div>
+        <div style={{ fontSize:16,fontWeight:700,color:th.ink }}>{d?.feature1||""}</div>
+      </div>
+      <div style={{ background:th.card,border:`1px solid ${th.line}`,borderRadius:14,padding:"18px 16px" }}>
+        <div style={{ fontSize:11,color:th.muted,marginBottom:4 }}>Feature 2</div>
+        <div style={{ fontSize:16,fontWeight:700,color:th.ink }}>{d?.feature2||""}</div>
+      </div>
+    </div>
+    <div style={{ background:th.card,border:`1px solid ${th.line}`,borderRadius:14,padding:"18px 16px",display:"flex",alignItems:"flex-end",gap:gap,height:chartH+30,opacity:chartOp }}>
+      {chartData.map((v,i)=>{
+        const barH = (v/maxVal)*chartH;
+        const barDelay = 50 + i*6;
+        const barScale = bentoInterp(frame,barDelay,barDelay+12,0,1);
+        return <div key={i} style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:4,flex:1 }}>
+          <div style={{ width:barW,height:barH*Math.max(0,barScale),background:`linear-gradient(180deg,${th.a1},${th.a2})`,borderRadius:6 }}/>
+          <div style={{ fontSize:10,color:th.muted }}>{v}%</div>
+        </div>;
+      })}
+    </div>
+    <div style={{ background:th.card,border:`1px solid ${th.line}`,borderRadius:14,padding:"16px 18px",opacity:quoteOp }}>
+      <div style={{ fontSize:15,fontWeight:600,color:th.ink,fontStyle:"italic" }}>"{d?.quote||""}"</div>
+    </div>
+    <div style={{ display:"flex",gap:8,opacity:gridOp }}>
+      {(d?.palette||[]).map((c,i)=><div key={i} style={{ width:28,height:28,borderRadius:8,background:c }}/>)}
+    </div>
+  </div>;
+}
+
+function Bento_Outro({ frame, fps, W, H, content: d, th }) {
+  const dur = 75;
+  const opacity = bentoSceneOpacity(frame, dur);
+  const brandOp = bentoInterp(frame, 0, 14, 0, 1);
+  const brandScale = bentoInterp(frame, 0, 18, 0.6, 1);
+  const c1 = 1.70158;
+  const back = 1 + (c1 + 1) * Math.pow(Math.min(1, Math.max(0, brandScale)) - 1, 3) + c1 * Math.pow(Math.min(1, Math.max(0, brandScale)) - 1, 2);
+  const tagOp = bentoInterp(frame, 18, 30, 0, 1);
+  const ctaOp = bentoInterp(frame, 36, 50, 0, 1);
+  const ctaPulse = frame > 50 ? 1 + 0.035 * Math.sin(frame * 0.18) : 1;
+  return <div style={{ position:"absolute",inset:0,background:th.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",opacity }}>
+    <div style={{ fontSize:42,fontWeight:900,color:th.a1,letterSpacing:3,opacity:brandOp,transform:`scale(${Math.max(0,back)})` }}>{d?.brand||""}</div>
+    <div style={{ marginTop:10,fontSize:13,color:th.muted,letterSpacing:2,opacity:tagOp }}>{d?.tagline||""}</div>
+    <div style={{ marginTop:28,fontSize:15,fontWeight:700,color:th.ink,background:th.a1,borderRadius:24,padding:"10px 26px",opacity:ctaOp,transform:`scale(${ctaPulse})` }}>{d?.cta||""}</div>
+  </div>;
+}
+
+const BENTO_SCENES = { hook: Bento_Hook, bento: Bento_Bento, outro: Bento_Outro };
+
 // ─── Fallback renderer for unsupported templates ─────────────────────────────
 function Fallback_Scene({ frame, fps, W, H, content: d, th, kind }) {
   if (!d) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>No content</div></div>;
@@ -1090,7 +1195,7 @@ function AppInner({format,pi,showSafe}){
   const maxW=960;
   const scale=format==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
-  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES, kineticStatement: KINETIC_SCENES };
+  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES, kineticStatement: KINETIC_SCENES, bentoGrid: BENTO_SCENES };
   const renderers = renderersMap[prod.template] || NF_SCENES;
   const sceneData=si>=0?scenes[si]:null;
   const content=sceneData?prod.content[sceneData.id]:null;

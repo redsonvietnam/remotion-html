@@ -47,6 +47,9 @@ import { EditorialFeatureTemplate } from "./templates/editorial-feature";
 import { EDITORIAL_FEATURE_CONTENT, EDITORIAL_FEATURE_TOTAL_FRAMES } from "./data/editorialFeature";
 import { RealEstateListingTemplate } from "./templates/real-estate-listing";
 import { REAL_ESTATE_LISTING_CONTENT, REAL_ESTATE_LISTING_TOTAL_FRAMES } from "./data/realEstateListing";
+import { BentoGridTemplate } from "./templates/bento-grid";
+import { BENTO_GRID_SCENES, BENTO_GRID_CONTENT, bentoGridSceneFrames } from "./data/bentoGrid";
+import { bentoGridTheme } from "./theme/bentoGrid";
 
 const FPS = 30;
 
@@ -104,6 +107,10 @@ const TERMINAL_DEMO_FRAMES =
 const KINETIC_STATEMENT_FRAMES =
   KINETIC_SCENES.reduce((acc, s) => acc + kineticSceneFrames(s.dur), 0) +
   (KINETIC_SCENES.length - 1) * 12;
+
+const BENTO_GRID_FRAMES =
+  BENTO_GRID_SCENES.reduce((acc, s) => acc + bentoGridSceneFrames(s.dur), 0) +
+  (BENTO_GRID_SCENES.length - 1) * 12;
 
 export const Root: React.FC = () => {
   return (
@@ -338,6 +345,19 @@ export const Root: React.FC = () => {
           highlightsTitle: REAL_ESTATE_LISTING_CONTENT.highlightsTitle,
           highlights: REAL_ESTATE_LISTING_CONTENT.highlights,
           agent: REAL_ESTATE_LISTING_CONTENT.agent,
+        }}
+      />
+      <Composition
+        id="BentoGrid"
+        component={BentoGridTemplate}
+        durationInFrames={BENTO_GRID_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          scenes: BENTO_GRID_SCENES,
+          content: BENTO_GRID_CONTENT,
+          theme: bentoGridTheme,
         }}
       />
     </>

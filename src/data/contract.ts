@@ -91,6 +91,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["hook", "stat", "quote", "outro"],
     requiredTextFields: { hook: ["words"], stat: ["label"], quote: ["text"], outro: ["brand"] },
   },
+  bentoGrid: {
+    allowedKinds: ["hook", "bento", "outro"],
+    requiredTextFields: { hook: ["line1"], bento: ["title"], outro: ["brand"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {

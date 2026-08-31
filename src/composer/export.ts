@@ -178,6 +178,7 @@ export function getCompositionId(template: string, format: ComposerFormat): stri
     cosmos: "SolarSystem",
     nodeflow: "BaoHiem2024",
     kineticStatement: "KineticStatement",
+    bentoGrid: "BentoGrid",
   }[template];
   return base ? base + suffix : `Composer_${template}${suffix}`;
 }

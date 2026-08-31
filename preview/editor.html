@@ -133,6 +133,13 @@ const TEMPLATES = [
       quote:{text:"Text"},
       outro:{brand:"Brand",tagline:"Tagline",cta:"CTA"},
     }},
+  { id:"bentoGrid", name:"Bento Grid", status:"ready", formats:["9:16"],
+    sceneKinds:["hook","bento","outro"],
+    fields:{
+      hook:{line1:"Line 1",line2:"Line 2"},
+      bento:{title:"Title"},
+      outro:{brand:"Brand",tagline:"Tagline",cta:"CTA"},
+    }},
 ];
 
 const EDITABLE_IDS = TEMPLATES.map(t => t.id);
