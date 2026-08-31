@@ -40,6 +40,9 @@ import { terminalTheme } from "./theme/terminal";
 import { KineticStatementTemplate } from "./templates/kinetic-statement";
 import { KINETIC_SCENES, KINETIC_CONTENT, kineticSceneFrames } from "./data/kineticStatement";
 import { kineticStatementTheme } from "./templates/kinetic-statement/theme";
+import { ProductTeaserTemplate } from "./templates/product-teaser";
+import { PRODUCT_TEASER_SCENES, PRODUCT_TEASER_CONTENT, PRODUCT_TEASER_TOTAL_FRAMES, FPS as PRODUCT_TEASER_FPS } from "./data/productTeaser";
+import { productTeaser } from "./theme/productTeaser";
 
 const FPS = 30;
 
@@ -288,6 +291,19 @@ export const Root: React.FC = () => {
           scenes: KINETIC_SCENES,
           content: KINETIC_CONTENT,
           theme: kineticStatementTheme,
+        }}
+      />
+      <Composition
+        id="ProductTeaser"
+        component={ProductTeaserTemplate}
+        durationInFrames={PRODUCT_TEASER_TOTAL_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          scenes: PRODUCT_TEASER_SCENES,
+          content: PRODUCT_TEASER_CONTENT,
+          theme: productTeaser,
         }}
       />
     </>
