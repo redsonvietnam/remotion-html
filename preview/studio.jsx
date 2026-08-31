@@ -6,7 +6,7 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"], kineticStatement: ["9:16"], bentoGrid: ["9:16"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"], kineticStatement: ["9:16"], bentoGrid: ["9:16"], featureDrop: ["9:16"] };
 
 const PRODUCTIONS = [
   {
@@ -277,6 +277,7 @@ function composerProjectToProduction(cp) {
     terminal: { bg:"#000000",bg2:"#0a0a0a",card:"#0d1117",line:"rgba(255,255,255,0.08)",a1:"#00ff66",a1s:"#33ff88",a2:"#00cc55",a2s:"#33ff88",a3:"#ff79c6",ink:"#e6e6e6",muted:"#6272a4",fd:"'Barlow Condensed','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
     kineticStatement: { bg:"#0b0d14",bg2:"#1a0b2e",card:"rgba(255,255,255,0.05)",line:"rgba(255,255,255,0.08)",a1:"#ffd166",a1s:"rgba(255,209,102,0.25)",a2:"#3a0ca3",a2s:"rgba(58,12,163,0.25)",a3:"#1c1c1e",ink:"#ffffff",muted:"#9a9aad",fd:"'Inter','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
     bentoGrid: { bg:"#06050a",bg2:"#0c0a14",card:"rgba(255,255,255,0.055)",line:"rgba(255,255,255,0.13)",a1:"#7c5cff",a1s:"rgba(124,92,255,0.25)",a2:"#ff6bd6",a2s:"rgba(255,107,214,0.25)",a3:"#3ddcff",ink:"#f5f4fa",muted:"rgba(245,244,250,0.65)",fd:"'Inter','Segoe UI',sans-serif",fm:"'Inter','Segoe UI',sans-serif" },
+    featureDrop: { bg:"#0a0812",bg2:"#140f24",card:"rgba(124,92,255,0.08)",line:"rgba(124,92,255,0.18)",a1:"#7c5cff",a1s:"rgba(124,92,255,0.25)",a2:"#3ddcff",a2s:"rgba(61,220,255,0.25)",a3:"#f5f4fa",ink:"#f5f4fa",muted:"rgba(245,244,250,0.55)",fd:"'Inter','Segoe UI',sans-serif",fm:"'JetBrains Mono','Fira Code',monospace" },
   };
   return {
     id: "__composer__" + cp.id,
@@ -1094,6 +1095,56 @@ function Bento_Outro({ frame, fps, W, H, content: d, th }) {
 
 const BENTO_SCENES = { hook: Bento_Hook, bento: Bento_Bento, outro: Bento_Outro };
 
+// ─── Feature Drop scene renderers ──────────────────────────────────────────
+function fdInterp(f, a, b, c, d) { const t = clamp((f - a) / (b - a)); return c + (d - c) * t; }
+function fdSceneOpacity(f, dur) { return fdInterp(f, 0, 14, 0, 1) * fdInterp(f, Math.max(0, dur - 14), dur, 1, 0); }
+function FD_Hook({ frame, fps, W, H, content: d, th }) {
+  const dur = 75;
+  const opacity = fdSceneOpacity(frame, dur);
+  const eyebrowOp = fdInterp(frame, 0, 10, 0, 1);
+  const line1Y = fdInterp(frame, 8, 26, 110, 0);
+  const line2Y = fdInterp(frame, 16, 34, 110, 0);
+  const threeOp = fdInterp(frame, 26, 42, 0, 1);
+  return <div style={{position:"absolute",inset:0,background:th.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"0 30px",opacity}}>
+    <div style={{fontFamily:th.fm,fontSize:11,letterSpacing:3,color:th.a2,opacity:eyebrowOp}}>{d?.eyebrow||""}</div>
+    <div style={{overflow:"hidden"}}><div style={{fontWeight:900,fontSize:32,lineHeight:1.2,textAlign:"center",letterSpacing:-0.5,color:th.ink,transform:"translateY("+line1Y+"%)"}}>{(d?.title||["",""])[0]||""}</div></div>
+    <div style={{overflow:"hidden"}}><div style={{fontWeight:900,fontSize:32,lineHeight:1.2,textAlign:"center",letterSpacing:-0.5,color:th.ink,transform:"translateY("+line2Y+"%)"}}>{(d?.title||["",""])[1]||""}</div></div>
+    <div style={{width:190,height:190,marginTop:12,opacity:threeOp,border:"2px solid "+th.a1,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:120,height:120,border:"1.5px solid "+th.a2,borderRadius:"50%",opacity:0.5}}/></div>
+  </div>;
+}
+function FD_Features({ frame, fps, W, H, content: d, th }) {
+  const dur = 190;
+  const opacity = fdSceneOpacity(frame, dur);
+  const titleOp = fdInterp(frame, 0, 12, 0, 1);
+  const items = d?.items || [];
+  return <div style={{position:"absolute",inset:0,background:th.bg,padding:"64px 26px 0",opacity}}>
+    <div style={{textAlign:"center",fontSize:11,fontWeight:700,letterSpacing:3,color:"rgba(245,244,250,0.5)",marginBottom:20,opacity:titleOp}}>3 TÍNH NĂNG NỔI BẬT</div>
+    {items.map((item,i)=>{const start=12+i*36;const rowOp=fdInterp(frame,start,start+14,0,1);const rowX=fdInterp(frame,start,start+14,-16,0);
+      return <div key={i} style={{display:"flex",alignItems:"center",gap:16,marginBottom:22,opacity:rowOp,transform:"translateX("+rowX+"px)"}}>
+        <div style={{width:56,height:56,background:th.card,borderRadius:12,border:"1.5px solid "+th.a1,flex:"none"}}/>
+        <div><div style={{fontWeight:800,fontSize:19,lineHeight:1.25,color:th.ink}}>{item.label||""}</div>
+          <div style={{fontSize:12,color:th.muted,marginTop:3}}>{item.sub||""}</div></div>
+      </div>;
+    })}
+  </div>;
+}
+function FD_Outro({ frame, fps, W, H, content: d, th }) {
+  const dur = 75;
+  const opacity = fdSceneOpacity(frame, dur);
+  const wrapScale = fdInterp(frame, 0, 18, 0.8, 1);
+  const ghostX = fdInterp(frame, 0, 20, 16, 6);
+  const ctaOp = fdInterp(frame, 24, 36, 0, 1);
+  const ctaPulse = frame > 38 ? 1 + 0.03 * Math.sin(frame * 0.15) : 1;
+  return <div style={{position:"absolute",inset:0,background:th.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",opacity}}>
+    <div style={{position:"relative",transform:"scale("+wrapScale+")"}}>
+      <div style={{position:"absolute",inset:0,fontWeight:900,fontSize:56,letterSpacing:-1,color:"transparent",WebkitTextStroke:"1.4px rgba(245,244,250,0.18)",transform:"translate("+ghostX+"px, 6px) scale(1.06)",zIndex:0}}>{d?.brand||""}</div>
+      <div style={{position:"relative",fontWeight:900,fontSize:56,letterSpacing:-1,zIndex:1,background:"linear-gradient(90deg,"+th.a1+","+th.a2+")",WebkitBackgroundClip:"text",backgroundClip:"text",WebkitTextFillColor:"transparent"}}>{d?.brand||""}</div>
+    </div>
+    <div style={{marginTop:22,fontWeight:700,fontSize:14,background:"#fff",color:"#0a0812",padding:"11px 24px",borderRadius:24,opacity:ctaOp,transform:"scale("+ctaPulse+")"}}>{d?.cta||""}</div>
+  </div>;
+}
+const FEATURE_DROP_SCENES = { hook: FD_Hook, features: FD_Features, outro: FD_Outro };
+
 // ─── Fallback renderer for unsupported templates ─────────────────────────────
 function Fallback_Scene({ frame, fps, W, H, content: d, th, kind }) {
   if (!d) return <div style={{position:"absolute",inset:0}}><NF_Bg frame={frame} W={W} H={H} th={th}/><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:th.fd,color:th.muted,fontSize:20}}>No content</div></div>;
@@ -1195,7 +1246,7 @@ function AppInner({format,pi,showSafe}){
   const maxW=960;
   const scale=format==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
-  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES, kineticStatement: KINETIC_SCENES, bentoGrid: BENTO_SCENES };
+  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES, kineticStatement: KINETIC_SCENES, bentoGrid: BENTO_SCENES, featureDrop: FEATURE_DROP_SCENES };
   const renderers = renderersMap[prod.template] || NF_SCENES;
   const sceneData=si>=0?scenes[si]:null;
   const content=sceneData?prod.content[sceneData.id]:null;

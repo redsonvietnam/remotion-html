@@ -24,6 +24,7 @@ const TEMPLATE_MODULES = {
   terminal: "./templates/terminal",
   kineticStatement: "./templates/kinetic-statement",
   bentoGrid: "./templates/bento-grid",
+  featureDrop: "./templates/feature-drop",
 };
 
 const THEME_DEFAULTS = {
@@ -75,6 +76,14 @@ const THEME_DEFAULTS = {
     radii: { sm: 6, md: 12, lg: 18, xl: 24, full: 9999 },
     typography: { caption: 11, body: 13, subtitle: 18, title: 26, titleLg: 38, hero: 56 },
   },
+  featureDrop: {
+    name: "featureDrop",
+    colors: { bg: "#0a0812", bg2: "#140f24", card: "rgba(124,92,255,0.08)", line: "rgba(124,92,255,0.18)", accent1: "#7c5cff", accent1Soft: "rgba(124,92,255,0.25)", accent2: "#3ddcff", accent2Soft: "rgba(61,220,255,0.25)", accent3: "#f5f4fa", ink: "#f5f4fa", muted: "rgba(245,244,250,0.55)" },
+    fonts: { display: "'Inter','Segoe UI',system-ui,sans-serif", body: "'Inter','Segoe UI',system-ui,sans-serif", mono: "'JetBrains Mono','Fira Code',monospace" },
+    spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+    radii: { sm: 6, md: 12, lg: 18, xl: 24, full: 9999 },
+    typography: { caption: 11, body: 13, subtitle: 18, title: 32, titleLg: 56, hero: 56 },
+  },
 };
 
 const FORMAT_DIMENSIONS = {
@@ -116,6 +125,7 @@ function extractCaption(template, content) {
     terminal: { intro: "title", typing: "caption", reveal: "caption", outro: "title" },
     kineticStatement: { hook: "words", stat: "label", quote: "text", outro: "brand" },
     bentoGrid: { hook: "line1", bento: "title", outro: "brand" },
+    featureDrop: { hook: "eyebrow", features: "items", outro: "brand" },
   };
   const kind = content?.kind;
   const field = FIELD_MAP[template]?.[kind] ?? "title";
@@ -198,7 +208,8 @@ function generateEntryFile(payload) {
     payload.template === "cosmos" ? "CosmosTemplate" :
     payload.template === "terminal" ? "TerminalTemplate" :
     payload.template === "kineticStatement" ? "KineticStatementTemplate" :
-    payload.template === "bentoGrid" ? "BentoGridTemplate" : "NodeFlowTemplate";
+    payload.template === "bentoGrid" ? "BentoGridTemplate" :
+    payload.template === "featureDrop" ? "FeatureDropTemplate" : "NodeFlowTemplate";
   const themeProp = needsTheme ? `\n    theme={THEME}` : "";
   const themeConst = needsTheme ? `\nconst THEME = ${themeJson};\n` : "";
 

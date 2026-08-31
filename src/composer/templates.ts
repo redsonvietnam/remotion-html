@@ -333,6 +333,37 @@ export const TEMPLATE_CAPABILITIES: Record<string, TemplateCapability> = {
       },
     ],
   },
+  featureDrop: {
+    template: "featureDrop",
+    label: "Feature Drop",
+    formats: ["9:16"],
+    defaultSceneKind: "hook",
+    sceneKinds: [
+      {
+        kind: "hook",
+        label: "Hook",
+        fields: [
+          { key: "eyebrow", label: "Eyebrow", type: "text", required: true },
+          { key: "title", label: "Title", type: "text", required: true },
+        ],
+      },
+      {
+        kind: "features",
+        label: "Features",
+        fields: [
+          { key: "items", label: "Features", type: "textarea", required: true },
+        ],
+      },
+      {
+        kind: "outro",
+        label: "Outro",
+        fields: [
+          { key: "brand", label: "Brand", type: "text", required: true },
+          { key: "cta", label: "CTA", type: "text" },
+        ],
+      },
+    ],
+  },
 };
 
 /** Get capability for a template, or null if unknown. */

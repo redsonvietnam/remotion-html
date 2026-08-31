@@ -128,6 +128,12 @@ const TEMPLATES = [
     formats: ["9:16"],
     sceneKinds: ["hook","bento","outro"],
   },
+  {
+    id: "featureDrop", name: "Feature Drop", status: "ready",
+    description: "Mask-reveal title with 3D icosahedron, SVG icon draw-in feature rows, layered ghost typography outro. For product update announcements.",
+    formats: ["9:16"],
+    sceneKinds: ["hook","features","outro"],
+  },
 ];
 
 const PRODUCTIONS = [
@@ -147,6 +153,7 @@ const PRODUCTIONS = [
   { id: "terminalDemo", name: "5 JavaScript Tips", template: "terminal", format: "9:16" },
   { id: "kineticStatementDemo", name: "3 Seconds Hook", template: "kineticStatement", format: "9:16" },
   { id: "bentoGridDemo", name: "AURA Product Showcase", template: "bentoGrid", format: "9:16" },
+  { id: "featureDropDemo", name: "NOVA Feature Update", template: "featureDrop", format: "9:16" },
 ];
 
 function FormatBadge({ format }) {

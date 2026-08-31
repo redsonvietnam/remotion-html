@@ -50,6 +50,9 @@ import { REAL_ESTATE_LISTING_CONTENT, REAL_ESTATE_LISTING_TOTAL_FRAMES } from ".
 import { BentoGridTemplate } from "./templates/bento-grid";
 import { BENTO_GRID_SCENES, BENTO_GRID_CONTENT, bentoGridSceneFrames } from "./data/bentoGrid";
 import { bentoGridTheme } from "./theme/bentoGrid";
+import { FeatureDropTemplate } from "./templates/feature-drop";
+import { FEATURE_DROP_SCENES, FEATURE_DROP_CONTENT, featureDropSceneFrames } from "./data/featureDrop";
+import { featureDropTheme } from "./theme/featureDrop";
 
 const FPS = 30;
 
@@ -111,6 +114,10 @@ const KINETIC_STATEMENT_FRAMES =
 const BENTO_GRID_FRAMES =
   BENTO_GRID_SCENES.reduce((acc, s) => acc + bentoGridSceneFrames(s.dur), 0) +
   (BENTO_GRID_SCENES.length - 1) * 12;
+
+const FEATURE_DROP_FRAMES =
+  FEATURE_DROP_SCENES.reduce((acc, s) => acc + featureDropSceneFrames(s.dur), 0) +
+  (FEATURE_DROP_SCENES.length - 1) * 12;
 
 export const Root: React.FC = () => {
   return (
@@ -358,6 +365,19 @@ export const Root: React.FC = () => {
           scenes: BENTO_GRID_SCENES,
           content: BENTO_GRID_CONTENT,
           theme: bentoGridTheme,
+        }}
+      />
+      <Composition
+        id="FeatureDrop"
+        component={FeatureDropTemplate}
+        durationInFrames={FEATURE_DROP_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          scenes: FEATURE_DROP_SCENES,
+          content: FEATURE_DROP_CONTENT,
+          theme: featureDropTheme,
         }}
       />
     </>

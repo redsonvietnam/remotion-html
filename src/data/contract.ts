@@ -95,6 +95,10 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["hook", "bento", "outro"],
     requiredTextFields: { hook: ["line1"], bento: ["title"], outro: ["brand"] },
   },
+  featureDrop: {
+    allowedKinds: ["hook", "features", "outro"],
+    requiredTextFields: { hook: ["eyebrow"], features: ["items"], outro: ["brand"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {

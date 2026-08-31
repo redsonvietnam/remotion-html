@@ -98,6 +98,7 @@ const TEMPLATES = [
   { id: "blueprint", name: "Blueprint", status: "legacy", description: "Technical document style with blueprint grid.", formats: ["16:9"], sceneKinds: ["title","pillars","measure","detail","process","seal"] },
   { id: "terminal", name: "Terminal Code Tip", status: "ready", description: "Matrix rain, dark terminal, syntax-highlighted code, typing animation. For coding tips.", formats: ["9:16"], sceneKinds: ["intro","typing","reveal","outro"] },
   { id: "kineticStatement", name: "Kinetic Statement", status: "ready", description: "Staggered word reveals, animated counters, karaoke quote highlights, brand outro. For punchy vertical social videos.", formats: ["9:16"], sceneKinds: ["hook","stat","quote","outro"] },
+  { id: "featureDrop", name: "Feature Drop", status: "ready", description: "Mask-reveal title with 3D icosahedron, SVG icon draw-in feature rows, layered ghost typography outro. For product update announcements.", formats: ["9:16"], sceneKinds: ["hook","features","outro"] },
 ];
 
 const PRODUCTIONS = [
@@ -115,6 +116,7 @@ const PRODUCTIONS = [
   { id: "stoiclove", name: "Stoic Love", template: "stoiclove", format: "9:16" },
   { id: "luatBHXH", name: "Luat BHXH", template: "blueprint", format: "16:9" },
   { id: "kineticStatementDemo", name: "3 Seconds Hook", template: "kineticStatement", format: "9:16" },
+  { id: "featureDropDemo", name: "NOVA Feature Update", template: "featureDrop", format: "9:16" },
 ];
 
 function getTemplateFromUrl() {
