@@ -43,6 +43,8 @@ import { kineticStatementTheme } from "./templates/kinetic-statement/theme";
 import { ProductTeaserTemplate } from "./templates/product-teaser";
 import { PRODUCT_TEASER_SCENES, PRODUCT_TEASER_CONTENT, PRODUCT_TEASER_TOTAL_FRAMES, FPS as PRODUCT_TEASER_FPS } from "./data/productTeaser";
 import { productTeaser } from "./theme/productTeaser";
+import { EditorialFeatureTemplate } from "./templates/editorial-feature";
+import { EDITORIAL_FEATURE_CONTENT, EDITORIAL_FEATURE_TOTAL_FRAMES } from "./data/editorialFeature";
 
 const FPS = 30;
 
@@ -304,6 +306,21 @@ export const Root: React.FC = () => {
           scenes: PRODUCT_TEASER_SCENES,
           content: PRODUCT_TEASER_CONTENT,
           theme: productTeaser,
+        }}
+      />
+      <Composition
+        id="EditorialFeature"
+        component={EditorialFeatureTemplate}
+        durationInFrames={EDITORIAL_FEATURE_TOTAL_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          cover: EDITORIAL_FEATURE_CONTENT.cover,
+          pullquote: EDITORIAL_FEATURE_CONTENT.pullquote,
+          takeawaysTitle: EDITORIAL_FEATURE_CONTENT.takeawaysTitle,
+          takeaways: EDITORIAL_FEATURE_CONTENT.takeaways,
+          outro: EDITORIAL_FEATURE_CONTENT.outro,
         }}
       />
     </>
