@@ -25,6 +25,9 @@ const TEMPLATE_MODULES = {
   kineticStatement: "./templates/kinetic-statement",
   bentoGrid: "./templates/bento-grid",
   featureDrop: "./templates/feature-drop",
+  productTeaser: "./templates/product-teaser",
+  editorialFeature: "./templates/editorial-feature",
+  realEstateListing: "./templates/real-estate-listing",
 };
 
 const THEME_DEFAULTS = {
@@ -83,6 +86,30 @@ const THEME_DEFAULTS = {
     spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
     radii: { sm: 6, md: 12, lg: 18, xl: 24, full: 9999 },
     typography: { caption: 11, body: 13, subtitle: 18, title: 32, titleLg: 56, hero: 56 },
+  },
+  productTeaser: {
+    name: "productTeaser",
+    colors: { bg: "#0a0812", bg2: "#140f24", card: "rgba(124,92,255,0.08)", line: "rgba(124,92,255,0.18)", accent1: "#7c5cff", accent1Soft: "rgba(124,92,255,0.25)", accent2: "#3ddcff", accent2Soft: "rgba(61,220,255,0.25)", accent3: "#f5f4fa", ink: "#f5f4fa", muted: "rgba(245,244,250,0.55)" },
+    fonts: { display: "'Inter','Segoe UI',system-ui,sans-serif", body: "'Inter','Segoe UI',system-ui,sans-serif", mono: "'JetBrains Mono','Fira Code',monospace" },
+    spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+    radii: { sm: 6, md: 12, lg: 18, xl: 24, full: 9999 },
+    typography: { caption: 11, body: 13, subtitle: 18, title: 32, titleLg: 56, hero: 56 },
+  },
+  editorialFeature: {
+    name: "editorialFeature",
+    colors: { bg: "#f5f1e8", bg2: "#ebe5d8", card: "#ffffff", line: "rgba(0,0,0,0.08)", accent1: "#1c1c1e", accent1Soft: "rgba(28,28,30,0.15)", accent2: "#e0a72e", accent2Soft: "rgba(224,167,46,0.2)", accent3: "#f5f1e8", ink: "#1c1c1e", muted: "#6b6560" },
+    fonts: { display: "'Playfair Display','Georgia',serif", body: "'Inter','Segoe UI',system-ui,sans-serif", mono: "'JetBrains Mono','Fira Code',monospace" },
+    spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+    radii: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
+    typography: { caption: 12, body: 15, subtitle: 20, title: 36, titleLg: 48, hero: 64 },
+  },
+  realEstateListing: {
+    name: "realEstateListing",
+    colors: { bg: "#0b1a2b", bg2: "#132d45", card: "rgba(255,255,255,0.06)", line: "rgba(255,255,255,0.12)", accent1: "#00d4aa", accent1Soft: "rgba(0,212,170,0.25)", accent2: "#f5a623", accent2Soft: "rgba(245,166,35,0.25)", accent3: "#ffffff", ink: "#f0f4f8", muted: "#7a8fa3" },
+    fonts: { display: "'Inter','Segoe UI',system-ui,sans-serif", body: "'Inter','Segoe UI',system-ui,sans-serif", mono: "'JetBrains Mono','Fira Code',monospace" },
+    spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+    radii: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
+    typography: { caption: 12, body: 15, subtitle: 20, title: 32, titleLg: 48, hero: 64 },
   },
 };
 

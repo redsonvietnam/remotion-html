@@ -6,7 +6,7 @@ const stf = s => Math.ceil(s * FPS);
 const fmt = f => { const t = f / FPS; return Math.floor(t/60) + ":" + String(Math.floor(t%60)).padStart(2,"0") + "." + String(Math.floor((t%1)*100)).padStart(2,"0"); };
 
 const CANVAS = { "16:9": { w: 1920, h: 1080 }, "9:16": { w: 1080, h: 1920 } };
-const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"], kineticStatement: ["9:16"], bentoGrid: ["9:16"], featureDrop: ["9:16"] };
+const TEMPLATE_FORMATS = { cr7: ["16:9","9:16"], nodeflow: ["16:9"], nq57: ["16:9"], stoiclove: ["9:16"], blueprint: ["16:9"], cosmos: ["16:9","9:16"], scrapbook: ["16:9"], terminal: ["9:16"], kineticStatement: ["9:16"], bentoGrid: ["9:16"], featureDrop: ["9:16"], productTeaser: ["9:16"], editorialFeature: ["9:16"], realEstateListing: ["9:16"] };
 
 const PRODUCTIONS = [
   {
@@ -1246,7 +1246,7 @@ function AppInner({format,pi,showSafe}){
   const maxW=960;
   const scale=format==="9:16"?Math.min(maxW/canvas.w,(maxW*1.5)/canvas.h):maxW/canvas.w;
   const cw=Math.round(canvas.w*scale),ch=Math.round(canvas.h*scale);
-  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES, kineticStatement: KINETIC_SCENES, bentoGrid: BENTO_SCENES, featureDrop: FEATURE_DROP_SCENES };
+  const renderersMap = { cr7: CR7_SCENES, cosmos: COSMOS_SCENES, scrapbook: SCRAPBOOK_SCENES, nodeflow: NF_SCENES, nq57: NF_SCENES, stoiclove: NF_SCENES, blueprint: NF_SCENES, terminal: TERMINAL_SCENES, kineticStatement: KINETIC_SCENES, bentoGrid: BENTO_SCENES, featureDrop: FEATURE_DROP_SCENES, productTeaser: NF_SCENES, editorialFeature: NF_SCENES, realEstateListing: NF_SCENES };
   const renderers = renderersMap[prod.template] || NF_SCENES;
   const sceneData=si>=0?scenes[si]:null;
   const content=sceneData?prod.content[sceneData.id]:null;

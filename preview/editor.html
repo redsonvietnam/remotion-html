@@ -147,6 +147,30 @@ const TEMPLATES = [
       features:{items:"Features"},
       outro:{brand:"Brand",cta:"CTA"},
     }},
+  { id:"productTeaser", name:"Product Teaser", status:"ready", formats:["9:16"],
+    sceneKinds:["hook","dashboard","features","outro"],
+    fields:{
+      hook:{headline:"Headline"},
+      dashboard:{title:"Title"},
+      features:{title:"Title"},
+      outro:{brand:"Brand",tagline:"Tagline",cta:"CTA"},
+    }},
+  { id:"editorialFeature", name:"Editorial Feature", status:"ready", formats:["9:16"],
+    sceneKinds:["cover","pullquote","takeaways","outro"],
+    fields:{
+      cover:{category:"Category",title:"Title",author:"Author"},
+      pullquote:{text:"Text",attribution:"Attribution"},
+      takeaways:{items:"Items"},
+      outro:{tagline:"Tagline"},
+    }},
+  { id:"realEstateListing", name:"Real Estate Listing", status:"ready", formats:["9:16"],
+    sceneKinds:["cover","specs","highlights","outro"],
+    fields:{
+      cover:{type:"Type",price:"Price",address:"Address"},
+      specs:{items:"Specs"},
+      highlights:{items:"Highlights"},
+      outro:{agentName:"Agent Name",phone:"Phone"},
+    }},
 ];
 
 const EDITABLE_IDS = TEMPLATES.map(t => t.id);

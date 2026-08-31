@@ -99,6 +99,18 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
     allowedKinds: ["hook", "features", "outro"],
     requiredTextFields: { hook: ["eyebrow"], features: ["items"], outro: ["brand"] },
   },
+  productTeaser: {
+    allowedKinds: ["hook", "dashboard", "features", "outro"],
+    requiredTextFields: { hook: ["headline"], dashboard: ["title"], features: ["title"], outro: ["brand"] },
+  },
+  editorialFeature: {
+    allowedKinds: ["cover", "pullquote", "takeaways", "outro"],
+    requiredTextFields: { cover: ["title"], pullquote: ["text"], takeaways: ["items"], outro: ["tagline"] },
+  },
+  realEstateListing: {
+    allowedKinds: ["cover", "specs", "highlights", "outro"],
+    requiredTextFields: { cover: ["type"], specs: ["items"], highlights: ["items"], outro: ["agentName"] },
+  },
 };
 
 function isSceneArray(v: unknown): v is SceneDef[] {

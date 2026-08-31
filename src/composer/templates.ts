@@ -364,6 +364,54 @@ export const TEMPLATE_CAPABILITIES: Record<string, TemplateCapability> = {
       },
     ],
   },
+  productTeaser: {
+    template: "productTeaser",
+    label: "Product Teaser",
+    formats: ["9:16"],
+    defaultSceneKind: "hook",
+    sceneKinds: [
+      { kind: "hook", label: "Hook", fields: [{ key: "headline", label: "Headline", type: "text", required: true }] },
+      { kind: "dashboard", label: "Dashboard", fields: [{ key: "title", label: "Title", type: "text", required: true }] },
+      { kind: "features", label: "Features", fields: [{ key: "title", label: "Title", type: "text", required: true }] },
+      { kind: "outro", label: "Outro", fields: [{ key: "brand", label: "Brand", type: "text", required: true }, { key: "tagline", label: "Tagline", type: "text" }, { key: "cta", label: "CTA", type: "text" }] },
+    ],
+  },
+  editorialFeature: {
+    template: "editorialFeature",
+    label: "Editorial Feature",
+    formats: ["9:16"],
+    defaultSceneKind: "cover",
+    sceneKinds: [
+      { kind: "cover", label: "Cover", fields: [{ key: "category", label: "Category", type: "text", required: true }, { key: "title", label: "Title", type: "text", required: true }, { key: "author", label: "Author", type: "text" }] },
+      { kind: "pullquote", label: "Pullquote", fields: [{ key: "text", label: "Text", type: "textarea", required: true }, { key: "attribution", label: "Attribution", type: "text" }] },
+      { kind: "takeaways", label: "Takeaways", fields: [{ key: "items", label: "Items", type: "textarea", required: true }] },
+      { kind: "outro", label: "Outro", fields: [{ key: "tagline", label: "Tagline", type: "text", required: true }] },
+    ],
+  },
+  realEstateListing: {
+    template: "realEstateListing",
+    label: "Real Estate Listing",
+    formats: ["9:16"],
+    defaultSceneKind: "cover",
+    sceneKinds: [
+      { kind: "cover", label: "Cover", fields: [{ key: "type", label: "Type", type: "text", required: true }, { key: "price", label: "Price", type: "text" }, { key: "address", label: "Address", type: "text" }] },
+      { kind: "specs", label: "Specs", fields: [{ key: "items", label: "Items", type: "textarea", required: true }] },
+      { kind: "highlights", label: "Highlights", fields: [{ key: "items", label: "Items", type: "textarea", required: true }] },
+      { kind: "outro", label: "Outro", fields: [{ key: "agentName", label: "Agent Name", type: "text", required: true }, { key: "phone", label: "Phone", type: "text" }] },
+    ],
+  },
+  terminal: {
+    template: "terminal",
+    label: "Terminal Code Tip",
+    formats: ["9:16"],
+    defaultSceneKind: "intro",
+    sceneKinds: [
+      { kind: "intro", label: "Intro", fields: [{ key: "title", label: "Title", type: "text", required: true }] },
+      { kind: "typing", label: "Typing", fields: [{ key: "caption", label: "Caption", type: "text", required: true }] },
+      { kind: "reveal", label: "Reveal", fields: [{ key: "caption", label: "Caption", type: "text", required: true }] },
+      { kind: "outro", label: "Outro", fields: [{ key: "title", label: "Title", type: "text", required: true }] },
+    ],
+  },
 };
 
 /** Get capability for a template, or null if unknown. */

@@ -180,6 +180,10 @@ export function getCompositionId(template: string, format: ComposerFormat): stri
     kineticStatement: "KineticStatement",
     bentoGrid: "BentoGrid",
     featureDrop: "FeatureDrop",
+    productTeaser: "ProductTeaser",
+    editorialFeature: "EditorialFeature",
+    realEstateListing: "RealEstateListing",
+    terminal: "TerminalCodeTip",
   }[template];
   return base ? base + suffix : `Composer_${template}${suffix}`;
 }
