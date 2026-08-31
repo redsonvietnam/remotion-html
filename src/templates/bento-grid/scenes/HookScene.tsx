@@ -24,7 +24,7 @@ export const HookSceneData: React.FC<HookSceneProps> = ({
   line2,
 }) => {
   const theme = useTheme();
-  const opacity = sceneOpacity(frame, dur);
+  const opacity = sceneOpacity(frame, Math.round(dur * fps));
 
   const l1Y = interpolate(frame, [0, 20], [110, 0], easeOutExpo);
   const l2Y = interpolate(frame, [10, 32], [110, 0], easeOutExpo);

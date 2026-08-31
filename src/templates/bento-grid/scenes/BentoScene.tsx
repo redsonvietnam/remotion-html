@@ -58,7 +58,7 @@ export const BentoSceneData: React.FC<BentoSceneProps> = ({
   palette,
 }) => {
   const theme = useTheme();
-  const opacity = sceneOpacity(frame, dur);
+  const opacity = sceneOpacity(frame, Math.round(dur * fps));
 
   // Title fade
   const titleOpacity = interpolate(frame, [0, 12], [0, 1]);

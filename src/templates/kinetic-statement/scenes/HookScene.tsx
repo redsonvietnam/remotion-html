@@ -27,7 +27,7 @@ export const HookSceneData: React.FC<HookSceneProps> = ({
   words,
 }) => {
   const theme = useTheme();
-  const opacity = sceneOpacity(frame, dur);
+  const opacity = sceneOpacity(frame, Math.round(dur * fps));
 
   return (
     <AbsoluteFill

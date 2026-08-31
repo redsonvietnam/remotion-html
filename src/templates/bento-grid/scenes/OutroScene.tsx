@@ -25,7 +25,7 @@ export const OutroSceneData: React.FC<OutroSceneProps> = ({
   cta,
 }) => {
   const theme = useTheme();
-  const opacity = sceneOpacity(frame, dur);
+  const opacity = sceneOpacity(frame, Math.round(dur * fps));
 
   const brandScale = interpolate(frame, [0, 18], [0.75, 1], easeOutBack);
   const tagOpacity = interpolate(frame, [16, 28], [0, 1]);

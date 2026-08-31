@@ -27,10 +27,11 @@ export const QuoteSceneData: React.FC<QuoteSceneProps> = ({
   text,
 }) => {
   const theme = useTheme();
-  const opacity = sceneOpacity(frame, dur);
+  const opacity = sceneOpacity(frame, Math.round(dur * fps));
   const words = (text || "").split(" ");
   const total = words.length;
-  const activeFloat = interpolate(frame, [8, dur - 34], [0, total], (t) => t);
+  const durFrames = Math.round(dur * fps);
+  const activeFloat = interpolate(frame, [8, durFrames - 34], [0, total], (t) => t);
   const activeIndex = Math.floor(activeFloat);
 
   return (

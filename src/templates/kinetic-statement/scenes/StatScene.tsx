@@ -29,7 +29,7 @@ export const StatSceneData: React.FC<StatSceneProps> = ({
   label,
 }) => {
   const theme = useTheme();
-  const opacity = sceneOpacity(frame, dur);
+  const opacity = sceneOpacity(frame, Math.round(dur * fps));
 
   const progress = interpolate(frame, [10, 55], [0, value], easeOutCubic);
   const scale = interpolate(frame, [10, 26], [0.7, 1], easeOutBack);
