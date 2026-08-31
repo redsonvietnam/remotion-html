@@ -104,19 +104,19 @@ const CHAMPIONS_LEAGUE_FRAMES =
   (CHAMPIONS_LEAGUE_SCENES.length - 1) * 16;
 
 const TERMINAL_DEMO_FRAMES =
-  TERMINAL_SCENES.reduce((acc, s) => acc + terminalSceneFrames(s.dur), 0) +
+  TERMINAL_SCENES.reduce((acc, s) => acc + terminalSceneFrames(s.dur), 0) -
   (TERMINAL_SCENES.length - 1) * 12;
 
 const KINETIC_STATEMENT_FRAMES =
-  KINETIC_SCENES.reduce((acc, s) => acc + kineticSceneFrames(s.dur), 0) +
+  KINETIC_SCENES.reduce((acc, s) => acc + kineticSceneFrames(s.dur), 0) -
   (KINETIC_SCENES.length - 1) * 12;
 
 const BENTO_GRID_FRAMES =
-  BENTO_GRID_SCENES.reduce((acc, s) => acc + bentoGridSceneFrames(s.dur), 0) +
+  BENTO_GRID_SCENES.reduce((acc, s) => acc + bentoGridSceneFrames(s.dur), 0) -
   (BENTO_GRID_SCENES.length - 1) * 12;
 
 const FEATURE_DROP_FRAMES =
-  FEATURE_DROP_SCENES.reduce((acc, s) => acc + featureDropSceneFrames(s.dur), 0) +
+  FEATURE_DROP_SCENES.reduce((acc, s) => acc + featureDropSceneFrames(s.dur), 0) -
   (FEATURE_DROP_SCENES.length - 1) * 12;
 
 export const Root: React.FC = () => {
