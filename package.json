@@ -13,6 +13,8 @@
     "studio": "node preview/serve.mjs studio",
     "produce": "node scripts/produce.mjs",
     "export": "node scripts/export.mjs",
+    "inspect": "node scripts/inspect.mjs",
+    "preflight": "node scripts/preflight.mjs",
     "verify": "tsc --noEmit && npm test && node scripts/verify.mjs",
     "upgrade": "remotion upgrade"
   },
