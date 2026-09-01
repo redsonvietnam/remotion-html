@@ -63,7 +63,8 @@
     "championsLeague": { "id": "championsLeague", "composition": "ChampionsLeague", "output": "out/championsLeague.mp4", "format": "16:9" },
     "luatGTDB": { "id": "luatGTDB", "composition": "LuatGTDB", "output": "out/luatGTDB.mp4", "format": "16:9" },
     "baoHiem2024": { "id": "baoHiem2024", "composition": "BaoHiem2024", "output": "out/baoHiem2024.mp4", "format": "16:9" },
-    "luatBHXH": { "id": "luatBHXH", "composition": "LuatBHXH", "output": "out/luatBHXH.mp4", "format": "16:9" }
+    "luatBHXH": { "id": "luatBHXH", "composition": "LuatBHXH", "output": "out/luatBHXH.mp4", "format": "16:9" },
+    "solarSystem-contract-test": { "id": "solarSystem-contract-test", "composition": "SolarSystem", "output": "out/solarSystem-contract-test.mp4", "format": "16:9", "test": true }
   },
   "tts": {
     "publicAbstraction": "tts({ productionId })",

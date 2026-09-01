@@ -1,11 +1,12 @@
 import os
+import sys
 import asyncio
 import json
 import edge_tts
 from mutagen.mp3 import MP3
 
 VOICE = "vi-VN-NamMinhNeural"
-OUTPUT_DIR = "public/solarSystem"
+DEFAULT_OUTPUT_DIR = "public/solarSystem"
 RETRY_COUNT = 3
 
 SCENES = {
@@ -21,9 +22,9 @@ SCENES = {
 }
 
 
-async def generate_audio(scene_id, text):
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    output_path = os.path.join(OUTPUT_DIR, f"{scene_id}.mp3")
+async def generate_audio(scene_id, text, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, f"{scene_id}.mp3")
 
     for attempt in range(1, RETRY_COUNT + 1):
         try:
@@ -40,13 +41,39 @@ async def generate_audio(scene_id, text):
     return None
 
 
+def validate_output_dir(output_dir):
+    """Validate output directory is project-relative and safe."""
+    if not output_dir:
+        return DEFAULT_OUTPUT_DIR
+    
+    # Reject absolute paths
+    if os.path.isabs(output_dir):
+        raise ValueError("Output directory must be project-relative")
+    
+    # Reject traversal attempts
+    if ".." in output_dir.split(os.sep) or ".." in output_dir.split("/"):
+        raise ValueError("Output directory must not traverse outside project")
+    
+    # Reject empty segments
+    parts = output_dir.replace("\\", "/").split("/")
+    if "" in parts:
+        raise ValueError("Output directory contains empty segments")
+    
+    return output_dir
+
+
 async def main():
+    # Parse command-line arguments
+    output_dir = DEFAULT_OUTPUT_DIR
+    if len(sys.argv) > 1:
+        output_dir = validate_output_dir(sys.argv[1])
+    
     print(f"Generating TTS with voice: {VOICE}")
-    print(f"Output directory: {OUTPUT_DIR}\n")
+    print(f"Output directory: {output_dir}\n")
 
     results = {}
     for scene_id, text in SCENES.items():
-        path = await generate_audio(scene_id, text)
+        path = await generate_audio(scene_id, text, output_dir)
         results[scene_id] = path
 
     durations = {}
@@ -56,7 +83,7 @@ async def main():
             durations[scene_id] = round(audio.info.length, 3)
             print(f"  {scene_id}: {durations[scene_id]}s")
 
-    durations_path = os.path.join(OUTPUT_DIR, "durations.json")
+    durations_path = os.path.join(output_dir, "durations.json")
     with open(durations_path, "w", encoding="utf-8") as f:
         json.dump(durations, f, indent=2, ensure_ascii=False)
     print(f"\nSaved durations.json -> {durations_path}")

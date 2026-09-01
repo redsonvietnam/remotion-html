@@ -25,6 +25,12 @@ export async function runTts(productionId) {
     if (r.status !== 0) return { status: "FAILED", message: "TTS generation failed" };
     return { status: "SUCCESS", message: "TTS generation completed" };
   }
+  
+  if (productionId === "solarSystem-contract-test") {
+    const r = spawnSync("python", [path.join(ROOT, "gen_tts_solarSystem.py"), target.artifactRoot], { cwd: ROOT, stdio: "inherit" });
+    if (r.status !== 0) return { status: "FAILED", message: "TTS generation failed" };
+    return { status: "SUCCESS", message: "TTS generation completed" };
+  }
   return { status: "BLOCKED", message: `no generation path for production "${productionId}"` };
 }
 

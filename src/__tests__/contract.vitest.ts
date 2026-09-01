@@ -270,3 +270,96 @@ describe("Render capability: semantic rules", () => {
     expect(result.status).toBe("SUCCESS");
   });
 });
+
+// ─── TTS test fixture: solarSystem-contract-test ────────────────────────────
+
+describe("TTS test fixture: solarSystem-contract-test", () => {
+  it("test production identity exists in TTS_TARGETS", () => {
+    expect(TTS_TARGETS["solarSystem-contract-test"]).toBeDefined();
+  });
+
+  it("test production resolves correctly", () => {
+    const result = resolveTtsRequest({ productionId: "solarSystem-contract-test" });
+    expect(result.status).toBe("SUCCESS");
+    expect(result.target).toBeDefined();
+    expect(result.target!.productionId).toBe("solarSystem-contract-test");
+  });
+
+  it("test artifact root is dedicated namespace", () => {
+    const target = TTS_TARGETS["solarSystem-contract-test"];
+    expect(target.artifactRoot).toBe("public/solarSystem-contract-test");
+  });
+
+  it("test sentinel is correct", () => {
+    const target = TTS_TARGETS["solarSystem-contract-test"];
+    expect(target.sentinel).toBe("public/solarSystem-contract-test/durations.json");
+  });
+
+  it("unsupported productionId is BLOCKED", () => {
+    const result = resolveTtsRequest({ productionId: "nonexistent-production" });
+    expect(result.status).toBe("BLOCKED");
+  });
+
+  it("fresh target has no collision", () => {
+    const target = TTS_TARGETS["solarSystem-contract-test"];
+    const result = ttsCollision(target, false);
+    expect(result.status).toBe("SUCCESS");
+  });
+
+  it("existing sentinel returns BLOCKED", () => {
+    const target = TTS_TARGETS["solarSystem-contract-test"];
+    const result = ttsCollision(target, true);
+    expect(result.status).toBe("BLOCKED");
+    expect(result.message).toContain("already exists");
+  });
+
+  it("test namespace cannot escape project boundaries", () => {
+    const target = TTS_TARGETS["solarSystem-contract-test"];
+    expect(target.artifactRoot).not.toContain("..");
+    expect(target.artifactRoot).not.toMatch(/^[a-zA-Z]:[\\/]/);
+  });
+
+  it("real SolarSystem target remains unchanged", () => {
+    const target = TTS_TARGETS.solarSystem;
+    expect(target.artifactRoot).toBe("public/solarSystem");
+    expect(target.sentinel).toBe("public/solarSystem/durations.json");
+  });
+
+  it("contract contains no provider/script/path implementation leak", () => {
+    const contract = JSON.parse(readFileSync(CONTRACT_PATH, "utf8"));
+    const ttsCapability = contract.capabilities.find((c: any) => c.name === "tts");
+    expect(ttsCapability).toBeDefined();
+    expect(JSON.stringify(ttsCapability)).not.toContain("python");
+    expect(JSON.stringify(ttsCapability)).not.toContain("edge_tts");
+    expect(JSON.stringify(ttsCapability)).not.toContain("gen_tts");
+    expect(JSON.stringify(ttsCapability)).not.toContain("vi-VN");
+  });
+});
+
+// ─── Contract capability surface stability ──────────────────────────────────
+
+describe("Contract capability surface: stability", () => {
+  it("public capability surface remains exactly five", () => {
+    const contract = JSON.parse(readFileSync(CONTRACT_PATH, "utf8"));
+    expect(contract.capabilities).toHaveLength(5);
+    const names = contract.capabilities.map((c: any) => c.name);
+    expect(names).toEqual(["inspect", "preflight", "tts", "render", "verify"]);
+  });
+
+  it("test production has test flag in contract", () => {
+    const contract = JSON.parse(readFileSync(CONTRACT_PATH, "utf8"));
+    expect(contract.productions["solarSystem-contract-test"]).toBeDefined();
+    expect(contract.productions["solarSystem-contract-test"].test).toBe(true);
+  });
+
+  it("test production uses SolarSystem composition", () => {
+    const contract = JSON.parse(readFileSync(CONTRACT_PATH, "utf8"));
+    expect(contract.productions["solarSystem-contract-test"].composition).toBe("SolarSystem");
+  });
+
+  it("test production output is within artifact boundary", () => {
+    const contract = JSON.parse(readFileSync(CONTRACT_PATH, "utf8"));
+    const output = contract.productions["solarSystem-contract-test"].output;
+    expect(output).toMatch(/^out\//);
+  });
+});

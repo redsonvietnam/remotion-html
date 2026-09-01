@@ -21,12 +21,18 @@ export interface TtsTarget {
 /**
  * Registered TTS-enabled productions (stable project identities).
  * Currently only solarSystem has a real generation path.
+ * solarSystem-contract-test is an isolated test fixture for contract verification.
  */
 export const TTS_TARGETS: Record<string, TtsTarget> = {
   solarSystem: {
     productionId: "solarSystem",
     artifactRoot: "public/solarSystem",
     sentinel: "public/solarSystem/durations.json",
+  },
+  "solarSystem-contract-test": {
+    productionId: "solarSystem-contract-test",
+    artifactRoot: "public/solarSystem-contract-test",
+    sentinel: "public/solarSystem-contract-test/durations.json",
   },
 };
 
