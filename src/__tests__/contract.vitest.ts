@@ -11,6 +11,9 @@ import path from "node:path";
 
 import { evaluatePreflight } from "../contract/preflight";
 import { inspectContractData } from "../contract/inspect";
+import { resolveTtsRequest, ttsCollision, TTS_TARGETS } from "../contract/tts";
+import { verifyArtifactFacts } from "../contract/artifact";
+import { validateRenderOutput, validateRenderRequest, renderCollision } from "../contract/model";
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const CONTRACT_PATH = path.join(ROOT, "contract.json");
@@ -161,5 +164,109 @@ describe("TTS capability: implementation limitation", () => {
     expect(contract.tts).toBeDefined();
     expect(contract.tts.notes).toContain("SolarSystem");
     expect(contract.tts.notes).toContain("implementation limitation");
+  });
+});
+
+// ─── TTS contract semantics ─────────────────────────────────────────────────
+
+describe("TTS capability: semantic rules", () => {
+  it("resolveTtsRequest with empty productionId returns BLOCKED", () => {
+    const result = resolveTtsRequest({ productionId: "" });
+    expect(result.status).toBe("BLOCKED");
+  });
+
+  it("resolveTtsRequest with unsupported productionId returns BLOCKED", () => {
+    const result = resolveTtsRequest({ productionId: "nonexistent" });
+    expect(result.status).toBe("BLOCKED");
+  });
+
+  it("resolveTtsRequest with solarSystem returns SUCCESS with target", () => {
+    const result = resolveTtsRequest({ productionId: "solarSystem" });
+    expect(result.status).toBe("SUCCESS");
+    expect(result.target).toBeDefined();
+    expect(result.target!.productionId).toBe("solarSystem");
+  });
+
+  it("ttsCollision with existing artifact returns BLOCKED", () => {
+    const target = TTS_TARGETS.solarSystem;
+    const result = ttsCollision(target, true);
+    expect(result.status).toBe("BLOCKED");
+    expect(result.message).toContain("already exists");
+  });
+
+  it("ttsCollision with no artifact returns SUCCESS", () => {
+    const target = TTS_TARGETS.solarSystem;
+    const result = ttsCollision(target, false);
+    expect(result.status).toBe("SUCCESS");
+  });
+});
+
+// ─── Artifact verification semantics ────────────────────────────────────────
+
+describe("Artifact verification: semantic rules", () => {
+  it("verifyArtifactFacts with non-existent artifact returns BLOCKED", () => {
+    const facts = { exists: false, size: 0, extension: ".mp4", readable: false };
+    const result = verifyArtifactFacts("out/nonexistent.mp4", facts, false);
+    expect(result.status).toBe("BLOCKED");
+    expect(result.checks.some((c: any) => c.name === "exists" && !c.passed)).toBe(true);
+  });
+
+  it("verifyArtifactFacts with valid artifact returns SUCCESS", () => {
+    const facts = { exists: true, size: 1024, extension: ".mp4", readable: true };
+    const result = verifyArtifactFacts("out/video.mp4", facts, false);
+    expect(result.status).toBe("SUCCESS");
+    expect(result.checks.every((c: any) => c.available ? c.passed : true)).toBe(true);
+  });
+
+  it("verifyArtifactFacts with empty artifact returns FAILED", () => {
+    const facts = { exists: true, size: 0, extension: ".mp4", readable: true };
+    const result = verifyArtifactFacts("out/empty.mp4", facts, false);
+    expect(result.status).toBe("FAILED");
+    expect(result.checks.some((c: any) => c.name === "size" && !c.passed)).toBe(true);
+  });
+
+  it("verifyArtifactFacts with unsupported extension returns FAILED", () => {
+    const facts = { exists: true, size: 1024, extension: ".txt", readable: true };
+    const result = verifyArtifactFacts("out/document.txt", facts, false);
+    expect(result.status).toBe("FAILED");
+    expect(result.checks.some((c: any) => c.name === "container" && !c.passed)).toBe(true);
+  });
+});
+
+// ─── Render contract semantics ──────────────────────────────────────────────
+
+describe("Render capability: semantic rules", () => {
+  it("validateRenderOutput rejects paths outside out/", () => {
+    const result = validateRenderOutput("tmp/video.mp4");
+    expect(result.status).toBe("BLOCKED");
+    expect(result.message).toContain("must live within the artifact boundary");
+  });
+
+  it("validateRenderOutput accepts paths inside out/", () => {
+    const result = validateRenderOutput("out/video.mp4");
+    expect(result.status).toBe("SUCCESS");
+  });
+
+  it("validateRenderRequest rejects empty composition", () => {
+    const result = validateRenderRequest({ composition: "", output: "out/video.mp4" });
+    expect(result.status).toBe("BLOCKED");
+    expect(result.message).toContain("composition must be a non-empty");
+  });
+
+  it("validateRenderRequest rejects empty output", () => {
+    const result = validateRenderRequest({ composition: "MyComp", output: "" });
+    expect(result.status).toBe("BLOCKED");
+    expect(result.message).toContain("output must be a non-empty string");
+  });
+
+  it("renderCollision detects existing output file", () => {
+    const result = renderCollision(true);
+    expect(result.status).toBe("BLOCKED");
+    expect(result.message).toContain("already exists");
+  });
+
+  it("renderCollision allows non-existing output file", () => {
+    const result = renderCollision(false);
+    expect(result.status).toBe("SUCCESS");
   });
 });

@@ -19,22 +19,22 @@ export function loadContract() {
   return JSON.parse(readFileSync(CONTRACT_PATH, "utf8"));
 }
 
-export function inspectContract() {
-  const contract = loadContract();
-  return {
-    contractVersion: contract.contractVersion,
-    projectId: contract.projectId,
-    projectName: contract.projectName,
-    projectVersion: contract.projectVersion,
-    capabilities: contract.capabilities.map((c) => c.name),
-    productions: contract.productions,
-    compatibility: contract.compatibility,
-  };
+import { loadContractModule } from "./contractLoader.mjs";
+
+async function inspectContract() {
+  const contractModule = await loadContractModule("src/contract/inspect.ts");
+  const { inspectContractData } = contractModule;
+  return inspectContractData(CONTRACT_PATH);
 }
 
 function main() {
-  console.log(JSON.stringify(inspectContract(), null, 2));
+  inspectContract().then(out => {
+    console.log(JSON.stringify(out, null, 2));
+    process.exit(0);
+  }).catch(e => {
+    console.error("Failed to inspect contract:", e);
+    process.exit(1);
+  });
 }
-
 const invoked = process.argv[1] ? pathToFileURL(process.argv[1]).href : "";
 if (invoked.endsWith("/scripts/inspect.mjs")) main();

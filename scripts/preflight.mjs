@@ -6,43 +6,20 @@
 // TTS. Reports semantic state: READY | BLOCKED | FAILED.
 // ---------------------------------------------------------------------------
 
-import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { pathToFileURL } from "node:url";
+import { loadContractModule } from "./contractLoader.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-export function runPreflight() {
-  const checks = [
-    {
-      name: "contract",
-      state: existsSync(path.join(ROOT, "contract.json")) ? "READY" : "FAILED",
-    },
-    {
-      name: "source",
-      state: existsSync(path.join(ROOT, "src", "Root.tsx")) ? "READY" : "FAILED",
-    },
-  ];
-
-  let status = "READY";
-  const evaluated = [];
-  for (const check of checks) {
-    evaluated.push(check);
-    if (check.state === "FAILED") {
-      status = "FAILED";
-      break;
-    }
-    if (check.state === "BLOCKED") {
-      status = "BLOCKED";
-      break;
-    }
-  }
-  return { status, checks: evaluated };
+export async function runPreflight() {
+  const mod = await loadContractModule("src/contract/preflight.ts");
+  return mod.evaluatePreflight(ROOT);
 }
 
-function main() {
-  const out = runPreflight();
+async function main() {
+  const out = await runPreflight();
   console.log(JSON.stringify(out, null, 2));
   const rc = out.status === "READY" ? 0 : out.status === "BLOCKED" ? 2 : 1;
   process.exit(rc);
