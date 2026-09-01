@@ -21,6 +21,9 @@ public/stoicLove/durations.json
 public/canCuoc/*.mp3
 public/canCuoc/_
 public/canCuoc/durations.json
+public/solarSystem-contract-test/*.mp3
+public/solarSystem-contract-test/_
+public/solarSystem-contract-test/durations.json
 
 # secrets (tuyet doi khong commit)
 gemini_key.txt
