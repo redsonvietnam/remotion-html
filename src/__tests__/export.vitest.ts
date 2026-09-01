@@ -286,6 +286,140 @@ describe("Export composition ID", () => {
   });
 });
 
+// ─── EXPORT DURATION: TransitionSeries overlap semantics ─────────────────────
+
+/**
+ * WS-Q duration hardening: export payload totalFrames must subtract the
+ * TransitionSeries overlap (12 frames) instead of adding a hard-coded 16.
+ *
+ * These assertions verify the formula against the production demo scene data
+ * so that export payloads match Root.tsx composition durations.
+ */
+describe("Export duration — TransitionSeries overlap semantics", () => {
+  const buildProject = (
+    template: string,
+    scenes: { kind: string; dur: number }[],
+  ): ComposerProject => ({
+    id: "proj_dur_test",
+    name: "Dur Test",
+    template,
+    format: "9:16",
+    scenes: scenes.map((s, i) => ({
+      id: "s" + i,
+      kind: s.kind,
+      content: { kind: s.kind },
+      duration: s.dur,
+    })),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  });
+
+  it("terminal: 6 scenes, -5×12 overlap → 840 frames", () => {
+    const p = buildProject("terminal", [
+      { kind: "intro", dur: 3.5 },
+      { kind: "typing", dur: 5.0 },
+      { kind: "typing", dur: 5.0 },
+      { kind: "typing", dur: 5.0 },
+      { kind: "typing", dur: 5.0 },
+      { kind: "outro", dur: 3.5 },
+    ]);
+    const result = projectToExportPayload(p);
+    expect(result.valid).toBe(true);
+    expect(result.payload!.totalFrames).toBe(840);
+  });
+
+  it("kineticStatement: 4 scenes, -3×12 overlap → 414 frames", () => {
+    const p = buildProject("kineticStatement", [
+      { kind: "hook", dur: 3.0 },
+      { kind: "stat", dur: 3.5 },
+      { kind: "quote", dur: 4.0 },
+      { kind: "outro", dur: 2.5 },
+    ]);
+    const result = projectToExportPayload(p);
+    expect(result.valid).toBe(true);
+    expect(result.payload!.totalFrames).toBe(414);
+  });
+
+  it("bentoGrid: 3 scenes, -2×12 overlap → 360 frames", () => {
+    const p = buildProject("bentoGrid", [
+      { kind: "hook", dur: 2.0 },
+      { kind: "bento", dur: 7.0 },
+      { kind: "outro", dur: 2.3 },
+    ]);
+    const result = projectToExportPayload(p);
+    expect(result.valid).toBe(true);
+    expect(result.payload!.totalFrames).toBe(360);
+  });
+
+  it("featureDrop: 3 scenes, -2×12 overlap → 316 frames", () => {
+    const p = buildProject("featureDrop", [
+      { kind: "hook", dur: 2.0 },
+      { kind: "features", dur: 5.83 },
+      { kind: "outro", dur: 2.0 },
+    ]);
+    const result = projectToExportPayload(p);
+    expect(result.valid).toBe(true);
+    expect(result.payload!.totalFrames).toBe(316);
+  });
+
+  it("TransitionSeries formula is subtraction (not addition of 16)", () => {
+    const p = buildProject("bentoGrid", [
+      { kind: "hook", dur: 2.0 },
+      { kind: "bento", dur: 7.0 },
+      { kind: "outro", dur: 2.3 },
+    ]);
+    const result = projectToExportPayload(p);
+    // Old bug would produce 384 + 2*16 = 416
+    expect(result.payload!.totalFrames).not.toBe(416);
+    // Correct value is 384 - 2*12 = 360
+    expect(result.payload!.totalFrames).toBe(360);
+  });
+});
+
+// ─── EXPORT DURATION: Sequence templates have zero overlap ───────────────────
+
+describe("Export duration — Sequence templates (zero overlap)", () => {
+  const buildProject = (
+    template: string,
+    scenes: { kind: string; dur: number }[],
+  ): ComposerProject => ({
+    id: "proj_seq_test",
+    name: "Seq Dur Test",
+    template,
+    format: "9:16",
+    scenes: scenes.map((s, i) => ({
+      id: "s" + i,
+      kind: s.kind,
+      content: { kind: s.kind },
+      duration: s.dur,
+    })),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  });
+
+  it("editorialFeature: 2 scenes, no overlap → sum of sceneFrames", () => {
+    const p = buildProject("editorialFeature", [
+      { kind: "cover", dur: 5.0 },
+      { kind: "takeaways", dur: 7.0 },
+    ]);
+    const result = projectToExportPayload(p);
+    expect(result.valid).toBe(true);
+    // sceneFrames(5.0) = 165, sceneFrames(7.0) = 225, total 390, no subtraction
+    expect(result.payload!.totalFrames).toBe(390);
+  });
+
+  it("productTeaser: 2 scenes, no overlap → sum of sceneFrames", () => {
+    const p = buildProject("productTeaser", [
+      { kind: "hook", dur: 3.0 },
+      { kind: "features", dur: 6.0 },
+    ]);
+    const result = projectToExportPayload(p);
+    expect(result.valid).toBe(true);
+    // sceneFrames(3.0) = 105, sceneFrames(6.0) = 195, total 300, no subtraction
+    expect(result.payload!.totalFrames).toBe(300);
+  });
+});
+
 // ─── ROUTING: production URL regression ──────────────────────────────────────
 
 describe("Export routing — production regression", () => {

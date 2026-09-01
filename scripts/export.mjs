@@ -218,8 +218,16 @@ function buildPayload(project) {
     }
     content[s.id] = sanitized;
   }
-  const totalFrames = scenes.reduce((acc, s) => acc + sceneFrames(s.dur), 0)
-    + Math.max(0, scenes.length - 1) * 16;
+  const OVERLAP_FRAMES = {
+    terminal: 12,
+    kineticStatement: 12,
+    bentoGrid: 12,
+    featureDrop: 12,
+  };
+  const overlap = OVERLAP_FRAMES[project.template] ?? 0;
+  const totalFrames =
+    scenes.reduce((acc, s) => acc + sceneFrames(s.dur), 0) -
+    Math.max(0, scenes.length - 1) * overlap;
   return { template: project.template, scenes, content, format: project.format,
     width, height, fps: FPS, totalFrames, projectName: project.name };
 }

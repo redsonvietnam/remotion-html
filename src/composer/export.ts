@@ -141,8 +141,15 @@ export function projectToExportPayload(project: ComposerProject): ExportValidati
     content[s.id] = { ...s.content };
   }
 
+  const OVERLAP_FRAMES: Record<string, number> = {
+    terminal: 12,
+    kineticStatement: 12,
+    bentoGrid: 12,
+    featureDrop: 12,
+  };
+  const overlap = OVERLAP_FRAMES[project.template] ?? 0;
   const totalFrames = scenes.reduce((acc, s) => acc + sceneFrames(s.dur), 0)
-    + Math.max(0, scenes.length - 1) * 16;
+    - Math.max(0, scenes.length - 1) * overlap;
 
   return {
     ...validation,
