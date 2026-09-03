@@ -276,7 +276,7 @@ def pad_silence(path, lead, tail):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--backend", choices=["edge", "omni", "gemini", "proxy", "vieneu"], default="edge")
+    ap.add_argument("--backend", choices=["edge", "omni", "gemini", "proxy", "vieneu"], default="vieneu")
     ap.add_argument("--key", default=None, help="Gemini API key (hoac file gemini_key.txt / env GEMINI_API_KEY)")
     ap.add_argument("--voice", default=None,
                     help="VieNeu single-speaker voice name (default: Thái Sơn)")
