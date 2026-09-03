@@ -25,13 +25,21 @@ _VIENEU_BACKEND = None
 
 
 def _get_vieneu_backend():
-    """Lazy-init VieNeu backend (model loads once)."""
+    """Lazy-init VieNeu backend (model loads once).
+
+    HF_HOME resolution order:
+      1. Existing HF_HOME env var (honored as-is)
+      2. VIENEU_HF_HOME env var (VieNeu-specific override)
+      3. Not set — let the SDK use its own default (~/.cache/huggingface)
+    """
     global _VIENEU_BACKEND
     if _VIENEU_BACKEND is None:
         if sys.stdout.encoding != "utf-8":
             sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-        if "HF_HOME" not in os.environ:
-            os.environ["HF_HOME"] = r"D:\CODE2026\VieNeu-TTS\.hf_cache"
+        # Honor existing HF_HOME; allow VIENEU_HF_HOME as a VieNeu-specific override.
+        # Never hardcode a machine-specific path.
+        if "HF_HOME" not in os.environ and "VIENEU_HF_HOME" in os.environ:
+            os.environ["HF_HOME"] = os.environ["VIENEU_HF_HOME"]
         try:
             from gen_tts_vieneu import VieneuBackend
         except ImportError:
@@ -295,6 +303,10 @@ def main():
     # Resolve voice map for vieneu
     voice_map = None
     if backend == "vieneu":
+        # Validate: --voice-a and --voice-b must be supplied together
+        if bool(args.voice_a) != bool(args.voice_b):
+            print("ERROR: --voice-a and --voice-b must be supplied together", file=sys.stderr)
+            raise SystemExit(1)
         if args.voice_a and args.voice_b:
             voice_map = {"A": args.voice_a, "B": args.voice_b}
         elif args.voice:
@@ -309,46 +321,47 @@ def main():
             gemini_key = open(kf, encoding="utf-8").read().strip()
 
     scenes = []
-    if backend == "gemini":
-        for sid, turns in DIALOGUE:
-            transcript = "\n".join(f"Speaker {1 if spk == 'A' else 2}: {text}" for spk, text in turns)
-            out_path = os.path.join(OUT, f"{sid}.mp3").replace("\\", "/")
-            gemini_turn(transcript, out_path, gemini_key)
-            pad_silence(out_path, 0.5, 0.5)
-            total = MP3(out_path).info.length
-            caption = "\n".join(f"{ROLE[spk]}: {text}" for spk, text in turns)
-            scenes.append({"id": sid, "audio": f"nq57/{sid}.mp3", "caption": caption, "dur": round(total, 3)})
-            print(f"{sid}: {total:.2f}s ({len(turns)} turns) [gemini]")
-    else:
-        for sid, turns in DIALOGUE:
-            tmp_files, durations, caption_lines = [], [], []
-            for i, (spk, text) in enumerate(turns):
-                tp = os.path.join(OUT, f"_{sid}_{i}.mp3")
-                tts_for(backend, spk, text, tp, voice_map=voice_map)
-                tmp_files.append(tp)
-                durations.append(MP3(tp).info.length)
-                caption_lines.append(f"{ROLE[spk]}: {text}")
-            out_path = os.path.join(OUT, f"{sid}.mp3").replace("\\", "/")
-            inputs = []
-            for tp in tmp_files:
-                inputs += ["-i", tp.replace("\\", "/")]
-            fd = "".join(f"[{j}:a]" for j in range(len(tmp_files))) + f"concat=n={len(tmp_files)}:v=0:a=1[a]"
-            r = subprocess.run([FF, "-y"] + inputs + ["-filter_complex", fd, "-map", "[a]", "-c:a", "mp3", "-b:a", "128k", out_path],
-                               capture_output=True, text=True)
-            if r.returncode != 0:
-                print("FFPATH:", repr(FF))
-                print("RC:", r.returncode)
-                print("ERR:", r.stderr[-1200:])
-                raise SystemExit(1)
-            for tp in tmp_files:
-                os.remove(tp)
-            pad_silence(out_path, 0.5, 0.5)
-            total = MP3(out_path).info.length
-            scenes.append({"id": sid, "audio": f"nq57/{sid}.mp3", "caption": "\n".join(caption_lines), "dur": round(total, 3)})
-            print(f"{sid}: {total:.2f}s ({len(turns)} turns) [{backend}]")
-
-    # Cleanup VieNeu model if used
-    _close_vieneu()
+    try:
+        if backend == "gemini":
+            for sid, turns in DIALOGUE:
+                transcript = "\n".join(f"Speaker {1 if spk == 'A' else 2}: {text}" for spk, text in turns)
+                out_path = os.path.join(OUT, f"{sid}.mp3").replace("\\", "/")
+                gemini_turn(transcript, out_path, gemini_key)
+                pad_silence(out_path, 0.5, 0.5)
+                total = MP3(out_path).info.length
+                caption = "\n".join(f"{ROLE[spk]}: {text}" for spk, text in turns)
+                scenes.append({"id": sid, "audio": f"nq57/{sid}.mp3", "caption": caption, "dur": round(total, 3)})
+                print(f"{sid}: {total:.2f}s ({len(turns)} turns) [gemini]")
+        else:
+            for sid, turns in DIALOGUE:
+                tmp_files, durations, caption_lines = [], [], []
+                for i, (spk, text) in enumerate(turns):
+                    tp = os.path.join(OUT, f"_{sid}_{i}.mp3")
+                    tts_for(backend, spk, text, tp, voice_map=voice_map)
+                    tmp_files.append(tp)
+                    durations.append(MP3(tp).info.length)
+                    caption_lines.append(f"{ROLE[spk]}: {text}")
+                out_path = os.path.join(OUT, f"{sid}.mp3").replace("\\", "/")
+                inputs = []
+                for tp in tmp_files:
+                    inputs += ["-i", tp.replace("\\", "/")]
+                fd = "".join(f"[{j}:a]" for j in range(len(tmp_files))) + f"concat=n={len(tmp_files)}:v=0:a=1[a]"
+                r = subprocess.run([FF, "-y"] + inputs + ["-filter_complex", fd, "-map", "[a]", "-c:a", "mp3", "-b:a", "128k", out_path],
+                                   capture_output=True, text=True)
+                if r.returncode != 0:
+                    print("FFPATH:", repr(FF))
+                    print("RC:", r.returncode)
+                    print("ERR:", r.stderr[-1200:])
+                    raise SystemExit(1)
+                for tp in tmp_files:
+                    os.remove(tp)
+                pad_silence(out_path, 0.5, 0.5)
+                total = MP3(out_path).info.length
+                scenes.append({"id": sid, "audio": f"nq57/{sid}.mp3", "caption": "\n".join(caption_lines), "dur": round(total, 3)})
+                print(f"{sid}: {total:.2f}s ({len(turns)} turns) [{backend}]")
+    finally:
+        # Ensure VieNeu model is released even on failure
+        _close_vieneu()
 
     with open(os.path.join(OUT, "durations.json"), "w", encoding="utf-8") as f:
         json.dump(scenes, f, ensure_ascii=False, indent=2)
