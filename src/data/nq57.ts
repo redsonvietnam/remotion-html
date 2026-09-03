@@ -152,7 +152,7 @@ export const SCENES: SceneDef[] = [
     audio: "nq57/s1.mp3",
     caption: `MC: Chào bạn. Hôm nay chúng ta cùng giải mã một văn kiện đang làm thay đổi cuộc chơi: Nghị quyết 57 của Bộ Chính trị, ban hành ngày 22 tháng 12 năm 2024.
 Chuyên gia: Đúng vậy. Đó là Nghị quyết về đột phá phát triển khoa học, công nghệ, đổi mới sáng tạo và chuyển đổi số quốc gia.`,
-    dur: 18.84,
+    dur: 17.88,
   },
   {
     id: "s2",
@@ -166,7 +166,7 @@ Chuyên gia: Vì Nghị quyết xác định đây là đột phá quan trọng 
     audio: "nq57/s3.mp3",
     caption: `MC: Vậy ai là người làm nên cuộc cách mạng này?
 Chuyên gia: Người dân và doanh nghiệp là trung tâm, là chủ thể và động lực chính. Nhà khoa học là nhân tố then chốt. Và Nhà nước giữ vai trò dẫn dắt.`,
-    dur: 11.856,
+    dur: 11.928,
   },
   {
     id: "s4",
@@ -180,14 +180,14 @@ Chuyên gia: Năm trụ cột cốt lõi: Thể chế, Nhân lực, Hạ tầng,
     audio: "nq57/s5.mp3",
     caption: `MC: Đích đến cụ thể là gì?
 Chuyên gia: Đến năm 2030, quy mô kinh tế số đạt tối thiểu 30% GDP. Trên 80% giao dịch với cơ quan nhà nước thực hiện trực tuyến. Và Việt Nam nằm trong nhóm 3 nước dẫn đầu Đông Nam Á về trí tuệ nhân tạo.`,
-    dur: 16.992,
+    dur: 16.824,
   },
   {
     id: "s6",
     audio: "nq57/s6.mp3",
     caption: `MC: Còn xa hơn, năm 2045?
 Chuyên gia: Đến 2045, Việt Nam trở thành nước phát triển, thu nhập cao. Kinh tế số đạt tối thiểu 50% GDP, thuộc nhóm 30 nước dẫn đầu thế giới về đổi mới sáng tạo.`,
-    dur: 15.384,
+    dur: 15.288,
   },
   {
     id: "s7",
@@ -195,6 +195,6 @@ Chuyên gia: Đến 2045, Việt Nam trở thành nước phát triển, thu nh�
     caption: `MC: Một tầm nhìn tham vọng.
 Chuyên gia: Và nó chỉ thành hiện thực nếu chúng ta hành động ngay hôm nay.
 MC: Nghị quyết 57 — khởi động kỷ nguyên vươn mình của dân tộc. Hành động hôm nay, để Việt Nam hùng cường ngày mai.`,
-    dur: 12.552,
+    dur: 12.48,
   },
 ];
