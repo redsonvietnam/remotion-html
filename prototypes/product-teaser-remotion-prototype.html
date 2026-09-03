@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Product Teaser — Remotion-HTML Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --stage-w: 405px; --stage-h: 720px; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:#1a1a1a; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; font-family:'Inter',sans-serif; color:#ddd; padding:30px 0;
+  }
+
+  #stage{
+    position:relative; width:var(--stage-w); height:var(--stage-h);
+    overflow:hidden; border-radius:20px; box-shadow:0 30px 90px rgba(0,0,0,.7);
+    background:#08090c; color:#f5f6f8;
+  }
+  .scene{ position:absolute; inset:0; opacity:0; }
+
+  #bggrid{
+    position:absolute; inset:0; z-index:0;
+    background-image: radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:24px 24px;
+  }
+  #bgglow{ position:absolute; z-index:0; width:340px; height:340px; border-radius:50%; filter:blur(60px); background:radial-gradient(circle, rgba(110,139,255,.35), transparent 70%); }
+
+  /* ---- scene: hook ---- */
+  #scene-hook{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 40px; }
+  #hookkicker{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px; color:#6e8bff; text-transform:uppercase; padding:5px 12px; border:1px solid rgba(110,139,255,.35); border-radius:20px; background:rgba(110,139,255,.08); }
+  #hookmain{ font-weight:800; font-size:32px; line-height:1.25; margin-top:18px; letter-spacing:-.5px; }
+  #hooksub{ font-size:14.5px; color:#9a9ea8; margin-top:12px; line-height:1.5; max-width:290px; }
+
+  /* ---- scene: dashboard ---- */
+  #scene-dashboard{ padding:64px 20px 0; }
+  #dashheader{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; }
+  #dashtitle{ font-weight:700; font-size:15px; }
+  #dashperiod{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5c6270; }
+
+  #kpirow{ display:flex; gap:10px; margin-bottom:16px; }
+  .kpicard{
+    flex:1; background:#101218; border:1px solid rgba(255,255,255,.08); border-radius:14px;
+    padding:12px 12px 11px;
+  }
+  .kpicard .lbl{ font-size:10px; color:#9a9ea8; margin-bottom:6px; }
+  .kpicard .val{ font-weight:800; font-size:17px; letter-spacing:-.3px; }
+  .kpicard .chg{ font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:#3ddc84; margin-top:5px; }
+
+  #chartcard{
+    background:#101218; border:1px solid rgba(255,255,255,.08); border-radius:16px;
+    padding:16px 14px 12px; margin-bottom:14px;
+  }
+  #chartcard .charthead{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  #chartcard .chartlbl{ font-size:12px; font-weight:700; }
+  #chartcard .chartval{ font-family:'JetBrains Mono',monospace; font-size:12px; color:#6e8bff; }
+
+  #logrow{ display:flex; gap:10px; }
+  .logcard{ flex:1; background:#101218; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px 12px; }
+  .logcard .t{ font-size:11px; font-weight:700; }
+  .logcard .s{ font-size:9.5px; color:#5c6270; margin-top:3px; }
+
+  /* ---- scene: features ---- */
+  #scene-features{ padding:70px 24px 0; }
+  #featuretitle{ font-weight:800; font-size:20px; text-align:center; margin-bottom:26px; }
+  .featurecard{
+    display:flex; gap:14px; align-items:flex-start;
+    background:#101218; border:1px solid rgba(255,255,255,.08); border-radius:16px;
+    padding:16px; margin-bottom:12px;
+  }
+  .featurecard .iconwrap{
+    width:40px; height:40px; border-radius:11px; background:rgba(110,139,255,.15);
+    display:flex; align-items:center; justify-content:center; font-size:18px; flex:none;
+  }
+  .featurecard .ft{ font-weight:700; font-size:14px; }
+  .featurecard .fd{ font-size:12px; color:#9a9ea8; margin-top:4px; line-height:1.45; }
+
+  /* ---- scene: outro ---- */
+  #scene-outro{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  #outrologo{ font-weight:900; font-size:26px; letter-spacing:-.5px; }
+  #outrotag{ font-size:12.5px; color:#9a9ea8; margin-top:8px; }
+  #outrocta{
+    margin-top:26px; background:#f5f6f8; color:#08090c; font-weight:700; font-size:13.5px;
+    padding:11px 24px; border-radius:24px;
+  }
+
+  /* prototype chrome */
+  #chrome{ width:var(--stage-w); }
+  #timeline{ position:relative; height:34px; border-radius:8px; overflow:hidden; display:flex; cursor:pointer; background:#000; }
+  .tlseg{ position:relative; display:flex; align-items:center; justify-content:center; font-size:9.5px; color:rgba(255,255,255,.75); font-weight:600; border-right:1px solid rgba(0,0,0,.4); }
+  #playhead{ position:absolute; top:0; bottom:0; width:2px; background:#fff; box-shadow:0 0 6px #fff; pointer-events:none; }
+  #transportrow{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; font-size:11px; color:#888; }
+  #playpausebtn{ background:#2a2a2a; color:#fff; border:none; border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; font-weight:600; }
+  #timecode{ font-variant-numeric:tabular-nums; }
+  #chromenote{ font-size:10.5px; color:#666; margin-top:10px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="bggrid"></div>
+  <div id="bgglow"></div>
+
+  <div class="scene" id="scene-hook">
+    <div id="hookkicker"></div>
+    <div id="hookmain"></div>
+    <div id="hooksub"></div>
+  </div>
+
+  <div class="scene" id="scene-dashboard">
+    <div id="dashheader"><div id="dashtitle">Tổng quan</div><div id="dashperiod">30 ngày qua</div></div>
+    <div id="kpirow"></div>
+    <div id="chartcard">
+      <div class="charthead"><div class="chartlbl">Doanh thu theo ngày</div><div class="chartval" id="chartcurval"></div></div>
+      <svg id="chartsvg" viewBox="0 0 340 120" width="100%" height="120"></svg>
+    </div>
+    <div id="logrow"></div>
+  </div>
+
+  <div class="scene" id="scene-features">
+    <div id="featuretitle"></div>
+    <div id="featurelist"></div>
+  </div>
+
+  <div class="scene" id="scene-outro">
+    <div id="outrologo"></div>
+    <div id="outrotag"></div>
+    <div id="outrocta"></div>
+  </div>
+</div>
+
+<div id="chrome">
+  <div id="timeline"></div>
+  <div id="transportrow">
+    <button id="playpausebtn">⏸ Pause</button>
+    <span id="timecode">0.00s / 0.00s</span>
+  </div>
+  <div id="chromenote">
+    Teaser sản phẩm chất lượng thiết kế thật (design tokens, hệ thống
+    spacing/typography) — không có kịch bản "hướng dẫn thao tác".
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   1) DATA — nội dung sản phẩm/số liệu, tách khỏi thiết kế.
+   ================================================================ */
+const DATA = {
+  hook: { kicker:"RA MẮT HÔM NAY", title:"Gặp gỡ Pulse.", sub:"Nền tảng phân tích dữ liệu real-time cho đội ngũ hiện đại." },
+  kpis: [
+    { label:"MRR", value:128400, prefix:"$", change:"+18.2%" },
+    { label:"Người dùng", value:24380, change:"+9.4%" },
+    { label:"Chuyển đổi", value:4.8, suffix:"%", change:"+0.6%" },
+  ],
+  chart: { label:"Doanh thu theo ngày", points:[18,22,19,27,31,26,34,41,38,47,44,52,58,54,63], currentValueLabel:"$63.2K hôm nay" },
+  logs: [
+    { title:"142 sự kiện", sub:"trong giờ qua" },
+    { title:"99.98%", sub:"uptime hệ thống" },
+  ],
+  featuresTitle: "Vì sao đội ngũ chọn Pulse",
+  features: [
+    { icon:"⚡", title:"Real-time đến từng giây", desc:"Dữ liệu cập nhật tức thời, không cần refresh trang." },
+    { icon:"🔗", title:"Tích hợp trong 2 phút", desc:"Kết nối với hơn 40 công cụ bạn đang dùng sẵn." },
+    { icon:"🛡️", title:"Bảo mật cấp doanh nghiệp", desc:"Mã hoá đầu cuối, tuân thủ SOC 2 Type II." },
+  ],
+  outro: { logo:"PULSE", tagline:"Bắt nhịp dữ liệu của bạn.", cta:"Dùng thử miễn phí →" }
+};
+
+/* ================================================================
+   2) THEME — design tokens thật sự: màu, bo góc, khoảng cách.
+   Tách hẳn khỏi DATA và ENGINE để đổi "skin" mà không đụng logic.
+   ================================================================ */
+const THEME = {
+  color: {
+    bg:"#08090c", surface:"#101218", border:"rgba(255,255,255,.08)",
+    textPrimary:"#f5f6f8", textSecondary:"#9a9ea8", textTertiary:"#5c6270",
+    accent:"#6e8bff", accentSoft:"rgba(110,139,255,.15)", success:"#3ddc84"
+  },
+  radius: { sm:10, md:14, lg:20 },
+};
+
+/* ================================================================
+   3) TIMING / CONFIG
+   ================================================================ */
+const TIMING = { fps:30, sceneFadeFrames:14 };
+const CONFIG = {
+  fps: TIMING.fps, width:1080, height:1920,
+  scenes: [
+    { id:"hook",      durationInFrames:55  }, // 1.8s
+    { id:"dashboard", durationInFrames:170 }, // 5.7s
+    { id:"features",  durationInFrames:130 }, // 4.3s
+    { id:"outro",     durationInFrames:70  }, // 2.3s
+  ]
+};
+let cursor = 0;
+CONFIG.scenes.forEach(s=>{ s.startFrame = cursor; cursor += s.durationInFrames; });
+const TOTAL_FRAMES = cursor;
+
+/* ================================================================
+   4) ENGINE — pure per-frame.
+   ================================================================ */
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+function interpolate(frame,[i0,i1],[o0,o1],easing=t=>t){
+  const t = clamp((frame-i0)/(i1-i0),0,1);
+  return o0 + (o1-o0)*easing(t);
+}
+const easeOutCubic = t=>1-Math.pow(1-t,3);
+const easeOutBack = t=>{ const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); };
+function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+
+function sceneOpacity(localFrame,dur){
+  const f = TIMING.sceneFadeFrames;
+  return interpolate(localFrame,[0,f],[0,1]) * interpolate(localFrame,[dur-f,dur],[1,0]);
+}
+
+/* ---- scene: hook ---- */
+document.getElementById('hookkicker').textContent = DATA.hook.kicker;
+document.getElementById('hookmain').textContent = DATA.hook.title;
+document.getElementById('hooksub').textContent = DATA.hook.sub;
+function renderHook(localFrame,dur){
+  document.getElementById('scene-hook').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('hookkicker').style.opacity = interpolate(localFrame,[0,10],[0,1]);
+  document.getElementById('hookmain').style.transform = `translateY(${interpolate(localFrame,[6,22],[14,0],easeOutCubic)}px)`;
+  document.getElementById('hookmain').style.opacity = interpolate(localFrame,[6,22],[0,1]);
+  document.getElementById('hooksub').style.opacity = interpolate(localFrame,[20,32],[0,1]);
+}
+
+/* ---- scene: dashboard ---- */
+const kpirowEl = document.getElementById('kpirow');
+DATA.kpis.forEach((k,i)=>{
+  const el = document.createElement('div');
+  el.className = 'kpicard'; el.id = 'kpi-'+i;
+  el.innerHTML = `<div class="lbl">${k.label}</div><div class="val" id="kpival-${i}">0</div><div class="chg" id="kpichg-${i}">${k.change}</div>`;
+  kpirowEl.appendChild(el);
+});
+const logrowEl = document.getElementById('logrow');
+DATA.logs.forEach((l,i)=>{
+  const el = document.createElement('div');
+  el.className = 'logcard'; el.id = 'log-'+i;
+  el.innerHTML = `<div class="t">${l.title}</div><div class="s">${l.sub}</div>`;
+  logrowEl.appendChild(el);
+});
+
+// xây path biểu đồ 1 lần từ DATA.chart.points (deterministic, không đổi giữa các frame)
+const chartSvg = document.getElementById('chartsvg');
+const pts = DATA.chart.points;
+const maxV = Math.max(...pts), minV = Math.min(...pts);
+const chartW = 340, chartH = 120, padY = 10;
+const coords = pts.map((v,i)=>{
+  const x = (i/(pts.length-1))*chartW;
+  const y = chartH - padY - ((v-minV)/(maxV-minV))*(chartH-2*padY);
+  return [x,y];
+});
+const linePath = coords.map((c,i)=> (i===0?'M':'L')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
+const areaPath = linePath + ` L${chartW},${chartH} L0,${chartH} Z`;
+
+chartSvg.innerHTML = `
+  <defs>
+    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${THEME.color.accent}" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="${THEME.color.accent}" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="revealClip"><rect id="revealRect" x="0" y="0" width="0" height="${chartH}"/></clipPath>
+  </defs>
+  <g clip-path="url(#revealClip)">
+    <path d="${areaPath}" fill="url(#areaGrad)"></path>
+    <path id="chartline" d="${linePath}" fill="none" stroke="${THEME.color.accent}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+  </g>
+`;
+const chartLineEl = document.getElementById('chartline');
+const chartLineLength = chartLineEl.getTotalLength();
+chartLineEl.style.strokeDasharray = chartLineLength;
+
+function renderDashboard(localFrame,dur){
+  document.getElementById('scene-dashboard').style.opacity = sceneOpacity(localFrame,dur);
+
+  DATA.kpis.forEach((k,i)=>{
+    const start = 8 + i*8;
+    const cardEl = document.getElementById('kpi-'+i);
+    cardEl.style.opacity = interpolate(localFrame,[start,start+14],[0,1]);
+    cardEl.style.transform = `translateY(${interpolate(localFrame,[start,start+14],[12,0],easeOutCubic)}px)`;
+    const progress = interpolate(localFrame,[start+6,start+30],[0,k.value],easeOutCubic);
+    document.getElementById('kpival-'+i).textContent = (k.prefix||'') + (k.value<100 ? progress.toFixed(1) : fmt(progress)) + (k.suffix||'');
+    document.getElementById('kpichg-'+i).style.opacity = interpolate(localFrame,[start+26,start+36],[0,1]);
+  });
+
+  const chartStart = 40, chartDrawDur = 60;
+  const revealPct = interpolate(localFrame,[chartStart,chartStart+chartDrawDur],[0,1],easeOutCubic);
+  document.getElementById('revealRect').setAttribute('width', chartW*revealPct);
+  chartLineEl.style.strokeDashoffset = chartLineLength*(1-revealPct);
+  document.getElementById('chartcard').style.opacity = interpolate(localFrame,[34,46],[0,1]);
+  document.getElementById('chartcurval').style.opacity = interpolate(localFrame,[chartStart+chartDrawDur, chartStart+chartDrawDur+10],[0,1]);
+  document.getElementById('chartcurval').textContent = DATA.chart.currentValueLabel;
+
+  DATA.logs.forEach((l,i)=>{
+    const start = 116 + i*8;
+    const el = document.getElementById('log-'+i);
+    el.style.opacity = interpolate(localFrame,[start,start+14],[0,1]);
+    el.style.transform = `translateY(${interpolate(localFrame,[start,start+14],[10,0],easeOutCubic)}px)`;
+  });
+}
+
+/* ---- scene: features ---- */
+document.getElementById('featuretitle').textContent = DATA.featuresTitle;
+const featurelistEl = document.getElementById('featurelist');
+DATA.features.forEach((f,i)=>{
+  const el = document.createElement('div');
+  el.className = 'featurecard'; el.id = 'feat-'+i;
+  el.innerHTML = `<div class="iconwrap">${f.icon}</div><div><div class="ft">${f.title}</div><div class="fd">${f.desc}</div></div>`;
+  featurelistEl.appendChild(el);
+});
+function renderFeatures(localFrame,dur){
+  document.getElementById('scene-features').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('featuretitle').style.opacity = interpolate(localFrame,[0,14],[0,1]);
+  DATA.features.forEach((f,i)=>{
+    const start = 16 + i*14;
+    const el = document.getElementById('feat-'+i);
+    el.style.opacity = interpolate(localFrame,[start,start+16],[0,1]);
+    el.style.transform = `translateX(${interpolate(localFrame,[start,start+16],[-18,0],easeOutCubic)}px)`;
+  });
+}
+
+/* ---- scene: outro ---- */
+document.getElementById('outrologo').textContent = DATA.outro.logo;
+document.getElementById('outrotag').textContent = DATA.outro.tagline;
+document.getElementById('outrocta').textContent = DATA.outro.cta;
+function renderOutro(localFrame,dur){
+  document.getElementById('scene-outro').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('outrologo').style.transform = `scale(${interpolate(localFrame,[0,18],[0.7,1],easeOutBack)})`;
+  document.getElementById('outrotag').style.opacity = interpolate(localFrame,[16,28],[0,1]);
+  const ctaEl = document.getElementById('outrocta');
+  ctaEl.style.opacity = interpolate(localFrame,[30,42],[0,1]);
+  ctaEl.style.transform = `scale(${localFrame>44 ? 1+0.03*Math.sin(localFrame*0.15) : 1})`;
+}
+
+const RENDERERS = { hook:renderHook, dashboard:renderDashboard, features:renderFeatures, outro:renderOutro };
+function renderFrame(frame){
+  CONFIG.scenes.forEach(s=>{
+    const local = frame - s.startFrame;
+    if(local>=0 && local<s.durationInFrames){ RENDERERS[s.id](local, s.durationInFrames); }
+    else{ document.getElementById('scene-'+s.id).style.opacity = 0; }
+  });
+  // glow trôi nhẹ theo frame — chuyển động xác định, không random
+  const glowX = 40 + 25*Math.sin(frame*0.012);
+  const glowY = 10 + 15*Math.cos(frame*0.009);
+  document.getElementById('bgglow').style.left = glowX+'%';
+  document.getElementById('bgglow').style.top = glowY+'%';
+}
+
+/* ================================================================
+   5) PROTOTYPE PLAYBACK
+   ================================================================ */
+const timelineEl = document.getElementById('timeline');
+const playheadEl = document.createElement('div');
+playheadEl.id = 'playhead';
+timelineEl.appendChild(playheadEl);
+CONFIG.scenes.forEach((s,i)=>{
+  const seg = document.createElement('div');
+  seg.className = 'tlseg';
+  seg.style.flex = s.durationInFrames;
+  seg.style.background = ['#161a2a','#101822','#1a1622','#141414'][i];
+  seg.textContent = s.id;
+  timelineEl.insertBefore(seg, playheadEl);
+});
+
+let isPlaying = true, playStartPerf = performance.now(), seekFrame = 0;
+function currentFrame(){ return isPlaying ? Math.floor(((performance.now()-playStartPerf)/1000)*CONFIG.fps) : seekFrame; }
+function updateChrome(frame){
+  playheadEl.style.left = (clamp(frame/TOTAL_FRAMES,0,1)*100)+'%';
+  document.getElementById('timecode').textContent = `${(frame/CONFIG.fps).toFixed(2)}s / ${(TOTAL_FRAMES/CONFIG.fps).toFixed(2)}s`;
+}
+function loop(){
+  let frame = currentFrame();
+  if(isPlaying && frame>=TOTAL_FRAMES){ playStartPerf = performance.now(); frame = 0; }
+  renderFrame(frame); updateChrome(frame);
+  requestAnimationFrame(loop);
+}
+loop();
+document.getElementById('playpausebtn').addEventListener('click', ()=>{
+  if(isPlaying){ seekFrame = currentFrame(); isPlaying=false; document.getElementById('playpausebtn').textContent='▶ Play'; }
+  else{ playStartPerf = performance.now() - (seekFrame/CONFIG.fps)*1000; isPlaying=true; document.getElementById('playpausebtn').textContent='⏸ Pause'; }
+});
+timelineEl.addEventListener('click', e=>{
+  const rect = timelineEl.getBoundingClientRect();
+  const frame = Math.floor(clamp((e.clientX-rect.left)/rect.width,0,1)*TOTAL_FRAMES);
+  seekFrame = frame; isPlaying = false;
+  document.getElementById('playpausebtn').textContent = '▶ Play';
+  renderFrame(frame); updateChrome(frame);
+});
+</script>
+
+<!--
+================================================================
+TEMPLATE PROTOTYPE
+
+Name: Product Teaser (Dashboard Reveal)
+Description: Video giới thiệu sản phẩm/tính năng theo chất lượng thiết
+  kế frontend cao cấp (dark UI kiểu Linear/Stripe/Vercel: design tokens
+  rõ ràng, spacing/typography có hệ thống, thẻ KPI, biểu đồ area chart
+  tự "vẽ" ra bằng SVG stroke-dashoffset) kết hợp nhịp độ video creator
+  (hook gây chú ý → payoff trực quan → CTA), KHÔNG có kịch bản hướng
+  dẫn thao tác hay con trỏ giả lập.
+
+Recommended aspect ratio: 9:16 (1080x1920)
+Recommended duration: 14.1s @ 30fps (425 frames)
+
+Scenes:
+- Scene 1 — Hook (1.8s): kicker tag + tiêu đề sản phẩm + mô tả ngắn,
+  trượt lên nhẹ nhàng, không phô trương.
+- Scene 2 — Dashboard (5.7s): 3 thẻ KPI đếm số lên có so le thời gian,
+  biểu đồ area chart tự vẽ từ trái sang phải (path length thật, không
+  giả lập bằng width), 2 thẻ log nhỏ hiện sau cùng.
+- Scene 3 — Features (4.3s): 3 thẻ tính năng trượt vào từ trái, so le
+  14 frame mỗi thẻ — nhịp độ đọc được, không dồn dập.
+- Scene 4 — Outro (2.3s): logo pop-in bằng easeOutBack, tagline, nút
+  CTA fade + pulse nhẹ liên tục tới hết video.
+- Toàn video: 1 khối glow nền trôi rất chậm theo hàm sin(frame) —
+  chuyển động có chủ đích, không phải hiệu ứng ngẫu nhiên.
+
+Configurable content:
+- DATA.hook.{kicker,title,sub}
+- DATA.kpis[] (label, value, prefix, suffix, change)
+- DATA.chart.{points[], currentValueLabel} — số điểm dữ liệu tự do,
+  chart tự tính lại toạ độ và độ dài path.
+- DATA.logs[] (title, sub)
+- DATA.featuresTitle / DATA.features[] (icon, title, desc)
+- DATA.outro.{logo, tagline, cta}
+- THEME.color.* / THEME.radius.* — đổi toàn bộ "skin" mà không đụng
+  ENGINE, đúng tinh thần design-token tách khỏi logic.
+
+Assets:
+- Chỉ Google Font 'Inter' + 'JetBrains Mono'. Biểu đồ vẽ bằng SVG
+  path thuần từ DATA.chart.points — không cần thư viện chart ngoài.
+
+Prototype-only behavior:
+- chartLineEl.getTotalLength() gọi 1 lần lúc dựng DOM (không phải mỗi
+  frame) để đo độ dài path thật — đây là API trình duyệt, hoạt động
+  y hệt trong môi trường render của Remotion (Chromium thật).
+- Auto-loop khi hết video, timeline/scrubber/play-pause là chrome xem
+  trước, nằm ngoài #stage.
+
+Remotion migration considerations:
+- Cấu trúc DATA/THEME tách bạch sẵn nên gần như copy-paste thẳng
+  thành props Composition + 1 file design-tokens.js dùng chung.
+- renderDashboard()/renderFeatures()/... map trực tiếp sang component
+  <Scene> tương ứng, mỗi cái tự gọi useCurrentFrame() trong <Sequence>.
+- SVG + getTotalLength() hoạt động bình thường trong Remotion (chạy
+  trên Chromium headless thật) — không cần thay thế kỹ thuật vẽ chart.
+- Glow trôi theo sin(frame) giữ nguyên — đã là hàm thuần của frame.
+- Nên cân nhắc dùng font tự host (thay vì Google Fonts CDN) khi render
+  batch trên Remotion để tránh phụ thuộc mạng lúc render server-side.
+================================================================
+-->
+</body>
+</html>

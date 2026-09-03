@@ -1,0 +1,73 @@
+{
+  "contractVersion": "1.0",
+  "projectId": "remotion-html-project",
+  "projectName": "remotion-html",
+  "projectVersion": "1.0.0",
+  "compatibility": {
+    "node": ">=18",
+    "remotion": ">=4.0.0 <5.0.0"
+  },
+  "resultModel": ["SUCCESS", "BLOCKED", "FAILED"],
+  "artifactBoundary": "out/",
+  "capabilities": [
+    {
+      "name": "inspect",
+      "kind": "read-only",
+      "semantics": "Stable capability and project discovery metadata. Does not scan source tree or infer capabilities from implementation layout.",
+      "inputs": [],
+      "outputs": ["contractVersion", "projectId", "projectVersion", "capabilities", "productions"]
+    },
+    {
+      "name": "preflight",
+      "kind": "read-only",
+      "semantics": "Readiness / safe-to-operate assessment. Does not mutate source, repair, install dependencies, render, or generate TTS.",
+      "inputs": [],
+      "outputs": ["status", "checks"]
+    },
+    {
+      "name": "tts",
+      "kind": "write-artifact",
+      "semantics": "Generate TTS audio for a production within the project artifact boundary.",
+      "inputs": [{ "name": "productionId", "type": "string", "required": true }],
+      "outputs": ["status", "artifact"]
+    },
+    {
+      "name": "render",
+      "kind": "write-artifact",
+      "semantics": "Render a stable composition to a project-relative output path within the artifact boundary.",
+      "inputs": [
+        { "name": "composition", "type": "string", "required": true },
+        { "name": "output", "type": "string", "required": true }
+      ],
+      "outputs": ["status", "artifact"]
+    },
+    {
+      "name": "verify",
+      "kind": "read-only",
+      "semantics": "Verify a project or an artifact. Does not render, build, repair, or orchestrate.",
+      "inputs": [
+        { "name": "target", "type": "string", "required": false, "values": ["project", "artifact"] }
+      ],
+      "outputs": ["status", "checks"]
+    }
+  ],
+  "productions": {
+    "solarSystem": { "id": "solarSystem", "composition": "SolarSystem", "output": "out/solarSystem.mp4", "format": "16:9" },
+    "nq57": { "id": "nq57", "composition": "NghiQuyet57V2", "output": "out/nq57.mp4", "format": "16:9" },
+    "dean06": { "id": "dean06", "composition": "DeAn06", "output": "out/dean06.mp4", "format": "16:9" },
+    "nq79": { "id": "nq79", "composition": "NghiQuyet79", "output": "out/nghiQuyet79.mp4", "format": "16:9" },
+    "stoiclove": { "id": "stoiclove", "composition": "StoicLove", "output": "out/stoicLove.mp4", "format": "9:16" },
+    "canCuoc": { "id": "canCuoc", "composition": "CanCuoc", "output": "out/canCuoc.mp4", "format": "16:9" },
+    "cr7Records": { "id": "cr7Records", "composition": "CR7Records", "output": "out/cr7Records.mp4", "format": "16:9" },
+    "cr7VsMessi": { "id": "cr7VsMessi", "composition": "CR7VsMessi", "output": "out/cr7VsMessi.mp4", "format": "16:9" },
+    "championsLeague": { "id": "championsLeague", "composition": "ChampionsLeague", "output": "out/championsLeague.mp4", "format": "16:9" },
+    "luatGTDB": { "id": "luatGTDB", "composition": "LuatGTDB", "output": "out/luatGTDB.mp4", "format": "16:9" },
+    "baoHiem2024": { "id": "baoHiem2024", "composition": "BaoHiem2024", "output": "out/baoHiem2024.mp4", "format": "16:9" },
+    "luatBHXH": { "id": "luatBHXH", "composition": "LuatBHXH", "output": "out/luatBHXH.mp4", "format": "16:9" },
+    "solarSystem-contract-test": { "id": "solarSystem-contract-test", "composition": "SolarSystem", "output": "out/solarSystem-contract-test.mp4", "format": "16:9", "test": true }
+  },
+  "tts": {
+    "publicAbstraction": "tts({ productionId })",
+    "notes": "Current project TTS implementation is limited to SolarSystem. No generic TTS engine is fabricated. This is an implementation limitation, not a contract redesign."
+  }
+}

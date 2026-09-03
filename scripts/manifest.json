@@ -71,6 +71,78 @@
       "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Luật GTDB" },
       "aliases": ["luật trật tự an toàn giao thông đường bộ", "luật 36/2024", "luật giao thông đường bộ 2024", "luatgtdb"],
       "keywords": ["luật giao thông", "an toàn giao thông", "luật 36", "36/2024", "trật tự giao thông"]
+    },
+    "baoHiem2024": {
+      "id": "baoHiem2024",
+      "template": "nodeflow",
+      "composition": "BaoHiem2024",
+      "dataFile": "src/data/baoHiem2024.ts",
+      "tts": "gen_tts_baoHiem2024.py",
+      "output": "out/baoHiem2024.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "BHXH 2024" },
+      "aliases": ["bao hiem xa hoi 2024", "luat bhxh 2024", "luat 41/2024", "bhxh 2024", "bảo hiểm xã hội 2024"],
+      "keywords": ["bhxh", "bảo hiểm xã hội", "lương hưu", "thai sản", "ốm đau", "luật 41", "41/2024/qh15"]
+    },
+    "luatBHXH": {
+      "id": "luatBHXH",
+      "template": "blueprint",
+      "composition": "LuatBHXH",
+      "dataFile": "src/data/luatBHXH.ts",
+      "tts": "gen_tts_luatBHXH.py",
+      "output": "out/luatBHXH.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run preview", "url": "http://localhost:4321/", "tab": "Luat BHXH" },
+      "aliases": ["luat bao hiem xa hoi", "luat bhxh 2024", "luatbhxh", "bao hiem xa hoi 2024"],
+      "keywords": ["bảo hiểm xã hội", "luật bhxh", "41/2024/qh15", "lương hưu", "bhxh một lần"]
+    },
+    "cr7Records": {
+      "id": "cr7Records",
+      "template": "cr7",
+      "composition": "CR7Records",
+      "dataFile": "src/data/cr7Records.ts",
+      "tts": "gen_tts_cr7Records.py",
+      "output": "out/cr7Records.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "CR7 Records" },
+      "aliases": ["cr7 records", "cristiano ronaldo records", "ronaldo records"],
+      "keywords": ["cr7 records", "ronaldo records", "cristiano records"]
+    },
+    "cr7VsMessi": {
+      "id": "cr7VsMessi",
+      "template": "cr7",
+      "composition": "CR7VsMessi",
+      "dataFile": "src/data/cr7VsMessi.ts",
+      "tts": "gen_tts_cr7VsMessi.py",
+      "output": "out/cr7VsMessi.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "CR7 vs Messi" },
+      "aliases": ["cr7 vs messi", "ronaldo vs messi", "messi vs ronaldo"],
+      "keywords": ["ronaldo vs messi", "messi vs ronaldo", "cr7 vs messi"]
+    },
+    "solarSystem": {
+      "id": "solarSystem",
+      "template": "cosmos",
+      "composition": "SolarSystem",
+      "dataFile": "src/data/solarSystem.ts",
+      "tts": "gen_tts_solarSystem.py",
+      "output": "out/solarSystem.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "Solar System" },
+      "aliases": ["solar system", "he mat troi", "hệ mặt trời", "8 hành tinh"],
+      "keywords": ["solar system", "hệ mặt trời", "hành tinh", "mặt trời", "thiên văn"]
+    },
+    "championsLeague": {
+      "id": "championsLeague",
+      "template": "scrapbook",
+      "composition": "ChampionsLeague",
+      "dataFile": "src/data/championsLeague.ts",
+      "tts": "gen_tts_championsLeague.py",
+      "output": "out/championsLeague.mp4",
+      "resolution": "1920x1080",
+      "preview": { "server": "npm run studio", "url": "http://localhost:4321/", "tab": "Champions League" },
+      "aliases": ["champions league", "ucl", "c1", "cúp c1", "bóng đá châu âu"],
+      "keywords": ["champions league", "ucl", "c1", "cúp c1", "bóng đá", "football"]
     }
   }
 }

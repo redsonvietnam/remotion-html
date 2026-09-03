@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Editorial Feature Teaser — Remotion-HTML Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --stage-w: 405px; --stage-h: 720px; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:#1a1a1a; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; font-family:'Inter',sans-serif; color:#ddd; padding:30px 0;
+  }
+
+  #stage{
+    position:relative; width:var(--stage-w); height:var(--stage-h);
+    overflow:hidden; border-radius:6px; box-shadow:0 30px 90px rgba(0,0,0,.7);
+    background:#f7f3ec; color:#1a1a1a;
+  }
+  .scene{ position:absolute; inset:0; opacity:0; }
+
+  /* global reading-progress bar, chạy suốt cả video */
+  #readbar{ position:absolute; top:0; left:0; right:0; height:3px; background:rgba(26,26,26,.08); z-index:20; }
+  #readbarfill{ height:100%; width:0%; background:#b5432c; }
+
+  /* ---- scene: cover ---- */
+  #scene-cover{ display:flex; flex-direction:column; justify-content:center; padding:0 34px; }
+  #covercat{ font-family:'Inter',sans-serif; font-weight:700; font-size:11.5px; letter-spacing:2.5px; color:#b5432c; }
+  #covertitle{ font-family:'Playfair Display',serif; font-weight:900; font-size:38px; line-height:1.18; margin-top:14px; color:#1a1a1a; }
+  #covermeta{ display:flex; align-items:center; gap:10px; margin-top:22px; font-size:12px; color:#6b6459; }
+  #covermeta .dot{ width:3px; height:3px; border-radius:50%; background:#6b6459; }
+  #coverrule{ width:46px; height:2px; background:#1a1a1a; margin-top:26px; }
+
+  /* ---- scene: pullquote ---- */
+  #scene-pullquote{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 40px; text-align:center; }
+  #pqmark{ font-family:'Playfair Display',serif; font-weight:900; font-size:70px; color:#e4dccb; line-height:.5; }
+  #pqtext{ font-family:'Playfair Display',serif; font-style:italic; font-weight:600; font-size:24px; line-height:1.45; color:#1a1a1a; margin-top:10px; }
+  #pqattr{ font-size:12px; color:#6b6459; margin-top:20px; letter-spacing:.5px; }
+
+  /* ---- scene: takeaways ---- */
+  #scene-takeaways{ padding:80px 32px 0; }
+  #takeawaystitle{ font-family:'Playfair Display',serif; font-weight:700; font-size:21px; margin-bottom:28px; }
+  .takeaway{ display:flex; gap:16px; margin-bottom:24px; }
+  .takeaway .num{ font-family:'Playfair Display',serif; font-weight:900; font-size:26px; color:#e4dccb; flex:none; width:40px; }
+  .takeaway .txt{ font-size:14.5px; line-height:1.6; color:#2a2a26; padding-top:4px; }
+
+  /* ---- scene: outro ---- */
+  #scene-outro{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 34px; }
+  #outrobrand{ font-family:'Playfair Display',serif; font-weight:900; font-size:20px; letter-spacing:1px; }
+  #outrocta{ margin-top:20px; font-weight:700; font-size:14px; border-bottom:2px solid #1a1a1a; padding-bottom:3px; }
+  #outrotime{ margin-top:16px; font-size:11.5px; color:#6b6459; }
+
+  /* prototype chrome */
+  #chrome{ width:var(--stage-w); }
+  #timeline{ position:relative; height:34px; border-radius:8px; overflow:hidden; display:flex; cursor:pointer; background:#000; }
+  .tlseg{ position:relative; display:flex; align-items:center; justify-content:center; font-size:9.5px; color:rgba(255,255,255,.75); font-weight:600; border-right:1px solid rgba(0,0,0,.4); }
+  #playhead{ position:absolute; top:0; bottom:0; width:2px; background:#fff; box-shadow:0 0 6px #fff; pointer-events:none; }
+  #transportrow{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; font-size:11px; color:#888; }
+  #playpausebtn{ background:#2a2a2a; color:#fff; border:none; border-radius:6px; padding:5px 12px; font-size:11px; cursor:pointer; font-weight:600; }
+  #timecode{ font-variant-numeric:tabular-nums; }
+  #chromenote{ font-size:10.5px; color:#666; margin-top:10px; line-height:1.5; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="readbar"><div id="readbarfill"></div></div>
+
+  <div class="scene" id="scene-cover">
+    <div id="covercat"></div>
+    <div id="covertitle"></div>
+    <div id="coverrule"></div>
+    <div id="covermeta"></div>
+  </div>
+
+  <div class="scene" id="scene-pullquote">
+    <div id="pqmark">"</div>
+    <div id="pqtext"></div>
+    <div id="pqattr"></div>
+  </div>
+
+  <div class="scene" id="scene-takeaways">
+    <div id="takeawaystitle"></div>
+    <div id="takeawaylist"></div>
+  </div>
+
+  <div class="scene" id="scene-outro">
+    <div id="outrobrand"></div>
+    <div id="outrocta"></div>
+    <div id="outrotime"></div>
+  </div>
+</div>
+
+<div id="chrome">
+  <div id="timeline"></div>
+  <div id="transportrow">
+    <button id="playpausebtn">⏸ Pause</button>
+    <span id="timecode">0.00s / 0.00s</span>
+  </div>
+  <div id="chromenote">
+    Thanh tiến trình đọc ở mép trên chạy suốt video = frame/TOTAL_FRAMES —
+    ẩn dụ cho việc "đọc bài", không thuộc scene nào riêng lẻ.
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   1) DATA — nội dung bài viết, tách khỏi thiết kế.
+   ================================================================ */
+const DATA = {
+  cover: {
+    category: "CÔNG NGHỆ & XÃ HỘI",
+    title: "Tại sao sự chú ý mới là tài nguyên khan hiếm nhất",
+    author: "Nguyễn Minh", date: "28 Th8, 2026", readTime: "6 phút đọc"
+  },
+  pullquote: {
+    text: "Chúng ta không thiếu thông tin. Chúng ta thiếu khả năng lựa chọn thứ đáng để chú ý.",
+    attribution: "— Trích đoạn mở đầu bài viết"
+  },
+  takeawaysTitle: "3 điều rút ra",
+  takeaways: [
+    { num:"01", text:"Sự chú ý là tài nguyên hữu hạn, không phải vô hạn như ta vẫn tưởng." },
+    { num:"02", text:"Thuật toán được thiết kế để khai thác sự chú ý, không phải để phục vụ nó." },
+    { num:"03", text:"Chủ động chọn lọc là một kỹ năng cần luyện tập, không tự nhiên mà có." },
+  ],
+  outro: { brand: "THE WEEKLY READ", cta:"Đọc toàn bộ bài viết", readTime:"6 phút đọc · Miễn phí" }
+};
+
+/* ================================================================
+   2) THEME — hệ thống typography biên tập, tách khỏi DATA/ENGINE.
+   ================================================================ */
+const THEME = {
+  color: { bg:"#f7f3ec", ink:"#1a1a1a", inkSoft:"#2a2a26", muted:"#6b6459", accent:"#b5432c", hairline:"#e4dccb" },
+  serif: "'Playfair Display', serif",
+  sans: "'Inter', sans-serif",
+};
+
+/* ================================================================
+   3) TIMING / CONFIG
+   ================================================================ */
+const TIMING = { fps:30, sceneFadeFrames:14 };
+const CONFIG = {
+  fps: TIMING.fps, width:1080, height:1920,
+  scenes: [
+    { id:"cover",     durationInFrames:70  }, // 2.3s
+    { id:"pullquote", durationInFrames:90  }, // 3.0s
+    { id:"takeaways", durationInFrames:150 }, // 5.0s
+    { id:"outro",     durationInFrames:70  }, // 2.3s
+  ]
+};
+let cursor = 0;
+CONFIG.scenes.forEach(s=>{ s.startFrame = cursor; cursor += s.durationInFrames; });
+const TOTAL_FRAMES = cursor;
+
+/* ================================================================
+   4) ENGINE — pure per-frame.
+   ================================================================ */
+function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+function interpolate(frame,[i0,i1],[o0,o1],easing=t=>t){
+  const t = clamp((frame-i0)/(i1-i0),0,1);
+  return o0 + (o1-o0)*easing(t);
+}
+const easeOutCubic = t=>1-Math.pow(1-t,3);
+
+function sceneOpacity(localFrame,dur){
+  const f = TIMING.sceneFadeFrames;
+  return interpolate(localFrame,[0,f],[0,1]) * interpolate(localFrame,[dur-f,dur],[1,0]);
+}
+
+/* ---- scene: cover ---- */
+document.getElementById('covercat').textContent = DATA.cover.category;
+document.getElementById('covertitle').textContent = DATA.cover.title;
+document.getElementById('covermeta').innerHTML =
+  `<span>${DATA.cover.author}</span><span class="dot"></span><span>${DATA.cover.date}</span><span class="dot"></span><span>${DATA.cover.readTime}</span>`;
+function renderCover(localFrame,dur){
+  document.getElementById('scene-cover').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('covercat').style.opacity = interpolate(localFrame,[0,10],[0,1]);
+  const titleEl = document.getElementById('covertitle');
+  titleEl.style.opacity = interpolate(localFrame,[8,26],[0,1]);
+  titleEl.style.transform = `translateY(${interpolate(localFrame,[8,26],[16,0],easeOutCubic)}px)`;
+  document.getElementById('coverrule').style.transform = `scaleX(${interpolate(localFrame,[28,40],[0,1],easeOutCubic)})`;
+  document.getElementById('coverrule').style.transformOrigin = 'left';
+  document.getElementById('covermeta').style.opacity = interpolate(localFrame,[36,48],[0,1]);
+}
+
+/* ---- scene: pullquote ---- */
+document.getElementById('pqtext').textContent = DATA.pullquote.text;
+document.getElementById('pqattr').textContent = DATA.pullquote.attribution;
+function renderPullquote(localFrame,dur){
+  document.getElementById('scene-pullquote').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('pqmark').style.opacity = interpolate(localFrame,[0,14],[0,1]);
+  document.getElementById('pqmark').style.transform = `scale(${interpolate(localFrame,[0,14],[0.6,1],easeOutCubic)})`;
+  document.getElementById('pqtext').style.opacity = interpolate(localFrame,[14,34],[0,1]);
+  document.getElementById('pqtext').style.transform = `translateY(${interpolate(localFrame,[14,34],[10,0],easeOutCubic)}px)`;
+  document.getElementById('pqattr').style.opacity = interpolate(localFrame,[40,52],[0,1]);
+}
+
+/* ---- scene: takeaways ---- */
+document.getElementById('takeawaystitle').textContent = DATA.takeawaysTitle;
+const takeawaylistEl = document.getElementById('takeawaylist');
+DATA.takeaways.forEach((t,i)=>{
+  const el = document.createElement('div');
+  el.className = 'takeaway'; el.id = 'takeaway-'+i;
+  el.innerHTML = `<div class="num">${t.num}</div><div class="txt">${t.text}</div>`;
+  takeawaylistEl.appendChild(el);
+});
+function renderTakeaways(localFrame,dur){
+  document.getElementById('scene-takeaways').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('takeawaystitle').style.opacity = interpolate(localFrame,[0,14],[0,1]);
+  DATA.takeaways.forEach((t,i)=>{
+    const start = 16 + i*24;
+    const el = document.getElementById('takeaway-'+i);
+    el.style.opacity = interpolate(localFrame,[start,start+18],[0,1]);
+    el.style.transform = `translateY(${interpolate(localFrame,[start,start+18],[14,0],easeOutCubic)}px)`;
+  });
+}
+
+/* ---- scene: outro ---- */
+document.getElementById('outrobrand').textContent = DATA.outro.brand;
+document.getElementById('outrocta').textContent = DATA.outro.cta;
+document.getElementById('outrotime').textContent = DATA.outro.readTime;
+function renderOutro(localFrame,dur){
+  document.getElementById('scene-outro').style.opacity = sceneOpacity(localFrame,dur);
+  document.getElementById('outrobrand').style.opacity = interpolate(localFrame,[0,14],[0,1]);
+  document.getElementById('outrocta').style.opacity = interpolate(localFrame,[16,28],[0,1]);
+  document.getElementById('outrotime').style.opacity = interpolate(localFrame,[30,40],[0,1]);
+}
+
+const RENDERERS = { cover:renderCover, pullquote:renderPullquote, takeaways:renderTakeaways, outro:renderOutro };
+function renderFrame(frame){
+  CONFIG.scenes.forEach(s=>{
+    const local = frame - s.startFrame;
+    if(local>=0 && local<s.durationInFrames){ RENDERERS[s.id](local, s.durationInFrames); }
+    else{ document.getElementById('scene-'+s.id).style.opacity = 0; }
+  });
+  // reading-progress bar: hàm thuần của frame TOÀN CỤC, độc lập với scene
+  document.getElementById('readbarfill').style.width = (clamp(frame/TOTAL_FRAMES,0,1)*100)+'%';
+}
+
+/* ================================================================
+   5) PROTOTYPE PLAYBACK
+   ================================================================ */
+const timelineEl = document.getElementById('timeline');
+const playheadEl = document.createElement('div');
+playheadEl.id = 'playhead';
+timelineEl.appendChild(playheadEl);
+CONFIG.scenes.forEach((s,i)=>{
+  const seg = document.createElement('div');
+  seg.className = 'tlseg';
+  seg.style.flex = s.durationInFrames;
+  seg.style.background = ['#2a2a26','#3a231c','#232620','#1c1c1a'][i];
+  seg.textContent = s.id;
+  timelineEl.insertBefore(seg, playheadEl);
+});
+
+let isPlaying = true, playStartPerf = performance.now(), seekFrame = 0;
+function currentFrame(){ return isPlaying ? Math.floor(((performance.now()-playStartPerf)/1000)*CONFIG.fps) : seekFrame; }
+function updateChrome(frame){
+  playheadEl.style.left = (clamp(frame/TOTAL_FRAMES,0,1)*100)+'%';
+  document.getElementById('timecode').textContent = `${(frame/CONFIG.fps).toFixed(2)}s / ${(TOTAL_FRAMES/CONFIG.fps).toFixed(2)}s`;
+}
+function loop(){
+  let frame = currentFrame();
+  if(isPlaying && frame>=TOTAL_FRAMES){ playStartPerf = performance.now(); frame = 0; }
+  renderFrame(frame); updateChrome(frame);
+  requestAnimationFrame(loop);
+}
+loop();
+document.getElementById('playpausebtn').addEventListener('click', ()=>{
+  if(isPlaying){ seekFrame = currentFrame(); isPlaying=false; document.getElementById('playpausebtn').textContent='▶ Play'; }
+  else{ playStartPerf = performance.now() - (seekFrame/CONFIG.fps)*1000; isPlaying=true; document.getElementById('playpausebtn').textContent='⏸ Pause'; }
+});
+timelineEl.addEventListener('click', e=>{
+  const rect = timelineEl.getBoundingClientRect();
+  const frame = Math.floor(clamp((e.clientX-rect.left)/rect.width,0,1)*TOTAL_FRAMES);
+  seekFrame = frame; isPlaying = false;
+  document.getElementById('playpausebtn').textContent = '▶ Play';
+  renderFrame(frame); updateChrome(frame);
+});
+</script>
+
+<!--
+================================================================
+TEMPLATE PROTOTYPE
+
+Name: Editorial Feature Teaser
+Description: Video giới thiệu 1 bài viết/story theo chất biên tập tạp
+  chí số cao cấp — hệ typography serif display (Playfair Display) kết
+  hợp sans mảnh (Inter), nhiều khoảng trắng, pull-quote, danh sách
+  "điều rút ra" đánh số kiểu editorial. Không có kịch bản hướng dẫn
+  thao tác; nhịp video theo tư duy content: cover gây tò mò → trích
+  dẫn đắt giá → giá trị cụ thể (takeaways) → lời mời đọc tiếp.
+
+Recommended aspect ratio: 9:16 (1080x1920)
+Recommended duration: 12.7s @ 30fps (380 frames)
+
+Scenes:
+- Scene 1 — Cover (2.3s): category tag, tiêu đề bài viết trượt lên,
+  đường kẻ mảnh giãn ra (scaleX), byline/ngày/thời gian đọc fade cuối.
+- Scene 2 — Pull-quote (3.0s): dấu ngoặc kép lớn pop-in, câu trích dẫn
+  in nghiêng serif fade+trượt, chú thích nguồn fade sau cùng.
+- Scene 3 — Takeaways (5.0s): 3 điểm chính đánh số kiểu tạp chí, mỗi
+  điểm cách nhau 24 frame — đủ thời gian đọc trước khi điểm tiếp theo
+  xuất hiện (nhịp độ đọc thật, không dồn dập).
+- Scene 4 — Outro (2.3s): tên chuyên mục/thương hiệu, CTA có gạch chân,
+  thời gian đọc — kết bài gọn.
+- Toàn video: thanh tiến trình đọc ở mép trên (#readbarfill) chạy
+  frame/TOTAL_FRAMES suốt từ đầu đến cuối, độc lập với từng scene —
+  ẩn dụ trực quan cho "đang đọc bài".
+
+Configurable content:
+- DATA.cover.{category,title,author,date,readTime}
+- DATA.pullquote.{text,attribution}
+- DATA.takeawaysTitle / DATA.takeaways[] (num, text) — số lượng tự do,
+  scene tự giãn theo (24 frame/điểm được cộng dồn trong renderTakeaways)
+- DATA.outro.{brand,cta,readTime}
+- THEME.color.* / THEME.serif / THEME.sans
+
+Assets:
+- Google Font 'Playfair Display' (serif biên tập) + 'Inter' (sans).
+  Không ảnh/video ngoài — có thể thêm ảnh minh hoạ bài viết ở scene
+  cover nếu cần, không ảnh hưởng logic timing.
+
+Prototype-only behavior:
+- Auto-loop khi hết video, chỉ để xem demo liên tục trong browser.
+- Timeline/scrubber/play-pause nằm ngoài #stage, không thuộc render.
+
+Remotion migration considerations:
+- readbarfill nên đặt ở component App cha (ngoài <Series> các scene),
+  nhận `frame` từ useCurrentFrame() cấp cao nhất — đúng như cách
+  prototype này tách nó khỏi renderFrame() của từng scene.
+- takeaways.forEach với start = 16+i*24 nên chuyển thành .map() trong
+  JSX, mỗi item tự tính offset dựa trên index — giữ nguyên công thức.
+- Font Playfair Display nên cân nhắc self-host (thay vì Google Fonts
+  CDN) khi render batch số lượng lớn trên Remotion để ổn định tốc độ.
+- coverrule dùng transform:scaleX với transformOrigin — Remotion hỗ
+  trợ nguyên vẹn, không cần đổi kỹ thuật.
+================================================================
+-->
+</body>
+</html>

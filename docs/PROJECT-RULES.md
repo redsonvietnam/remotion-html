@@ -1,0 +1,175 @@
+# Project Rules — Universal Constraints
+
+Applies to ALL templates, productions, topics, and workstreams.
+
+---
+
+## 1. Data ↔ Template Layering Boundary
+
+**Rule:** Data layer MUST NOT import from template layer.
+
+```
+src/data/contract.ts  ← single source of truth (types + validation)
+       ↑                    ↑
+src/data/*.ts          src/templates/*/types.ts (re-exports only)
+       ↑                    ↑
+src/templates/*/scenes/*.tsx (import from ../types)
+```
+
+- Production data files import types from `contract.ts` (or re-export via template types)
+- Templates re-export types from `contract.ts` — NEVER define content types locally
+- Templates NEVER import production data files (e.g., `baoHiem2024.ts`, `luatBHXH.ts`)
+- Reverse dependency (template → data) is a hard violation
+
+---
+
+## 2. Reusable Template Genericity
+
+**Rule:** Templates must be generic — no production-specific defaults.
+
+- Template component accepts `scenes`, `content`, `theme` as REQUIRED props
+- NO defaultProps in template that reference a specific production
+- `Root.tsx` wires production via Composition `defaultProps`
+- Scene kinds defined in `contract.ts` → `TEMPLATE_SCHEMAS[template]`
+- Adding a production = new data + theme + Composition; NO template code changes
+
+---
+
+## 3. Inspect Before Create
+
+**Rule:** Before adding new visual/motion/typography capability:
+
+1. Search `src/design/*`, `src/templates/*/svg`, `src/templates/*/helpers`
+2. Reuse or extend existing primitives
+3. Only create new if capability genuinely doesn't exist
+
+---
+
+## 4. Required Validation Gates
+
+**Rule:** Every production change must pass ALL:
+
+```bash
+npx tsc --noEmit
+npm test
+npm run verify
+node scripts/validate.mjs --project <id> --check-assets --check-durations
+```
+
+Render validation (when assets exist):
+```bash
+npx remotion render src/index.ts <Composition> out/<id>.mp4
+```
+
+---
+
+## 5. AI Workstream Bootstrap
+
+**Rule:** Every AI agent starting a workstream MUST first read:
+
+1. `docs/PROJECT-RULES.md`
+2. `docs/PROJECT-KNOWLEDGE.md`
+
+Then inspect current HEAD (`git log --oneline -1`) before proposing changes.
+
+---
+
+## 6. Renderer Boundary
+
+**Rule:** Remotion hooks are ONLY allowed in adapter files.
+
+- `useCurrentFrame`, `useVideoConfig` — ONLY in `RemotionScenes.tsx` (or equivalent adapter)
+- Data components receive `frame`/`fps` as props — NEVER call hooks
+- `AbsoluteFill`, `interpolate`, `spring` from remotion are acceptable in data components (pure functions)
+- Preview adapter computes frame/progress from its own clock, passes as props
+- Violation: any data component importing `useCurrentFrame` or `useVideoConfig`
+
+---
+
+## 7. Design Model Contract
+
+**Rule:** Shared motion must be deterministic and renderer-agnostic.
+
+- Motion primitives: `(ctx: FrameContext, ...args) => result`
+- Must NOT call `useCurrentFrame()`, `useVideoConfig()`, or any React hook
+- Must NOT depend on Remotion
+- Accept timing information through explicit arguments/context
+- `FrameContext`: `{ frame, fps, progress }` — canonical time unit
+
+---
+
+## 8. Template sceneFrames Import
+
+**Rule:** Templates must import `sceneFrames` from `contract.ts`, not from production data.
+
+- `contract.ts` exports `sceneFrames` as canonical conversion function
+- Templates must NOT import from production data files (e.g., `nq57.ts`, `cr7Records.ts`)
+- This ensures templates remain production-agnostic
+- Violation: `import { sceneFrames } from "../../data/nq57"` in a template file
+
+---
+
+## 9. Preview/Remotion Duplication Boundary
+
+**Rule:** Preview Studio scene renderers are intentionally separate from Remotion scene components.
+
+- Preview (`preview/studio.jsx`) and Remotion (`src/templates/*/scenes/`) are independent implementations
+- Both share the same frame model (`sceneFrames`) but share zero rendering code
+- This duplication is intentional: Preview must work standalone (no npm, no build)
+- Do NOT attempt to unify Preview and Remotion rendering code
+- Do NOT import from `src/` in Preview files
+- Frame model must remain consistent: `Math.ceil((dur + 0.5) * FPS)` everywhere
+- Format metadata in Preview (`TEMPLATE_FORMATS`) must stay consistent with `TEMPLATE_SCHEMAS` in contract.ts
+
+---
+
+## 10. Legacy Template Technical Debt
+
+**Rule:** Legacy templates (nq57, stoicLove, blueprint) have known architectural violations.
+
+- Scene components directly call `useCurrentFrame()`/`useVideoConfig()` (Rule #6 violation)
+- Helpers (`Backdrop`) call hooks
+- Types defined in production data files (Rule #1 violation)
+- No `RemotionScenes.tsx` boundary file
+- **Decision:** Do not refactor legacy templates unless a production requires it
+- These violations are documented in PROJECT-KNOWLEDGE.md (Entry #37)
+- New templates MUST follow the clean architecture (nodeflow/cr7/cosmos pattern)
+
+---
+
+## 11. Composer Responsibility
+
+**Rule:** Composer is a project state editor, not an NLE or renderer.
+
+- Composer edits `ComposerProject` (scenes, content, duration, audio)
+- Studio remains the authoritative animated Remotion renderer
+- Composer MUST NOT contain Remotion hooks (useCurrentFrame/useVideoConfig)
+- Composer MUST NOT mutate manifest productions or `src/data/*`
+- Composer MUST NOT implement TTS or AI generation
+- Composer MUST NOT introduce a backend or database
+- Project state is separate from production state
+- Persistence is localStorage only (no server)
+
+---
+
+## 12. Project vs Production
+
+**Rule:** Projects and productions are distinct concepts.
+
+- **Production** = immutable content in `src/data/*.ts` + `scripts/manifest.json`
+- **Project** = editable user state in localStorage (`composer_projects`)
+- Studio can render both productions and projects (via `?project=<id>`)
+- Project rendering does NOT modify production data
+- Virtual productions from projects are prefixed with `__composer__`
+
+---
+
+## 13. Audio Foundation
+
+**Rule:** Audio is optional and decoupled from templates.
+
+- Each scene may have an optional `audio: { path, present }` field
+- Missing audio is valid — templates must handle gracefully
+- No Edge-TTS dependency in Composer
+- No template dependency on audio implementation
+- Audio paths are relative to `public/` directory

@@ -10,7 +10,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "node preview/serve.mjs",
+    "studio": "node preview/serve.mjs studio",
     "produce": "node scripts/produce.mjs",
+    "export": "node scripts/export.mjs",
+    "inspect": "node scripts/inspect.mjs",
+    "preflight": "node scripts/preflight.mjs",
+    "tts": "node scripts/tts.mjs",
+    "verify:artifact": "node scripts/verify-artifact.mjs",
     "verify": "tsc --noEmit && npm test && node scripts/verify.mjs",
     "upgrade": "remotion upgrade"
   },

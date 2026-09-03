@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Template Library</title>
+  <style>
+:root{--bg:#0a0e1a;--panel:#0f1423;--surface:#141a2e;--line:rgba(255,255,255,0.08);--accent1:#00d4ff;--accent2:#d4a843;--accent3:#34d399;--ink:#e8e6e1;--muted:#6b7280;--radius:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:"Inter","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;min-height:100vh}
+header{padding:0 24px;height:56px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--line);background:var(--panel);flex-shrink:0}
+.brand{font-weight:800;font-size:16px;color:var(--accent1);white-space:nowrap}
+.brand span{color:var(--muted);font-weight:400;margin-left:8px;font-size:13px}
+.hsep{width:1px;height:24px;background:var(--line);flex-shrink:0}
+.spacer{flex:1}
+.studio-link{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 14px;border:1px solid var(--line);border-radius:6px;transition:all 0.15s}
+.studio-link:hover{color:var(--accent1);border-color:var(--accent1)}
+main{flex:1;padding:32px 24px;overflow-y:auto}
+#root{max-width:1400px;margin:0 auto;width:100%}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:border-color 0.15s}
+.card:hover{border-color:rgba(255,255,255,0.15)}
+.card-header{padding:20px 20px 0}
+.card-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.card-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:0.3px}
+.format-badge{background:rgba(0,212,255,0.1);color:var(--accent1);border:1px solid rgba(0,212,255,0.2)}
+.status-badge{font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+.status-ready{background:rgba(52,211,153,0.1);color:var(--accent3);border:1px solid rgba(52,211,153,0.2)}
+.status-legacy{background:rgba(212,168,67,0.1);color:var(--accent2);border:1px solid rgba(212,168,67,0.2)}
+.scene-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
+.scene-tag{font-size:10px;padding:2px 6px;border-radius:3px;background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.scene-tag-more{font-size:10px;padding:2px 6px;border-radius:3px;background:transparent;color:var(--accent1);border:1px dashed rgba(0,212,255,0.3);cursor:pointer}
+.scene-tag-more:hover{background:rgba(0,212,255,0.05)}
+.prods-section{border-top:1px solid var(--line);padding:12px 20px 16px}
+.prods-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.prod-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;transition:background 0.12s;margin-bottom:2px}
+.prod-row:hover{background:var(--surface)}
+.prod-name{font-size:13px;font-weight:600;color:var(--ink);flex:1}
+.prod-format{font-size:10px;font-weight:600;color:var(--accent1);background:rgba(0,212,255,0.08);padding:2px 6px;border-radius:3px}
+.prod-arrow{color:var(--muted);font-size:12px;opacity:0;transition:opacity 0.12s}
+.prod-row:hover .prod-arrow{opacity:1}
+footer{padding:16px 24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
+footer a{color:var(--accent1);text-decoration:none}
+footer a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Template Library<span>WS-TEMPLATE-LIBRARY-01</span></div>
+    <div class="hsep"></div>
+    <div class="spacer"></div>
+    <a href="/preview/studio.html" class="studio-link">Open Preview Studio</a>
+  </header>
+  <main>
+    <div id="root"></div>
+  </main>
+  <footer>
+    NodeFlow Template Library — <a href="/preview/studio.html">Preview Studio</a> — <a href="/preview/index.html">MP4 Previews</a>
+  </footer>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+const { useState } = React;
+
+const TEMPLATES = [
+  {
+    id: "scrapbook", name: "Scrapbook", status: "ready",
+    description: "Aged paper, handwritten annotations, Polaroid cards, editorial overlays. Ideal for storytelling and historical narratives.",
+    formats: ["16:9","9:16"],
+    sceneKinds: ["hero","match","history","photo","timeline","closing"],
+  },
+  {
+    id: "cr7", name: "CR7", status: "ready",
+    description: "Dark warm backgrounds, large typography-driven statistics, gold/amber and red accents. Sports stats and comparisons.",
+    formats: ["16:9","9:16"],
+    sceneKinds: ["hero","stat","milestone","closing"],
+  },
+  {
+    id: "cosmos", name: "Cosmos", status: "ready",
+    description: "Deep space backgrounds, orbital paths, constellation lines, star fields. Science and astronomy content.",
+    formats: ["16:9","9:16"],
+    sceneKinds: ["title","fact","compare","timeline","diagram","closing"],
+  },
+  {
+    id: "nodeflow", name: "NodeFlow", status: "ready",
+    description: "Blueprint grid, node-edge diagrams, signal pulses, amber data badges. System and network explainers.",
+    formats: ["16:9"],
+    sceneKinds: ["title","flow","contribution","benefit","compare","end"],
+  },
+  {
+    id: "nq57", name: "NQ57", status: "legacy",
+    description: "Vietnamese government and policy video template. Title cards, quotes, role hierarchies, pillar layouts, statistics.",
+    formats: ["16:9"],
+    sceneKinds: ["title","quote","roles","pillars","stats","vision","end"],
+  },
+  {
+    id: "stoiclove", name: "Stoic Love", status: "legacy",
+    description: "Stoic philosophy vertical video. Hooks, statements, concept cards, split comparisons, impermanence reflections.",
+    formats: ["9:16"],
+    sceneKinds: ["hook","statement","split","concept","impermanence","ending"],
+  },
+  {
+    id: "blueprint", name: "Blueprint", status: "legacy",
+    description: "Technical document style with blueprint grid, pillar cards, measure blocks, process steps, official seals.",
+    formats: ["16:9"],
+    sceneKinds: ["title","pillars","measure","detail","process","seal"],
+  },
+  {
+    id: "terminal", name: "Terminal Code Tip", status: "ready",
+    description: "Matrix rain background, dark terminal window, syntax-highlighted code, typing animation. For coding tips and developer content.",
+    formats: ["9:16"],
+    sceneKinds: ["intro","typing","reveal","outro"],
+  },
+  {
+    id: "kineticStatement", name: "Kinetic Statement", status: "ready",
+    description: "Staggered word reveals, animated counters, karaoke quote highlights, brand outro. For punchy vertical social videos.",
+    formats: ["9:16"],
+    sceneKinds: ["hook","stat","quote","outro"],
+  },
+  {
+    id: "bentoGrid", name: "Bento Grid", status: "ready",
+    description: "Glassmorphism bento grid with aurora background, animated stat counters, SVG chart, staggered card reveals. For modern vertical product showcases.",
+    formats: ["9:16"],
+    sceneKinds: ["hook","bento","outro"],
+  },
+  {
+    id: "featureDrop", name: "Feature Drop", status: "ready",
+    description: "Mask-reveal title with 3D icosahedron, SVG icon draw-in feature rows, layered ghost typography outro. For product update announcements.",
+    formats: ["9:16"],
+    sceneKinds: ["hook","features","outro"],
+  },
+  {
+    id: "productTeaser", name: "Product Teaser", status: "ready",
+    description: "Animated dashboard metrics, feature spotlight cards, gradient hero reveal. For SaaS product announcements.",
+    formats: ["9:16"],
+    sceneKinds: ["hook","dashboard","features","outro"],
+  },
+  {
+    id: "editorialFeature", name: "Editorial Feature", status: "ready",
+    description: "Magazine-style cover, pullquote highlight, numbered takeaways, reading progress bar. For long-form editorial content.",
+    formats: ["9:16"],
+    sceneKinds: ["cover","pullquote","takeaways","outro"],
+  },
+  {
+    id: "realEstateListing", name: "Real Estate Listing", status: "ready",
+    description: "Property cover reveal, spec counters, highlight list, agent card. For property showcase videos.",
+    formats: ["9:16"],
+    sceneKinds: ["cover","specs","highlights","outro"],
+  },
+];
+
+const PRODUCTIONS = [
+  { id: "championsLeague", name: "Champions League", template: "scrapbook", format: "16:9" },
+  { id: "championsLeague9x16", name: "Champions League (9:16)", template: "scrapbook", format: "9:16" },
+  { id: "cr7Records", name: "CR7 Records", template: "cr7", format: "16:9" },
+  { id: "cr7VsMessi", name: "CR7 vs Messi", template: "cr7", format: "16:9" },
+  { id: "solarSystem", name: "Solar System", template: "cosmos", format: "16:9" },
+  { id: "baoHiem2024", name: "BHXH 2024", template: "nodeflow", format: "16:9" },
+  { id: "nq57", name: "NQ57", template: "nq57", format: "16:9" },
+  { id: "dean06", name: "De An 06", template: "nq57", format: "16:9" },
+  { id: "nq79", name: "NQ79", template: "nq57", format: "16:9" },
+  { id: "canCuoc", name: "Can Cuoc 2023", template: "nq57", format: "16:9" },
+  { id: "luatGTDB", name: "Luat GTDB", template: "nq57", format: "16:9" },
+  { id: "stoiclove", name: "Stoic Love", template: "stoiclove", format: "9:16" },
+  { id: "luatBHXH", name: "Luat BHXH", template: "blueprint", format: "16:9" },
+  { id: "terminalDemo", name: "5 JavaScript Tips", template: "terminal", format: "9:16" },
+  { id: "kineticStatementDemo", name: "3 Seconds Hook", template: "kineticStatement", format: "9:16" },
+  { id: "bentoGridDemo", name: "AURA Product Showcase", template: "bentoGrid", format: "9:16" },
+  { id: "featureDropDemo", name: "NOVA Feature Update", template: "featureDrop", format: "9:16" },
+  { id: "productTeaserDemo", name: "SaaS Dashboard Reveal", template: "productTeaser", format: "9:16" },
+  { id: "editorialFeatureDemo", name: "Tech & Society Editorial", template: "editorialFeature", format: "9:16" },
+  { id: "realEstateListingDemo", name: "Nguyen Hue Penthouse", template: "realEstateListing", format: "9:16" },
+];
+  { id: "bentoGridDemo", name: "AURA Product Showcase", template: "bentoGrid", format: "9:16" },
+  { id: "featureDropDemo", name: "NOVA Feature Update", template: "featureDrop", format: "9:16" },
+];
+
+function FormatBadge({ format }) {
+  return <span className="badge format-badge">{format}</span>;
+}
+
+function StatusBadge({ status }) {
+  const cls = status === "ready" ? "status-ready" : "status-legacy";
+  const label = status === "ready" ? "READY" : "LEGACY";
+  return <span className={"badge status-badge " + cls}>{label}</span>;
+}
+
+function SceneTags({ kinds }) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? kinds : kinds.slice(0, 4);
+  const overflow = kinds.length - 4;
+  return (
+    <div className="scene-tags">
+      {visible.map(k => <span key={k} className="scene-tag">{k}</span>)}
+      {!expanded && overflow > 0 && (
+        <span className="scene-tag-more" onClick={() => setExpanded(true)}>+{overflow} more</span>
+      )}
+    </div>
+  );
+}
+
+function ProductionRow({ prod }) {
+  const goToStudio = () => {
+    window.location.href = "/preview/studio.html?production=" + encodeURIComponent(prod.id);
+  };
+  return (
+    <div className="prod-row" onClick={goToStudio}>
+      <span className="prod-name">{prod.name}</span>
+      <span className="prod-format">{prod.format}</span>
+      <span className="prod-arrow">&#8250;</span>
+    </div>
+  );
+}
+
+function TemplateCard({ template }) {
+  const prods = PRODUCTIONS.filter(p => p.template === template.id);
+  const isReady = template.status === "ready";
+  return (
+    <div className="card">
+      <div className="card-header">
+        <div className="card-title">{template.name}</div>
+        <div className="card-desc">{template.description}</div>
+        <div className="card-meta">
+          {template.formats.map(f => <FormatBadge key={f} format={f} />)}
+          <StatusBadge status={template.status} />
+        </div>
+        <SceneTags kinds={template.sceneKinds} />
+      </div>
+      {prods.length > 0 && (
+        <div className="prods-section">
+          <div className="prods-label">Demo Productions ({prods.length})</div>
+          {prods.map(p => <ProductionRow key={p.id} prod={p} />)}
+        </div>
+      )}
+      <div className="prods-section" style={{borderTop:"1px solid var(--line)",padding:"12px 20px 16px"}}>
+        {isReady ? (
+          <div className="use-template-btn" onClick={() => window.location.href = "/preview/creator.html?template=" + encodeURIComponent(template.id)}
+            style={{display:"inline-flex",alignItems:"center",gap:8,padding:"8px 16px",borderRadius:6,background:"var(--accent1)",color:"#0a0e1a",fontSize:13,fontWeight:700,cursor:"pointer",transition:"background 0.15s",border:"none"}}
+            onMouseOver={e => e.currentTarget.style.background="#00bfe6"}
+            onMouseOut={e => e.currentTarget.style.background="var(--accent1)"}>
+            USE THIS TEMPLATE &#8250;
+          </div>
+        ) : (
+          <span style={{fontSize:12,color:"var(--muted)",fontStyle:"italic"}}>Preview only — legacy template</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div className="grid">
+      {TEMPLATES.map(t => <TemplateCard key={t.id} template={t} />)}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+  </script>
+</body>
+</html>

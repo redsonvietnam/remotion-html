@@ -1,0 +1,52 @@
+name: Verify Production Baseline
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: npm run verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies (reproducible from lockfile)
+        run: npm ci
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install TTS tooling
+        run: pip install --quiet edge-tts mutagen
+
+      # Narration audio is gitignored/generated. Regenerate it with the
+      # repository's existing edge_tts generators so verification runs against
+      # REAL assets — no generated MP3/MP4 are ever committed to the repo.
+      - name: Generate narration audio assets
+        run: |
+          for f in gen_tts_v2.py gen_tts_deAn06.py gen_tts_nghiQuyet79.py gen_tts_stoicLove.py gen_tts_canCuoc.py; do
+            echo "Generating $f"
+            for i in 1 2 3; do
+              python "$f" && break
+              echo "  retry $i for $f"
+              sleep 2
+            done
+          done
+
+      - name: Verify baseline (npm run verify)
+        run: npm run verify

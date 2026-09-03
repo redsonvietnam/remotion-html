@@ -1,0 +1,140 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                         PAIRFLOW 1.3 — QUICK REFERENCE                         ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+ROLES & AUTHORITY
+─────────────────
+R1 (Reviewer)
+  • Assigns workstreams
+  • Defines scope
+  • Approves commits
+  • Makes architectural decisions
+
+C1 (Implementer — YOU)
+  • Executes within authorized scope
+  • Verifies work
+  • Hands off with evidence
+  • Does NOT self-assign scope
+
+CORE PRINCIPLES
+───────────────
+1. Repository truth > stale context
+   → Always verify actual state first
+
+2. Evidence before conclusion
+   → Never claim correctness without proof
+
+3. R1 authorizes scope
+   → Stop if scope must expand
+
+4. Anti-invention
+   → No self-assigned enhancement workstreams
+
+5. No commits without R1 approval
+   → All changes require explicit authorization
+
+
+WORK CLASSIFICATION
+───────────────────
+DEFECT              Observable malfunction with evidence
+FEATURE             New capability (requires R1 authorization)
+BUGFIX              Remediation of defect
+REFACTOR            Code improvement without behavior change
+AUDIT               Investigation (no code changes by default)
+QA                  Visual/runtime verification
+WORKFLOW            Process/documentation changes
+
+
+WORKSTREAM LIFECYCLE
+────────────────────
+1. DISCOVERY        Inspect state, classify work
+2. DECISION         Resolve scope, architecture (with R1 when needed)
+3. IMPLEMENTATION   Write minimum necessary code
+4. VERIFICATION     Produce observable evidence
+5. HANDOFF          Communicate results to R1
+6. CLOSE            Campaign complete or terminated
+
+
+NEXT-ACTION DECISION GATE
+─────────────────────────
+Every handoff ends with EXACTLY ONE:
+
+AUTO-CONTINUE → Clear next WS, no R1 judgment needed
+               C1 provides complete executable next-WS prompt
+
+R1-DECISION   → Requires R1 judgment (product, architecture, scope, destructive)
+               C1 provides evidence, options, rationale, recommendation
+
+CLOSE         → Campaign complete, no next WS
+               C1 provides close reason with evidence
+
+
+VERIFICATION BY TYPE
+────────────────────
+FEATURE   Tests + typecheck + runtime + browser QA (if UI)
+BUGFIX    Repro test + fix + regression test
+REFACTOR  Regression emphasis
+AUDIT     Evidence/discovery (no code changes)
+QA        Visual/runtime evidence
+WORKFLOW  Artifact validation
+
+
+COMMANDS (remotion-html)
+────────────────────────
+npm test          Run tests
+tsc --noEmit      Type check
+npm run verify    Full verification
+npm run preview   Preview in browser
+
+
+ANTI-INVENTION RULE
+───────────────────
+DO NOT create workstreams solely because:
+  ✗ A component could be improved
+  ✗ Technical debt exists
+  ✗ A feature would be nice
+  ✗ Enhancement without requirement
+
+DO create workstreams when:
+  ✓ Evidence-backed defect exists
+  ✓ Explicitly authorized in current campaign
+  ✓ R1 explicitly authorizes
+  ✓ Clear continuation of current WS/campaign
+
+
+GIT SAFETY
+──────────
+✓ Never commit without R1 authorization
+✓ Never force-push
+✓ Never rewrite history
+✓ One focused commit per workstream
+✓ Verify remote HEAD after push
+
+
+HANDOFF CHECKLIST
+─────────────────
+☐ Workstream ID and type
+☐ Status (COMPLETE / BLOCKED / R1-DECISION)
+☐ Evidence (Git state, test results, QA evidence)
+☐ Findings (classified)
+☐ Changes made (files, behavior)
+☐ Verification results
+☐ Next action (AUTO-CONTINUE / R1-DECISION / CLOSE)
+☐ Decision required (if any)
+
+
+REFERENCES
+──────────
+Full Documentation: /docs/pairflow/
+  PF-CORE.md          Cross-repository invariants
+  PF-REPO.md          Repository adapter (remotion-html)
+  SKILL.md            Complete execution spine
+  protocols/          Detailed protocols
+  templates/          Handoff & workstream templates
+
+Steering: .kiro/steering/pairflow.md (auto-loaded)
+Hooks:    .kiro/hooks/pairflow-session-init.json
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║ When in doubt: Check /docs/pairflow/ or request R1 clarification              ║
+╚════════════════════════════════════════════════════════════════════════════════╝

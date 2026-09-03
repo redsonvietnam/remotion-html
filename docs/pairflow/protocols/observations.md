@@ -1,0 +1,98 @@
+# PF Observation System
+
+> This protocol implements the Observation Lifecycle defined in `PF-CORE.md`.
+> Core invariant: OBSERVED → REPEATED → CONFIRMED → PROPOSED → APPROVED → IMPLEMENTED → VALIDATED
+
+## Purpose
+
+Record genuinely new workflow friction discovered during workstream execution. Observations feed PF evolution — they are not action items for the current workstream.
+
+## Format
+
+```
+ID: <sequential number>
+PHASE: <phase where observation occurred>
+PROBLEM: <what went wrong or was friction>
+EVIDENCE: <concrete evidence — file, output, behavior>
+IMPACT: <how it affected the workstream>
+PROPOSED IMPROVEMENT: <specific suggestion>
+CLASSIFICATION: CORE | PROJECT | OPTIONAL
+CONFIDENCE: HIGH | MEDIUM | LOW
+```
+
+## Classification
+
+- **CORE** — Fundamental workflow friction that affects any repository. Candidate for PF version evolution.
+- **PROJECT** — Friction specific to this repository's setup. Record but don't propose PF changes.
+- **OPTIONAL** — Nice-to-have improvement. Record for future consideration.
+
+## Rules
+
+1. **C1 does not modify PF Core** during product workstreams. Record observations only.
+2. **R1 decides** whether to promote observations to new PF versions.
+3. **Evidence required.** Every observation must include concrete evidence.
+4. **No scope expansion.** Observations don't change the current workstream scope.
+5. **Genuine friction only.** Don't record theoretical concerns — only observed problems.
+6. **Single observation must NOT automatically become** a PF protocol change, a new workstream, or an architecture decision. Evidence must justify promotion through the lifecycle.
+
+## Observation Lifecycle
+
+Observations must progress through defined stages before becoming PF changes:
+
+```
+OBSERVED → REPEATED → CONFIRMED → PROPOSED → APPROVED → IMPLEMENTED → VALIDATED
+```
+
+| Stage | Definition | Promotion Rule |
+|-------|-----------|---------------|
+| OBSERVED | Single occurrence noted during a workstream | Record only; do not propose PF change |
+| REPEATED | Same friction observed in 2+ independent workstreams | May classify as CORE |
+| CONFIRMED | Impact measured, not hypothetical; evidence-backed | Ready for PROPOSED |
+| PROPOSED | Specific wording drafted, rationale provided | Requires R1 review |
+| APPROVED | R1 explicitly authorizes the change | Ready for IMPLEMENTED |
+| IMPLEMENTED | PF document modified, version bumped | Ready for VALIDATED |
+| VALIDATED | Next WS confirms friction is resolved | COMPLETE |
+
+### Key Rules
+
+- A single OBSERVED instance is NOT sufficient to propose a PF change
+- REPEATED requires 2+ independent observations of the same friction
+- CONFIRMED requires measured impact (not "this could be a problem")
+- PROJECT observations record but never propose PF changes
+- OPTIONAL observations record for future consideration
+- C1 never modifies PF during product workstreams
+- R1 is the only authority to approve PF changes
+
+## examples
+
+### Valid CORE observation
+```
+ID: 1
+PHASE: Phase 1 — Project Match
+PROBLEM: Auth fetch and data fetch ran as separate effects, causing timing issues
+  where restoration couldn't access user identity before it was loaded.
+EVIDENCE: Page component had separate useEffect for auth and data fetching,
+  with a third effect needing user from auth store.
+IMPACT: Required merging into single init() effect to avoid setState-in-effect
+  lint error and timing dependency.
+PROPOSED IMPROVATION: PF should recommend single init effect for auth-dependent
+  data fetching patterns.
+CLASSIFICATION: CORE
+CONFIDENCE: HIGH
+```
+
+### Valid PROJECT observation
+```
+ID: 2
+PHASE: Phase 6 — Implement
+PROBLEM: HTTP client's delete method does not support request body parameter.
+EVIDENCE: Client library source — delete method omits body from request options.
+IMPACT: Had to use fetch() directly for DELETE-with-body instead of the client.
+PROPOSED IMPROVATION: None for PF — this is repository-specific.
+CLASSIFICATION: PROJECT
+CONFIDENCE: HIGH
+```
+
+## Storage
+
+Observations are recorded in the workstream handoff under "PF OBSERVATIONS" section. They are not stored in a separate file unless R1 requests it.

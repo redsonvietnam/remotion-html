@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Create New Video</title>
+  <style>
+:root{--bg:#0a0e1a;--panel:#0f1423;--surface:#141a2e;--line:rgba(255,255,255,0.08);--accent1:#00d4ff;--accent2:#d4a843;--accent3:#34d399;--ink:#e8e6e1;--muted:#6b7280;--radius:10px;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:"Inter","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;min-height:100vh}
+header{padding:0 24px;height:56px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--line);background:var(--panel);flex-shrink:0}
+.brand{font-weight:800;font-size:16px;color:var(--accent1);white-space:nowrap}
+.brand span{color:var(--muted);font-weight:400;margin-left:8px;font-size:13px}
+.hsep{width:1px;height:24px;background:var(--line);flex-shrink:0}
+.spacer{flex:1}
+.back-link{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 14px;border:1px solid var(--line);border-radius:6px;transition:all 0.15s}
+.back-link:hover{color:var(--accent1);border-color:var(--accent1)}
+main{flex:1;padding:32px 24px;overflow-y:auto;display:flex;justify-content:center}
+.creator-shell{max-width:520px;width:100%}
+.tpl-header{margin-bottom:32px}
+.tpl-name{font-size:28px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.tpl-desc{font-size:14px;color:var(--muted);line-height:1.6}
+.tpl-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:0.3px}
+.format-badge{background:rgba(0,212,255,0.1);color:var(--accent1);border:1px solid rgba(0,212,255,0.2)}
+.status-badge{font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+.status-ready{background:rgba(52,211,153,0.1);color:var(--accent3);border:1px solid rgba(52,211,153,0.2)}
+.section{margin-bottom:28px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.format-selector{display:flex;gap:8px}
+.format-btn{padding:10px 24px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.format-btn:hover:not(.disabled){color:var(--ink);border-color:var(--accent1)}
+.format-btn.active{color:var(--accent1);border-color:var(--accent1);background:rgba(0,212,255,0.08)}
+.format-btn.disabled{opacity:0.35;cursor:not-allowed}
+.name-input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:15px;font-weight:500;outline:none;transition:border-color 0.15s}
+.name-input:focus{border-color:var(--accent1)}
+.name-input::placeholder{color:var(--muted)}
+.actions{display:flex;gap:12px;margin-top:40px}
+.btn{padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;border:none}
+.btn-secondary{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.btn-secondary:hover{color:var(--ink);border-color:var(--accent1)}
+.btn-primary{background:var(--accent1);color:#0a0e1a}
+.btn-primary:hover{background:#00bfe6}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+.error-state{text-align:center;padding:60px 20px}
+.error-icon{font-size:48px;margin-bottom:16px}
+.error-title{font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.error-msg{font-size:14px;color:var(--muted);margin-bottom:24px}
+.success-state{text-align:center;padding:40px 20px}
+.success-icon{font-size:48px;margin-bottom:16px}
+.success-title{font-size:20px;font-weight:700;color:var(--accent3);margin-bottom:8px}
+.success-msg{font-size:14px;color:var(--muted);margin-bottom:8px;line-height:1.6}
+.success-detail{font-size:13px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;margin:16px 0;text-align:left}
+.success-detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.success-detail-row:last-child{border-bottom:none}
+.success-detail-label{color:var(--muted)}
+.success-detail-value{color:var(--ink);font-weight:600}
+.demo-section{border-top:1px solid var(--line);padding-top:24px;margin-top:32px}
+.demo-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.demo-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;cursor:pointer;transition:background 0.12s;border:1px solid var(--line)}
+.demo-row:hover{background:var(--surface)}
+.demo-name{font-size:14px;font-weight:600;color:var(--ink);flex:1}
+.demo-format{font-size:11px;font-weight:600;color:var(--accent1);background:rgba(0,212,255,0.08);padding:2px 8px;border-radius:4px}
+.demo-arrow{color:var(--muted);font-size:13px}
+footer{padding:16px 24px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center}
+footer a{color:var(--accent1);text-decoration:none}
+footer a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Create New Video<span>Creator Shell</span></div>
+    <div class="hsep"></div>
+    <div class="spacer"></div>
+    <a href="/preview/library.html" class="back-link">Library</a>
+  </header>
+  <main>
+    <div id="root"></div>
+  </main>
+  <footer>
+    NodeFlow Creator Shell — <a href="/preview/library.html">Library</a> — <a href="/preview/studio.html">Preview Studio</a>
+  </footer>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+const { useState, useMemo } = React;
+
+const TEMPLATES = [
+  { id: "scrapbook", name: "Scrapbook", status: "ready", description: "Aged paper, handwritten annotations, Polaroid cards, editorial overlays. Ideal for storytelling and historical narratives.", formats: ["16:9","9:16"], sceneKinds: ["hero","match","history","photo","timeline","closing"] },
+  { id: "cr7", name: "CR7", status: "ready", description: "Dark warm backgrounds, large typography-driven statistics, gold/amber and red accents. Sports stats and comparisons.", formats: ["16:9","9:16"], sceneKinds: ["hero","stat","milestone","closing"] },
+  { id: "cosmos", name: "Cosmos", status: "ready", description: "Deep space backgrounds, orbital paths, constellation lines, star fields. Science and astronomy content.", formats: ["16:9","9:16"], sceneKinds: ["title","fact","compare","timeline","diagram","closing"] },
+  { id: "nodeflow", name: "NodeFlow", status: "ready", description: "Blueprint grid, node-edge diagrams, signal pulses, amber data badges. System and network explainers.", formats: ["16:9"], sceneKinds: ["title","flow","contribution","benefit","compare","end"] },
+  { id: "nq57", name: "NQ57", status: "legacy", description: "Vietnamese government and policy video template.", formats: ["16:9"], sceneKinds: ["title","quote","roles","pillars","stats","vision","end"] },
+  { id: "stoiclove", name: "Stoic Love", status: "legacy", description: "Stoic philosophy vertical video.", formats: ["9:16"], sceneKinds: ["hook","statement","split","concept","impermanence","ending"] },
+  { id: "blueprint", name: "Blueprint", status: "legacy", description: "Technical document style with blueprint grid.", formats: ["16:9"], sceneKinds: ["title","pillars","measure","detail","process","seal"] },
+  { id: "terminal", name: "Terminal Code Tip", status: "ready", description: "Matrix rain, dark terminal, syntax-highlighted code, typing animation. For coding tips.", formats: ["9:16"], sceneKinds: ["intro","typing","reveal","outro"] },
+  { id: "kineticStatement", name: "Kinetic Statement", status: "ready", description: "Staggered word reveals, animated counters, karaoke quote highlights, brand outro. For punchy vertical social videos.", formats: ["9:16"], sceneKinds: ["hook","stat","quote","outro"] },
+  { id: "bentoGrid", name: "Bento Grid", status: "ready", description: "Glassmorphism bento grid with aurora background, animated stat counters, SVG chart, staggered card reveals. For modern vertical product showcases.", formats: ["9:16"], sceneKinds: ["hook","bento","outro"] },
+  { id: "featureDrop", name: "Feature Drop", status: "ready", description: "Mask-reveal title with 3D icosahedron, SVG icon draw-in feature rows, layered ghost typography outro. For product update announcements.", formats: ["9:16"], sceneKinds: ["hook","features","outro"] },
+  { id: "productTeaser", name: "Product Teaser", status: "ready", description: "Animated dashboard metrics, feature spotlight cards, gradient hero reveal. For SaaS product announcements.", formats: ["9:16"], sceneKinds: ["hook","dashboard","features","outro"] },
+  { id: "editorialFeature", name: "Editorial Feature", status: "ready", description: "Magazine-style cover, pullquote highlight, numbered takeaways, reading progress bar. For long-form editorial content.", formats: ["9:16"], sceneKinds: ["cover","pullquote","takeaways","outro"] },
+  { id: "realEstateListing", name: "Real Estate Listing", status: "ready", description: "Property cover reveal, spec counters, highlight list, agent card. For property showcase videos.", formats: ["9:16"], sceneKinds: ["cover","specs","highlights","outro"] },
+];
+
+const PRODUCTIONS = [
+  { id: "championsLeague", name: "Champions League", template: "scrapbook", format: "16:9" },
+  { id: "championsLeague9x16", name: "Champions League (9:16)", template: "scrapbook", format: "9:16" },
+  { id: "cr7Records", name: "CR7 Records", template: "cr7", format: "16:9" },
+  { id: "cr7VsMessi", name: "CR7 vs Messi", template: "cr7", format: "16:9" },
+  { id: "solarSystem", name: "Solar System", template: "cosmos", format: "16:9" },
+  { id: "baoHiem2024", name: "BHXH 2024", template: "nodeflow", format: "16:9" },
+  { id: "nq57", name: "NQ57", template: "nq57", format: "16:9" },
+  { id: "dean06", name: "De An 06", template: "nq57", format: "16:9" },
+  { id: "nq79", name: "NQ79", template: "nq57", format: "16:9" },
+  { id: "canCuoc", name: "Can Cuoc 2023", template: "nq57", format: "16:9" },
+  { id: "luatGTDB", name: "Luat GTDB", template: "nq57", format: "16:9" },
+  { id: "stoiclove", name: "Stoic Love", template: "stoiclove", format: "9:16" },
+  { id: "luatBHXH", name: "Luat BHXH", template: "blueprint", format: "16:9" },
+  { id: "kineticStatementDemo", name: "3 Seconds Hook", template: "kineticStatement", format: "9:16" },
+  { id: "featureDropDemo", name: "NOVA Feature Update", template: "featureDrop", format: "9:16" },
+];
+
+function getTemplateFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("template") || null;
+  } catch { return null; }
+}
+
+function App() {
+  const templateId = useMemo(getTemplateFromUrl, []);
+  const template = useMemo(() => TEMPLATES.find(t => t.id === templateId), [templateId]);
+  const [selectedFormat, setSelectedFormat] = useState(template ? template.formats[0] : null);
+  const [videoName, setVideoName] = useState(template ? "Untitled " + template.name + " Video" : "");
+  const [created, setCreated] = useState(false);
+
+  if (!template) {
+    return (
+      <div className="creator-shell">
+        <div className="error-state">
+          <div className="error-icon">&#9888;</div>
+          <div className="error-title">Template Not Found</div>
+          <div className="error-msg">
+            {templateId ? `No template found with id "${templateId}".` : "No template specified."}
+            <br/>Please select a template from the Library.
+          </div>
+          <a href="/preview/library.html" className="btn btn-primary" style={{textDecoration:"none",display:"inline-block"}}>Back to Library</a>
+        </div>
+      </div>
+    );
+  }
+
+  if (template.status === "legacy") {
+    return (
+      <div className="creator-shell">
+        <div className="tpl-header">
+          <div className="tpl-name">{template.name}</div>
+          <div className="tpl-desc">{template.description}</div>
+          <div className="tpl-meta">
+            {template.formats.map(f => <span key={f} className="badge format-badge">{f}</span>)}
+            <span className="badge status-badge status-legacy">LEGACY</span>
+          </div>
+        </div>
+        <div className="error-state" style={{padding:"30px 20px"}}>
+          <div className="error-title">Preview Only</div>
+          <div className="error-msg">This template is available for preview only.<br/>New video creation is not supported for legacy templates.</div>
+        </div>
+        <div className="demo-section">
+          <div className="demo-label">Demo Productions</div>
+          {PRODUCTIONS.filter(p => p.template === template.id).map(p => (
+            <div key={p.id} className="demo-row" onClick={() => window.location.href = "/preview/studio.html?production=" + encodeURIComponent(p.id)}>
+              <span className="demo-name">{p.name}</span>
+              <span className="demo-format">{p.format}</span>
+              <span className="demo-arrow">&#8250;</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (created) {
+    return (
+      <div className="creator-shell">
+        <div className="success-state">
+          <div className="success-icon">&#10003;</div>
+          <div className="success-title">Video Context Created</div>
+          <div className="success-msg">Your new video context has been set up.</div>
+          <div className="success-detail">
+            <div className="success-detail-row">
+              <span className="success-detail-label">Template</span>
+              <span className="success-detail-value">{template.name}</span>
+            </div>
+            <div className="success-detail-row">
+              <span className="success-detail-label">Format</span>
+              <span className="success-detail-value">{selectedFormat}</span>
+            </div>
+            <div className="success-detail-row">
+              <span className="success-detail-label">Video Name</span>
+              <span className="success-detail-value">{videoName}</span>
+            </div>
+          </div>
+          <div className="success-msg" style={{marginTop:16,fontSize:13}}>
+            Your video is ready to edit.<br/>You can now customize scenes, content, and timing.
+          </div>
+          <div className="actions" style={{justifyContent:"center",marginTop:24}}>
+            <button className="btn btn-secondary" onClick={() => setCreated(false)}>Edit Settings</button>
+            <a href={"/preview/editor.html?template=" + encodeURIComponent(template.id) + "&format=" + encodeURIComponent(selectedFormat) + "&name=" + encodeURIComponent(videoName)} className="btn btn-primary" style={{textDecoration:"none"}}>Open Editor</a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="creator-shell">
+      <div className="tpl-header">
+        <div className="tpl-name">{template.name}</div>
+        <div className="tpl-desc">{template.description}</div>
+        <div className="tpl-meta">
+          {template.formats.map(f => <span key={f} className="badge format-badge">{f}</span>)}
+          <span className="badge status-badge status-ready">READY</span>
+        </div>
+      </div>
+
+      <div className="section">
+        <div className="section-label">Format</div>
+        <div className="format-selector">
+          {template.formats.map(f => (
+            <button key={f} className={"format-btn" + (f === selectedFormat ? " active" : "")} onClick={() => setSelectedFormat(f)}>{f}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="section">
+        <div className="section-label">Video Name</div>
+        <input className="name-input" type="text" value={videoName} onChange={e => setVideoName(e.target.value)} placeholder="Enter video name..." />
+      </div>
+
+      <div className="actions">
+        <a href="/preview/library.html" className="btn btn-secondary" style={{textDecoration:"none"}}>Back</a>
+        <button className="btn btn-primary" disabled={!videoName.trim()} onClick={() => setCreated(true)}>Continue</button>
+      </div>
+
+      <div className="demo-section">
+        <div className="demo-label">Preview Demo</div>
+        {PRODUCTIONS.filter(p => p.template === template.id).map(p => (
+          <div key={p.id} className="demo-row" onClick={() => window.location.href = "/preview/studio.html?production=" + encodeURIComponent(p.id)}>
+            <span className="demo-name">{p.name}</span>
+            <span className="demo-format">{p.format}</span>
+            <span className="demo-arrow">&#8250;</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+  </script>
+</body>
+</html>

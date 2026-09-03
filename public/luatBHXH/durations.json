@@ -1,0 +1,32 @@
+[
+  {
+    "id": "s1",
+    "audio": "luatBHXH/s1.mp3",
+    "dur": 16.704
+  },
+  {
+    "id": "s2",
+    "audio": "luatBHXH/s2.mp3",
+    "dur": 10.632
+  },
+  {
+    "id": "s3",
+    "audio": "luatBHXH/s3.mp3",
+    "dur": 9.792
+  },
+  {
+    "id": "s4",
+    "audio": "luatBHXH/s4.mp3",
+    "dur": 13.536
+  },
+  {
+    "id": "s5",
+    "audio": "luatBHXH/s5.mp3",
+    "dur": 13.2
+  },
+  {
+    "id": "s6",
+    "audio": "luatBHXH/s6.mp3",
+    "dur": 8.112
+  }
+]

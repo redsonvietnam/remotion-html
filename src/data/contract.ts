@@ -5,12 +5,10 @@
 // Pure logic + types (no React, no Remotion imports). Imported by vitest for
 // unit validation and by scripts/validate.mjs (via esbuild) for the CLI path.
 //
-// The four existing data files (nq57, deAn06, nghiQuyet79, stoicLove) already
-// follow this shape: each exports a SceneDef[] (named <NAME>_SCENES) and a
-// content Record (named <NAME>_CONTENT) keyed by scene id.
+// NOTE: This file must NOT import Node.js built-ins (e.g. "path") because it
+// gets bundled by webpack for Remotion rendering.  The `path`-dependent checks
+// live in scripts/validate.mjs (esbuild, Node-only).
 // ---------------------------------------------------------------------------
-
-import path from "node:path";
 
 // Base scene metadata shared by every production.
 export interface SceneDef {
@@ -19,6 +17,15 @@ export interface SceneDef {
   caption: string; // on-screen narration text
   dur: number; // seconds
 }
+
+// Project-wide FPS constant.
+export const FPS = 30;
+
+// Tail buffer in seconds added to each scene's duration.
+export const TAIL = 0.5;
+
+// Convert scene duration (seconds) to frames.
+export const sceneFrames = (dur: number) => Math.ceil((dur + TAIL) * FPS);
 
 export interface ContentError {
   code: string;
@@ -55,6 +62,54 @@ export const TEMPLATE_SCHEMAS: Record<string, TemplateContentSchema> = {
   stoiclove: {
     allowedKinds: ["hook", "statement", "split", "concept", "impermanence", "ending"],
     requiredTextFields: { hook: ["mainQuestion"], statement: ["lines"] },
+  },
+  nodeflow: {
+    allowedKinds: ["title", "flow", "contribution", "benefit", "compare", "end"],
+    requiredTextFields: { title: ["title"], flow: ["title"], contribution: ["title"], benefit: ["title"], compare: ["title"] },
+  },
+  blueprint: {
+    allowedKinds: ["title", "pillars", "measure", "detail", "process", "seal"],
+    requiredTextFields: { title: ["title"], pillars: ["heading"], measure: ["heading"], detail: ["heading"], process: ["heading"], seal: ["heading"] },
+  },
+  cr7: {
+    allowedKinds: ["hero", "stat", "milestone", "closing"],
+    requiredTextFields: { hero: ["name"], stat: ["bigNumber"], milestone: ["title"], closing: ["title"] },
+  },
+  cosmos: {
+    allowedKinds: ["title", "fact", "compare", "timeline", "diagram", "closing"],
+    requiredTextFields: { title: ["title"], fact: ["bigValue"], compare: ["title"], timeline: ["title"], diagram: ["title"], closing: ["title"] },
+  },
+  scrapbook: {
+    allowedKinds: ["hero", "match", "history", "photo", "timeline", "closing"],
+    requiredTextFields: { hero: ["title"], match: ["homeTeam"], history: ["fact"], photo: ["caption"], timeline: ["title"], closing: ["title"] },
+  },
+  terminal: {
+    allowedKinds: ["intro", "typing", "reveal", "outro"],
+    requiredTextFields: { intro: ["title"], typing: ["caption"], reveal: ["caption"], outro: ["title"] },
+  },
+  kineticStatement: {
+    allowedKinds: ["hook", "stat", "quote", "outro"],
+    requiredTextFields: { hook: ["words"], stat: ["label"], quote: ["text"], outro: ["brand"] },
+  },
+  bentoGrid: {
+    allowedKinds: ["hook", "bento", "outro"],
+    requiredTextFields: { hook: ["line1"], bento: ["title"], outro: ["brand"] },
+  },
+  featureDrop: {
+    allowedKinds: ["hook", "features", "outro"],
+    requiredTextFields: { hook: ["eyebrow"], features: ["items"], outro: ["brand"] },
+  },
+  productTeaser: {
+    allowedKinds: ["hook", "dashboard", "features", "outro"],
+    requiredTextFields: { hook: ["headline"], dashboard: ["title"], features: ["title"], outro: ["brand"] },
+  },
+  editorialFeature: {
+    allowedKinds: ["cover", "pullquote", "takeaways", "outro"],
+    requiredTextFields: { cover: ["title"], pullquote: ["text"], takeaways: ["items"], outro: ["tagline"] },
+  },
+  realEstateListing: {
+    allowedKinds: ["cover", "specs", "highlights", "outro"],
+    requiredTextFields: { cover: ["type"], specs: ["items"], highlights: ["items"], outro: ["agentName"] },
   },
 };
 
@@ -128,7 +183,6 @@ export function validateProductionData(
     if (!s.audio || typeof s.audio !== "string" || !s.audio.trim()) {
       errors.push({ code: "INVALID_AUDIO_PATH", scene: s.id, message: `Scene ${s.id} missing audio path.` });
     } else if (
-      path.isAbsolute(s.audio) ||
       /^[A-Za-z]:[\\/]/.test(s.audio) ||
       s.audio.startsWith("/") ||
       s.audio.startsWith("\\")
@@ -245,6 +299,289 @@ export function checkAudioDurations(
   }
   return errors;
 }
+
+// ---------------------------------------------------------------------------
+// NodeFlow Template Content Contract
+//
+// Canonical content types for the NodeFlow template (blueprint grid,
+// node-edge diagrams, signal flow). These are pure content types —
+// no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface NodeFlowTitleContent {
+  kind: "title";
+  lawCode: string;
+  title: string;
+  subtitle: string;
+  tagline: string;
+  nodes: { label: string; role?: string }[];
+}
+
+export interface NodeFlowFlowContent {
+  kind: "flow";
+  title: string;
+  description: string[];
+  flowNodes: { label: string; sublabel?: string; rate?: string }[];
+  edges: { from: number; to: number; label: string }[];
+}
+
+export interface NodeFlowContributionContent {
+  kind: "contribution";
+  title: string;
+  rows: { party: string; type: string; pct: number; rateLabel: string }[];
+  totalLabel: string;
+  totalValue: string;
+  note?: string;
+}
+
+export interface NodeFlowBenefitContent {
+  kind: "benefit";
+  title: string;
+  description: string;
+  benefits: { icon: string; label: string; value?: string }[];
+}
+
+export interface NodeFlowCompareContent {
+  kind: "compare";
+  title: string;
+  before: { items: { label: string; value?: string }[] };
+  after: { items: { label: string; value?: string; highlight?: boolean }[] };
+  changeLabel?: string;
+}
+
+export interface NodeFlowEndContent {
+  kind: "end";
+  closingTitle: string;
+  closingSubtitle: string;
+  stats: { label: string; value: string }[];
+  reference: string;
+}
+
+export type NodeFlowSceneContent =
+  | NodeFlowTitleContent
+  | NodeFlowFlowContent
+  | NodeFlowContributionContent
+  | NodeFlowBenefitContent
+  | NodeFlowCompareContent
+  | NodeFlowEndContent;
+
+// ---------------------------------------------------------------------------
+// CR7 Template Content Contract
+//
+// Canonical content types for the CR7 template (typography-driven,
+// large statistics, dark background). Pure content types —
+// no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface CR7HeroContent {
+  kind: "hero";
+  name: string;
+  tagline: string;
+  subtitle: string;
+}
+
+export interface CR7StatContent {
+  kind: "stat";
+  label: string;
+  bigNumber: string;
+  sub: string;
+  detail: string;
+  color: "accent1" | "accent2" | "accent3";
+}
+
+export interface CR7MilestoneContent {
+  kind: "milestone";
+  title: string;
+  items: { label: string; value: string }[];
+}
+
+export interface CR7ClosingContent {
+  kind: "closing";
+  title: string;
+  subtitle: string;
+  reference: string;
+}
+
+export type CR7SceneContent =
+  | CR7HeroContent
+  | CR7StatContent
+  | CR7MilestoneContent
+  | CR7ClosingContent;
+
+// ---------------------------------------------------------------------------
+// Cosmos Template Content Contract
+//
+// Canonical content types for the Cosmos template (space/astronomy,
+// orbital paths, constellation lines, deep space backgrounds).
+// Pure content types — no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface CosmosTitleContent {
+  kind: "title";
+  title: string;
+  subtitle: string;
+  tagline: string;
+}
+
+export interface CosmosFactContent {
+  kind: "fact";
+  label: string;
+  bigValue: string;
+  unit: string;
+  description: string;
+  detail: string;
+}
+
+export interface CosmosCompareContent {
+  kind: "compare";
+  title: string;
+  left: { label: string; value: string; color?: string };
+  right: { label: string; value: string; color?: string };
+  insight: string;
+}
+
+export interface CosmosTimelineContent {
+  kind: "timeline";
+  title: string;
+  items: { label: string; value: string; year?: string }[];
+}
+
+export interface CosmosDiagramContent {
+  kind: "diagram";
+  title: string;
+  nodes: { label: string; sublabel?: string; orbit?: number }[];
+  edges: { from: number; to: number; label: string }[];
+}
+
+export interface CosmosClosingContent {
+  kind: "closing";
+  title: string;
+  subtitle: string;
+  stats: { label: string; value: string }[];
+  reference: string;
+}
+
+export type CosmosSceneContent =
+  | CosmosTitleContent
+  | CosmosFactContent
+  | CosmosCompareContent
+  | CosmosTimelineContent
+  | CosmosDiagramContent
+  | CosmosClosingContent;
+
+// ---------------------------------------------------------------------------
+// Scrapbook Template Content Contract
+//
+// Canonical content types for the Scrapbook template (editorial collage,
+// aged paper, handwritten annotations, Polaroid cards, VOX overlays).
+// Pure content types — no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface ScrapbookHeroContent {
+  kind: "hero";
+  title: string;
+  subtitle: string;
+  tagline: string;
+}
+
+export interface ScrapbookMatchContent {
+  kind: "match";
+  homeTeam: string;
+  awayTeam: string;
+  score: string;
+  competition: string;
+  highlight: string;
+}
+
+export interface ScrapbookHistoryContent {
+  kind: "history";
+  year: string;
+  fact: string;
+  detail: string;
+  annotation: string;
+}
+
+export interface ScrapbookPhotoContent {
+  kind: "photo";
+  caption: string;
+  annotation: string;
+  Polaroid: { label: string; sublabel?: string }[];
+}
+
+export interface ScrapbookTimelineContent {
+  kind: "timeline";
+  title: string;
+  items: { label: string; value: string; year?: string }[];
+}
+
+export interface ScrapbookClosingContent {
+  kind: "closing";
+  title: string;
+  subtitle: string;
+  stats: { label: string; value: string }[];
+  reference: string;
+}
+
+export type ScrapbookSceneContent =
+  | ScrapbookHeroContent
+  | ScrapbookMatchContent
+  | ScrapbookHistoryContent
+  | ScrapbookPhotoContent
+  | ScrapbookTimelineContent
+  | ScrapbookClosingContent;
+
+// ---------------------------------------------------------------------------
+// Terminal Template Content Contract
+//
+// Canonical content types for the Terminal template (Matrix rain,
+// dark terminal, syntax-highlighted code, typing animation).
+// Pure content types — no React, no Remotion, no visual implementation details.
+// ---------------------------------------------------------------------------
+
+export interface TerminalCodeToken {
+  start: number;
+  length: number;
+  kind: "keyword" | "string" | "function" | "number" | "comment" | "variable" | "type";
+}
+
+export interface TerminalCodeLine {
+  text: string;
+  tokens?: TerminalCodeToken[];
+}
+
+export interface TerminalIntroContent {
+  kind: "intro";
+  kicker: string;
+  title: string;
+}
+
+export interface TerminalTypingContent {
+  kind: "typing";
+  language: string;
+  lines: TerminalCodeLine[];
+  caption: string;
+}
+
+export interface TerminalRevealContent {
+  kind: "reveal";
+  language: string;
+  lines: TerminalCodeLine[];
+  highlightLine: number;
+  caption: string;
+}
+
+export interface TerminalOutroContent {
+  kind: "outro";
+  kicker: string;
+  title: string;
+  subtitle: string;
+}
+
+export type TerminalSceneContent =
+  | TerminalIntroContent
+  | TerminalTypingContent
+  | TerminalRevealContent
+  | TerminalOutroContent;
 
 // ---------------------------------------------------------------------------
 // Storyboard Contract - the higher-level artifact C1 produces from research +
