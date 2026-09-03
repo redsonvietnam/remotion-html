@@ -274,60 +274,83 @@ def pad_silence(path, lead, tail):
     os.remove(tmp)
 
 
-def trim_trailing_silence(path, threshold_db=-35, min_silence_sec=0.2):
+def trim_trailing_silence(path, threshold_db=-40, min_silence_sec=0.1):
     """Trim trailing silence from an audio file to reduce turn-boundary gaps.
 
-    Uses ffmpeg silencedetect to find trailing silence and trims it.
+    Strategy: Convert to WAV, measure audio level from end, find where speech ends.
     """
-    tmp = path + ".trim.mp3"
-    # Detect silence: find silence longer than min_silence_sec at end
+    tmp_wav = path + ".trim.wav"
+    tmp_mp3 = path + ".trim.mp3"
+    
+    # Convert to WAV for analysis
     r = subprocess.run(
-        [FF, "-i", path.replace("\\", "/"), "-af",
-         f"silencedetect=noise={threshold_db}dB:d={min_silence_sec}",
-         "-f", "null", "-"],
+        [FF, "-y", "-i", path.replace("\\", "/"),
+         "-acodec", "pcm_s16le", "-ar", "48000", "-ac", "1",
+         tmp_wav.replace("\\", "/")],
         capture_output=True, text=True,
     )
-    # Parse silence_end from stderr
-    silence_end = None
-    for line in (r.stderr or "").splitlines():
-        if "silence_end" in line:
-            # e.g. [silencedetect @ ...] silence_end: 4.32 | silence_duration: 0.51
-            try:
-                part = line.split("silence_end:")[1].split("|")[0].strip()
-                silence_end = float(part)
-            except (IndexError, ValueError):
-                pass
-    if silence_end is None:
-        return  # no trailing silence detected
-    # Get total duration via ffprobe
-    probe = subprocess.run(
-        [FF, "-i", path.replace("\\", "/"), "-f", "null", "-"],
-        capture_output=True, text=True,
-    )
-    total = None
-    for line in (probe.stderr or "").splitlines():
-        if "Duration:" in line:
-            try:
-                dur_str = line.split("Duration:")[1].split(",")[0].strip()
-                parts = dur_str.split(":")
-                total = float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
-            except (IndexError, ValueError):
-                pass
-    if total is None or total - silence_end < 0.05:
-        return  # silence is at the very end, skip
-    # Trim: keep audio from 0 to silence_end
-    r = subprocess.run(
-        [FF, "-y", "-i", path.replace("\\", "/"), "-t", str(silence_end),
-         "-c:a", "libmp3lame", "-b:a", "128k", tmp],
-        capture_output=True, text=True,
-    )
-    if r.returncode == 0 and os.path.exists(tmp) and os.path.getsize(tmp) > 0:
-        os.replace(tmp, path)
-    else:
+    if r.returncode != 0 or not os.path.exists(tmp_wav):
+        return
+    
+    # Read WAV and find trailing silence
+    import wave, struct
+    try:
+        with wave.open(tmp_wav, 'r') as wf:
+            frames = wf.readframes(wf.getnframes())
+            samples = struct.unpack(f'<{len(frames)//2}h', frames)
+            rate = wf.getframerate()
+    except Exception:
         try:
-            os.remove(tmp)
+            os.remove(tmp_wav)
         except OSError:
             pass
+        return
+    
+    # Convert to float and normalize
+    import numpy as np
+    arr = np.array(samples, dtype=np.float32) / 32768.0
+    
+    # Find the last point where audio level > threshold
+    threshold = 10 ** (threshold_db / 20.0)  # Convert dB to linear
+    total_samples = len(arr)
+    
+    # Search from end, find last sample above threshold
+    last_speech_idx = total_samples - 1
+    while last_speech_idx > 0 and abs(arr[last_speech_idx]) < threshold:
+        last_speech_idx -= 1
+    
+    # Add small buffer (10ms) after last speech
+    buffer_samples = int(0.01 * rate)
+    trim_point = min(last_speech_idx + buffer_samples, total_samples)
+    trim_time = trim_point / rate
+    total_time = total_samples / rate
+    
+    # Only trim if we're cutting > 50ms
+    if total_time - trim_time < 0.05:
+        os.remove(tmp_wav)
+        return
+    
+    # Trim using ffmpeg
+    r = subprocess.run(
+        [FF, "-y", "-i", path.replace("\\", "/"),
+         "-t", str(trim_time),
+         "-c:a", "libmp3lame", "-b:a", "128k",
+         tmp_mp3.replace("\\", "/")],
+        capture_output=True, text=True,
+    )
+    
+    if r.returncode == 0 and os.path.exists(tmp_mp3) and os.path.getsize(tmp_mp3) > 0:
+        os.replace(tmp_mp3, path)
+    
+    # Cleanup
+    try:
+        os.remove(tmp_wav)
+    except OSError:
+        pass
+    try:
+        os.remove(tmp_mp3)
+    except OSError:
+        pass
 
 
 def main():
