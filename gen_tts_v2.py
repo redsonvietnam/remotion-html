@@ -274,6 +274,62 @@ def pad_silence(path, lead, tail):
     os.remove(tmp)
 
 
+def trim_trailing_silence(path, threshold_db=-35, min_silence_sec=0.2):
+    """Trim trailing silence from an audio file to reduce turn-boundary gaps.
+
+    Uses ffmpeg silencedetect to find trailing silence and trims it.
+    """
+    tmp = path + ".trim.mp3"
+    # Detect silence: find silence longer than min_silence_sec at end
+    r = subprocess.run(
+        [FF, "-i", path.replace("\\", "/"), "-af",
+         f"silencedetect=noise={threshold_db}dB:d={min_silence_sec}",
+         "-f", "null", "-"],
+        capture_output=True, text=True,
+    )
+    # Parse silence_end from stderr
+    silence_end = None
+    for line in (r.stderr or "").splitlines():
+        if "silence_end" in line:
+            # e.g. [silencedetect @ ...] silence_end: 4.32 | silence_duration: 0.51
+            try:
+                part = line.split("silence_end:")[1].split("|")[0].strip()
+                silence_end = float(part)
+            except (IndexError, ValueError):
+                pass
+    if silence_end is None:
+        return  # no trailing silence detected
+    # Get total duration via ffprobe
+    probe = subprocess.run(
+        [FF, "-i", path.replace("\\", "/"), "-f", "null", "-"],
+        capture_output=True, text=True,
+    )
+    total = None
+    for line in (probe.stderr or "").splitlines():
+        if "Duration:" in line:
+            try:
+                dur_str = line.split("Duration:")[1].split(",")[0].strip()
+                parts = dur_str.split(":")
+                total = float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
+            except (IndexError, ValueError):
+                pass
+    if total is None or total - silence_end < 0.05:
+        return  # silence is at the very end, skip
+    # Trim: keep audio from 0 to silence_end
+    r = subprocess.run(
+        [FF, "-y", "-i", path.replace("\\", "/"), "-t", str(silence_end),
+         "-c:a", "libmp3lame", "-b:a", "128k", tmp],
+        capture_output=True, text=True,
+    )
+    if r.returncode == 0 and os.path.exists(tmp) and os.path.getsize(tmp) > 0:
+        os.replace(tmp, path)
+    else:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backend", choices=["edge", "omni", "gemini", "proxy", "vieneu"], default="vieneu")
@@ -338,6 +394,9 @@ def main():
                 for i, (spk, text) in enumerate(turns):
                     tp = os.path.join(OUT, f"_{sid}_{i}.mp3")
                     tts_for(backend, spk, text, tp, voice_map=voice_map)
+                    # Trim trailing silence to reduce gaps between turns
+                    if backend == "vieneu" and len(turns) > 1:
+                        trim_trailing_silence(tp)
                     tmp_files.append(tp)
                     durations.append(MP3(tp).info.length)
                     caption_lines.append(f"{ROLE[spk]}: {text}")
