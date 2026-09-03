@@ -159,7 +159,7 @@ def vieneu_turn(text, spk, path, voice_map=None):
         voice_map: dict mapping speaker -> voice name, e.g. {"A": "Adam", "B": "Thanh Bình"}.
     """
     backend = _get_vieneu_backend()
-    voice_name = (voice_map or {}).get(spk, "Adam")
+    voice_name = (voice_map or {}).get(spk, "Thái Sơn")
     wav_path = path.replace(".mp3", ".wav")
     audio = backend.generate(text=text, voice_name=voice_name)
     backend.save_wav(audio, wav_path)
@@ -279,7 +279,7 @@ def main():
     ap.add_argument("--backend", choices=["edge", "omni", "gemini", "proxy", "vieneu"], default="edge")
     ap.add_argument("--key", default=None, help="Gemini API key (hoac file gemini_key.txt / env GEMINI_API_KEY)")
     ap.add_argument("--voice", default=None,
-                    help="VieNeu single-speaker voice name (e.g. 'Adam')")
+                    help="VieNeu single-speaker voice name (default: Thái Sơn)")
     ap.add_argument("--voice-a", default=None,
                     help="VieNeu voice for speaker A (two-speaker mode)")
     ap.add_argument("--voice-b", default=None,
@@ -312,7 +312,7 @@ def main():
         elif args.voice:
             voice_map = {"A": args.voice, "B": args.voice}
         else:
-            voice_map = {"A": "Adam", "B": "Adam"}
+            voice_map = {"A": "Thái Sơn", "B": "Thái Sơn"}
 
     gemini_key = args.key or os.environ.get("GEMINI_API_KEY")
     if backend == "gemini" and not gemini_key:

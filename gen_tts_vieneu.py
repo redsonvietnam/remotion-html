@@ -6,13 +6,13 @@ Voice cloning is intentionally excluded from this module.
 
 Usage as standalone:
     python gen_tts_vieneu.py --list-voices
-    python gen_tts_vieneu.py --voice "Adam" --text "Xin chào" --output test.wav
+    python gen_tts_vieneu.py --voice "Thái Sơn" --text "Xin chào" --output test.wav
 
 Usage as import:
     from gen_tts_vieneu import VieneuBackend
     backend = VieneuBackend()
     backend.init()
-    audio_numpy = backend.generate(text="Xin chào", voice_name="Adam")
+        audio_numpy = backend.generate(text="Xin chào", voice_name="Thái Sơn")
     backend.save_wav(audio_numpy, "output.wav")
     backend.close()
 """
@@ -43,7 +43,7 @@ class VieneuBackend:
     Lifecycle:
         backend = VieneuBackend()
         backend.init()           # loads model once
-        audio = backend.generate(text="...", voice_name="Adam")
+        audio = backend.generate(text="...", voice_name="Thái Sơn")
         backend.save_wav(audio, "out.wav")
         backend.close()          # frees resources
     """
@@ -80,7 +80,7 @@ class VieneuBackend:
         """Resolve a voice name to its preset dict.
 
         Args:
-            name: Voice name string (e.g. "Adam", "Thanh Bình").
+            name: Voice name string (e.g. "Thái Sơn", "Thanh Bình").
 
         Returns:
             dict suitable for tts.infer(voice=...)
@@ -110,12 +110,12 @@ class VieneuBackend:
             print(f"  {vname}", file=sys.stderr)
         raise SystemExit(1)
 
-    def generate(self, text, voice_name="Adam", **infer_kwargs):
+    def generate(self, text, voice_name="Thái Sơn", **infer_kwargs):
         """Generate audio from text using a preset voice.
 
         Args:
             text: Vietnamese text to speak.
-            voice_name: Preset voice name (default: "Adam").
+            voice_name: Preset voice name (default: "Thái Sơn").
             **infer_kwargs: Extra kwargs passed to tts.infer().
 
         Returns:
@@ -228,8 +228,8 @@ def main():
     ap = argparse.ArgumentParser(description="VieNeu-TTS preset voice backend")
     ap.add_argument("--list-voices", action="store_true",
                     help="List all available preset voices")
-    ap.add_argument("--voice", default="Adam",
-                    help="Preset voice name (default: Adam)")
+    ap.add_argument("--voice", default="Thái Sơn",
+                    help="Preset voice name (default: Thái Sơn)")
     ap.add_argument("--text", default=None,
                     help="Text to generate (standalone mode)")
     ap.add_argument("--output", default=None,
