@@ -74,17 +74,11 @@ function buildProductions() {
 
 const PRODUCTIONS = buildProductions();
 
-// ─── TTS configuration constants ──────────────────────────────────────────
-// These reflect the ACTUAL implementation in each gen_tts_*.py script.
-// Source of truth: the Python scripts themselves (VOICE constant, edge_tts import).
-const TTS_CONFIG = {
-  solarSystem: {
-    ttsBackend: "edge",           // actual engine: edge_tts (Microsoft Edge TTS)
-    voice: "vi-VN-NamMinhNeural", // actual voice from gen_tts_solarSystem.py line 8
-    sentinel: "public/solarSystem/durations.json",
-  },
-  // Add other TTS-enabled productions here as their scripts are inspected
-};
+// ─── TTS configuration — shared source ────────────────────────────────────
+// Import from tts.mjs to ensure both capabilities consume the same actual
+// TTS configuration (edge_tts + vi-VN-NamMinhNeural from gen_tts_solarSystem.py).
+// This eliminates the duplicated hard‑coded values and guarantees consistency.
+const { TTS_CONFIG } = await import("./tts.mjs");
 
 function normalize(s) {
   return s
@@ -267,8 +261,18 @@ async function produce(id, opts) {
       } catch { /* ignore */ }
 
       // Get actual duration from rendered artifact if possible
-      // For now, use null — actual video duration measurement requires ffprobe or similar
-      const duration = null;
+      // Try using ffprobe if available; otherwise mark as 'unknown' explicitly
+      let duration = null;
+      try {
+        const { spawnSync } = await import("node:child_process");
+        const r = spawnSync("ffprobe", ["-v", "quiet", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1", p.output], { cwd: ROOT, stdio: ["pipe", "pipe"] });
+        if (r.status === 0 && r.stdout) {
+          const parsed = parseFloat(r.stdout.toString().trim());
+          if (!isNaN(parsed) && parsed > 0) {
+            duration = Math.round(parsed * 1000) / 1000;
+          }
+        }
+      } catch { /* ffprobe not available */ }
 
       // Get TTS configuration for accurate backend/voice
       const ttsConfig = TTS_CONFIG[id];
@@ -307,7 +311,7 @@ async function produce(id, opts) {
   return true;
 }
 
-function main() {
+async function main() {
   const argv = process.argv.slice(2);
   const get = (name, def = null) => {
     const i = argv.indexOf(name);
@@ -354,8 +358,10 @@ function main() {
     routedFrom = topicArg;
   }
 
-  const ok = produce(id, { topic: topicArg || projectArg, skipTts, skipRender, routeOnly, skipValidation, routedFrom });
+  const ok = await produce(id, { topic: topicArg || projectArg, skipTts, skipRender, routeOnly, skipValidation, routedFrom });
   process.exit(ok ? 0 : 1);
 }
 
-main();
+(async () => {
+  main();
+})();
