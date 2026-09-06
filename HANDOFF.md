@@ -2,25 +2,25 @@
 
 ## Current Canonical Architecture
 
-- **Composition**: `NghiQuyet57V2` (src/compositions/NghiQuyet57VideoV2.tsx)
-- **Scenes**: 7 scenes in `src/scenes/NQ57ScenesV2.tsx` (Title, Quote, Roles, Pillars, Stats, Vision, End)
+- **Composition**: `NghiQuyet57Video` (src/compositions/NghiQuyet57Video.tsx)
+- **Scenes**: 7 scenes in `src/templates/nq57/scenes/` (Title, Quote, Roles, Pillars, Stats, Vision, End)
 - **Data**: `src/data/nq57.ts` — SCENES array with id/audio/caption/dur per scene
 - **Theme**: `src/theme/nq57.ts` — design tokens (colors, fonts)
 - **Fonts**: `src/fonts/nq57.ts` — Be Vietnam Pro via @remotion/google-fonts
 - **TTS**: `gen_tts_v2.py` — 4 backends (edge, omni, gemini, proxy), outputs to `public/nq57/`
-- **Entry**: `src/index.ts` → `src/Root.tsx` → single Composition `NghiQuyet57V2`
+- **Entry**: `src/index.ts` → `src/Root.tsx` → single Composition `NghiQuyet57Video`
 
 ## Production Composition
 
-`NghiQuyet57V2`: 1920×1080, 30fps, TransitionSeries with fade crossfade between scenes.
+`NghiQuyet57Video`: 1920×1080, 30fps, TransitionSeries with fade crossfade between scenes.
 Each scene has Audio, karaoke Caption (marquee), and visual elements:
-- TitleSceneV2: RingDraw SVG + Emblem3D (Three.js torus + icosahedron)
-- QuoteSceneV2: large quote mark + UnderlineDraw
-- RolesSceneV2: 3 role cards + DataFlow SVG
-- PillarsSceneV2: Bars3D (Three.js 3D bar chart)
-- StatsSceneV2: AreaChart (Recharts) + DataFlow + 3 Gauge SVGs
-- VisionSceneV2: RingDraw + animated counter
-- EndSceneV2: RingDraw + Emblem3D
+- TitleScene: RingDraw SVG + Emblem3D (Three.js torus + icosahedron)
+- QuoteScene: large quote mark + UnderlineDraw
+- RolesScene: 3 role cards + DataFlow SVG
+- PillarsScene: Bars3D (Three.js 3D bar chart)
+- StatsScene: AreaChart (Recharts) + DataFlow + 3 Gauge SVGs
+- VisionScene: RingDraw + animated counter
+- EndScene: RingDraw + Emblem3D
 
 ## Current Status
 

@@ -129,12 +129,17 @@ All themes use `createTheme()` from `src/design/theme/index.ts`.
 
 ```
 scripts/
-  ├── manifest.json    — Production registry (7 productions)
+  ├── manifest.json    — Internal build/render manifest (12 productions, used by pipeline scripts)
   ├── produce.mjs      — Orchestrator: topic → route → validate → TTS → render
   ├── validate.mjs     — Content-contract validator CLI
   ├── verify.mjs       — Production-matrix verification gate (CI)
   └── verify.d.mts     — Type declarations for verify.mjs
 ```
+
+### Canonical Sources
+
+- **`contract.json`** (repository root) — External-facing Remotion Production Contract v1. Canonical for external operators (zeroclaw-remotion).
+- **`scripts/manifest.json`** — Internal build/render manifest. Used by `produce.mjs`, `validate.mjs`, `verify.mjs`. Contains richer metadata (template, dataFile, tts script, preview config, aliases, keywords).
 
 ### Manifest → Routing → Production Flow
 

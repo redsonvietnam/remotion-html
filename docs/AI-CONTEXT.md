@@ -39,7 +39,7 @@ Single Remotion codebase, multiple production lines, shared design system.
 | `stoicLove` | 1080×1920 | hook, statement, split, concept, impermanence, ending | stoicLove |
 | `nodeflow` | 1920×1080 | title, flow, contribution, benefit, compare, end | baoHiem2024 |
 
-## Current Production Lines (7)
+## Current Production Lines (12)
 
 | ID | Template | Composition | Data File | TTS Script | Output |
 |----|----------|-------------|-----------|------------|--------|
@@ -50,6 +50,16 @@ Single Remotion codebase, multiple production lines, shared design system.
 | canCuoc | nq57 | CanCuoc | `src/data/canCuoc.ts` | `gen_tts_canCuoc.py` | `out/canCuoc.mp4` |
 | luatGTDB | nq57 | LuatGTDB | `src/data/luatGTDB.ts` | `gen_tts_luatGTDB.py` | `out/luatGTDB.mp4` |
 | baoHiem2024 | nodeflow | BaoHiem2024 | `src/data/baoHiem2024.ts` | `gen_tts_baoHiem2024.py` | `out/baoHiem2024.mp4` |
+| luatBHXH | blueprint | LuatBHXH | `src/data/luatBHXH.ts` | `gen_tts_luatBHXH.py` | `out/luatBHXH.mp4` |
+| cr7Records | cr7 | CR7Records | `src/data/cr7Records.ts` | `gen_tts_cr7Records.py` | `out/cr7Records.mp4` |
+| cr7VsMessi | cr7 | CR7VsMessi | `src/data/cr7VsMessi.ts` | `gen_tts_cr7VsMessi.py` | `out/cr7VsMessi.mp4` |
+| solarSystem | cosmos | SolarSystem | `src/data/solarSystem.ts` | `gen_tts_solarSystem.py` | `out/solarSystem.mp4` |
+| championsLeague | scrapbook | ChampionsLeague | `src/data/championsLeague.ts` | `gen_tts_championsLeague.py` | `out/championsLeague.mp4` |
+
+## Manifest Sources
+
+- **`contract.json`** — External-facing Remotion Production Contract v1. Canonical for external operators.
+- **`scripts/manifest.json`** — Internal build/render manifest. Used by pipeline scripts (produce.mjs, validate.mjs, verify.mjs).
 
 ## Content/Data Contract
 
