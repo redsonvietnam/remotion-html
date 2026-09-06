@@ -183,6 +183,41 @@ function produce(id, opts) {
       console.error("  ✗ render failed");
       return false;
     }
+
+    // Generate provenance for successful render
+    try {
+      const { loadContractModule } = await import("./contractLoader.mjs");
+      const provMod = await loadContractModule("src/contract/provenance.ts");
+      const { existsSync, statSync, writeFileSync } = await import("node:fs");
+
+      let artifactSize = null;
+      try {
+        if (existsSync(p.output)) {
+          artifactSize = statSync(p.output).size;
+        }
+      } catch { /* ignore */ }
+
+      const contract = JSON.parse((await import("node:fs")).readFileSync(path.join(ROOT, "contract.json"), "utf8"));
+      const ttsBackend = p.tts ? "python" : null;
+
+      const provenance = provMod.generateProvenance({
+        productionId: id,
+        contractVersion: contract.contractVersion,
+        composition: p.composition,
+        ttsBackend,
+        voice: null,
+        duration: null,
+        artifactPath: p.output,
+        artifactSize,
+        repoRoot: ROOT,
+      });
+
+      const provPath = provMod.provenancePath(p.output);
+      writeFileSync(path.join(ROOT, provPath), JSON.stringify(provenance, null, 2));
+      console.log(`  ✓ Provenance: ${provPath}`);
+    } catch (err) {
+      console.warn(`  ! Provenance generation failed: ${err.message}`);
+    }
   } else {
     console.log("  · --skip-render: render skipped");
   }

@@ -2,7 +2,7 @@
 // tts.mjs — Remotion Production Contract v1 `tts` capability
 // ---------------------------------------------------------------------------
 
-import { existsSync } from "node:fs";
+import { existsSync, statSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -12,6 +12,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 export async function runTts(productionId) {
   const mod = await loadContractModule("src/contract/tts.ts");
+  const provMod = await loadContractModule("src/contract/provenance.ts");
   const resolution = mod.resolveTtsRequest({ productionId });
   if (resolution.status !== "SUCCESS") return resolution;
 
@@ -20,18 +21,48 @@ export async function runTts(productionId) {
   if (collision.status !== "SUCCESS") return collision;
 
   // Implementation-specific delegation
+  let genResult;
   if (productionId === "solarSystem") {
     const r = spawnSync("python", [path.join(ROOT, "gen_tts_solarSystem.py")], { cwd: ROOT, stdio: "inherit" });
     if (r.status !== 0) return { status: "FAILED", message: "TTS generation failed" };
-    return { status: "SUCCESS", message: "TTS generation completed" };
-  }
-  
-  if (productionId === "solarSystem-contract-test") {
+    genResult = { status: "SUCCESS", message: "TTS generation completed" };
+  } else if (productionId === "solarSystem-contract-test") {
     const r = spawnSync("python", [path.join(ROOT, "gen_tts_solarSystem.py"), target.artifactRoot], { cwd: ROOT, stdio: "inherit" });
     if (r.status !== 0) return { status: "FAILED", message: "TTS generation failed" };
-    return { status: "SUCCESS", message: "TTS generation completed" };
+    genResult = { status: "SUCCESS", message: "TTS generation completed" };
+  } else {
+    return { status: "BLOCKED", message: `no generation path for production "${productionId}"` };
   }
-  return { status: "BLOCKED", message: `no generation path for production "${productionId}"` };
+
+  // Generate provenance for successful TTS
+  const sentinelPath = path.join(ROOT, target.sentinel);
+  let artifactSize = null;
+  try {
+    if (existsSync(sentinelPath)) {
+      artifactSize = statSync(sentinelPath).size;
+    }
+  } catch { /* ignore */ }
+
+  const contract = JSON.parse((await import("node:fs")).readFileSync(path.join(ROOT, "contract.json"), "utf8"));
+  const composition = contract.productions[productionId]?.composition || "unknown";
+
+  const provenance = provMod.generateProvenance({
+    productionId,
+    contractVersion: contract.contractVersion,
+    composition,
+    ttsBackend: "python",
+    voice: null,
+    duration: null,
+    artifactPath: target.sentinel,
+    artifactSize,
+    repoRoot: ROOT,
+  });
+
+  // Write provenance sidecar
+  const provPath = provMod.provenancePath(target.sentinel);
+  writeFileSync(path.join(ROOT, provPath), JSON.stringify(provenance, null, 2));
+
+  return { ...genResult, provenance };
 }
 
 async function main() {

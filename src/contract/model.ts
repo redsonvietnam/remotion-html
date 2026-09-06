@@ -10,6 +10,8 @@
 // machine-readable document; this module is its testable semantic surface.
 // ---------------------------------------------------------------------------
 
+import type { Provenance } from "./provenance";
+
 export type Result = "SUCCESS" | "BLOCKED" | "FAILED";
 
 export const CONTRACT_VERSION = "1.0";
@@ -25,8 +27,22 @@ export const ARTIFACT_BOUNDARY = "out/";
  * BLOCKED = operation cannot/should not continue due to a declared
  *           precondition/state/collision/incompatibility. No remediation.
  * FAILED   = operation was attempted and did not succeed.
+ *
+ * On SUCCESS for artifact-producing capabilities (tts, render), the result
+ * may include a `provenance` field attributing the artifact to its production
+ * inputs and execution context. This is optional for backward compatibility.
  */
-export function result(state: Result, message: string): { status: Result; message: string } {
+export interface ContractResult {
+  status: Result;
+  message: string;
+  /** Provenance record for successful artifact-producing operations. */
+  provenance?: Provenance;
+}
+
+/**
+ * Wrap an operation outcome in the canonical result model.
+ */
+export function result(state: Result, message: string): ContractResult {
   return { status: state, message };
 }
 
