@@ -13,7 +13,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 // ─── TTS configuration constants ──────────────────────────────────────────
 // These reflect the ACTUAL implementation in gen_tts_solarSystem.py.
 // Source of truth: gen_tts_solarSystem.py line 8 (VOICE) and line 5 (edge_tts import).
-const TTS_CONFIG = {
+export const TTS_CONFIG = {
   solarSystem: {
     ttsBackend: "edge",        // actual engine: edge_tts (Microsoft Edge TTS)
     voice: "vi-VN-NamMinhNeural", // actual voice from gen_tts_solarSystem.py line 8
